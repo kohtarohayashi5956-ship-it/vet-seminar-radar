@@ -240,6 +240,8 @@ def validate(raw_items, text, page_url, today, stats):
             "deadline": _date(it.get("deadline")),
             "abstract_deadline": _date(it.get("abstract_deadline")),
             "detail_url": _str(it.get("detail_url")),
+            "certification_note": _str(it.get("certification_note")),
+            "certification_url": _str(it.get("certification_url")),
             "organizer": _str(it.get("organizer")),
             "speaker": _str(it.get("speaker")),
             "url": url,

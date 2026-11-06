@@ -259,6 +259,7 @@
       <label><input type="checkbox" id="oPrice" checked>受講料</label>
       <label><input type="checkbox" id="oDeadline" checked>参加申込締切</label>
       <label><input type="checkbox" id="oAbstractDeadline" checked>演題募集締切</label>
+      <label><input type="checkbox" id="oCert" checked>認定医関連</label>
     </div>
     <label class="field">見出し（空欄なら自動）<input type="text" id="tHead" placeholder="例: 11月のセミナー情報（2026年11月）"></label>
     <label class="field">案内の一言<input type="text" id="tIntro"></label>
@@ -294,7 +295,7 @@
   function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { /* 保存できなくても動作は続ける */ } }
 
   var sel = new Set(load("sr.sel", []).filter(function (id) { return BYID[id]; }));
-  var opt = Object.assign({ emoji: true, org: true, aud: true, price: true, deadline: true, abstractDeadline: true,
+  var opt = Object.assign({ emoji: true, org: true, aud: true, price: true, deadline: true, abstractDeadline: true, cert: true,
     head: "", intro: "気になるものがあればご覧ください。",
     note: "※日時・料金は変更されることがあります。必ずリンク先で最新情報をご確認ください。" }, load("sr.opt", {}));
   var dirty = false;
@@ -515,6 +516,16 @@
     if (price) kvs.appendChild(kv("受講料", price));
     if (e.deadline) kvs.appendChild(kv("参加申込締切", md(e.deadline) + "（" + wd(e.deadline) + "）"));
     if (e.abstract_deadline) kvs.appendChild(kv("演題募集締切", md(e.abstract_deadline) + "（" + wd(e.abstract_deadline) + "）"));
+    if (e.certification_note) {
+      kvs.appendChild(kv("認定医関連", e.certification_note));
+      if (e.certification_url) {
+        var certLink = el("a", "detail-link", "制度の公式情報");
+        certLink.href = e.certification_url;
+        certLink.target = "_blank"; certLink.rel = "noopener noreferrer";
+        certLink.addEventListener("click", function (ev) { ev.stopPropagation(); });
+        kvs.appendChild(certLink);
+      }
+    }
     if ((e.topics || []).length) kvs.appendChild(kv("分野", e.topics.join("・")));
     var other = otherSessions(e);
     if (other.length) kvs.appendChild(kv("同じ講座の別日程", other.slice(0, 5).map(md).join("・") + (other.length > 5 ? " ほか" + (other.length - 5) + "件" : "")));
@@ -638,6 +649,7 @@
     if (opt.price) { var pr = e.price || (e.is_free ? "無料" : ""); if (pr) parts.push("受講料：" + pr); }
     if (opt.deadline && e.deadline) parts.push("参加申込締切：" + md(e.deadline) + "（" + wd(e.deadline) + "）");
     if (opt.abstractDeadline && e.abstract_deadline) parts.push("演題募集締切：" + md(e.abstract_deadline) + "（" + wd(e.abstract_deadline) + "）");
+    if (opt.cert && e.certification_note) parts.push("認定医関連：" + e.certification_note);
     if (parts.length) lines.push(parts.join("／"));
     if (e.url) lines.push(e.url);
     return lines.join("\n");
@@ -730,6 +742,7 @@
         ["料金", EVENTS.filter(function(e) { return !!e.price || e.is_free === true; }).length + "/" + total],
         ["参加申込締切", EVENTS.filter(function(e) { return !!e.deadline; }).length + "/" + total],
         ["演題募集締切", EVENTS.filter(function(e) { return !!e.abstract_deadline; }).length + "/" + total],
+        ["認定医関連", EVENTS.filter(function(e) { return !!e.certification_note; }).length + "/" + total],
         ["巡回", good + "/" + (st.source_results || []).length + "情報源"]
       ];
       metrics.forEach(function (item) {
@@ -764,7 +777,7 @@
     $("next").addEventListener("click", function () { cur.m++; if (cur.m > 12) { cur.m = 1; cur.y++; } render(); });
     $("today").addEventListener("click", function () { cur = { y: now.getFullYear(), m: now.getMonth() + 1 }; render(); });
 
-    var map = { oEmoji: "emoji", oOrg: "org", oAud: "aud", oPrice: "price", oDeadline: "deadline", oAbstractDeadline: "abstractDeadline" };
+    var map = { oEmoji: "emoji", oOrg: "org", oAud: "aud", oPrice: "price", oDeadline: "deadline", oAbstractDeadline: "abstractDeadline", oCert: "cert" };
     Object.keys(map).forEach(function (id) {
       $(id).checked = !!opt[map[id]];
       $(id).addEventListener("change", function () { opt[map[id]] = $(id).checked; save("sr.opt", opt); refreshComposer(); });

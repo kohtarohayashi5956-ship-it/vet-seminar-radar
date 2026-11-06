@@ -147,6 +147,7 @@ def _event(title,when,url,page,context="",organizer=None,end=None):
         "audience":_audience(context+" "+title),"topics":_topics(title),
         "price":price,"is_free":free,"status":m.group(0) if m else None,
         "deadline":None,"abstract_deadline":None,"detail_url":None,
+        "certification_note":None,"certification_url":None,
         "speaker":_speakers_in_title(title),"organizer":organizer,"url":url or page,"evidence":title.strip()}
 
 
@@ -639,7 +640,7 @@ def _jsvd_participant_deadline(lines, index, event_pat, event_date):
             deadline = _date(*full[-1].groups())
         else:
             tail = piece[full[0].end():]
-            m = re.search(r"[～〜~－–-]\s*(\d{1,2})月\s*(\d{1,2})日", tail)
+            m = re.search(r"(?:\([月火水木金土日]\))?\s*[～〜~－–-]\s*(\d{1,2})月\s*(\d{1,2})日", tail)
             if not m:
                 continue
             month, day = map(int, m.groups())
@@ -648,6 +649,32 @@ def _jsvd_participant_deadline(lines, index, event_pat, event_date):
         if deadline and first <= deadline <= event_date:
             return deadline
     return None
+
+
+
+# Only meeting+date combinations with explicitly supported official information.
+# Never infer credentials from the title or from a different society's page.
+def _certification_for_meeting(society, title, start, section_lines):
+    if society == "jsvd" and "共催シンポジウム" in title and start == "2026-11-22":
+        region = "\n".join(section_lines)
+        m = re.search(r"(?:日本獣医皮膚科学会)?認定医更新評価点\s*(\d{1,2})\s*ポイント", region)
+        if m:
+            return ("日本獣医皮膚科学会認定医更新評価点 " + m.group(1) +
+                    "ポイント（参加条件・実績認定は主催者で確認）",
+                    "https://www.jsvd.jp/")
+        return None, None
+    if society == "jsvd" and "学術大会" in title and start == "2027-03-20":
+        return ("一般講演での発表は認定医制度上「国内学会発表」扱い（点数は明記なし）",
+                "https://www.jsvd.jp/topics/30meeting/announcement.html")
+    if society == "javnu" and "第19回学術集会" in title and start == "2027-08-21":
+        return ("認定医制度の学術集会参加単位：認定された出席1回につき1単位。"
+                "個人のプログラム参加時期・出席確認条件に注意",
+                "https://www.javnu.jp/certification/faq/")
+    if society == "jsvc" and "第125回" in title and start == "2026-12-19":
+        return ("2026年度認定医講習会の開催予定大会（講座22・23・34とアドバンスコース）。"
+                "取得単位・受講条件は公式案内で確認",
+                "https://www.jsvc.jp/certification/session/records/session2026/")
+    return None, None
 
 
 def _society(text, page, today, stats, society):
@@ -712,6 +739,16 @@ def _society(text, page, today, stats, society):
             ev["abstract_deadline"] = _jsvd_abstract_deadline(lines, i, pat, start)
             if start == "2027-03-20":
                 ev["detail_url"] = "https://www.jsvd.jp/topics/30meeting/announcement.html"
+        # Bound the evidence to this event, not the next conference/announcement.
+        scope = []
+        for following in lines[i+1:min(len(lines), i+75)]:
+            if pat.search(following) or (
+                society == "jsvd" and re.match(r"^AiANZ", following)
+            ):
+                break
+            scope.append(following)
+        ev["certification_note"], ev["certification_url"] = _certification_for_meeting(
+            society, title, start, scope)
         out.append(ev)
     stats["society_meetings"] = len(out)
     return out
