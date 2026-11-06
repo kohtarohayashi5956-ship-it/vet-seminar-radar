@@ -1,9 +1,50 @@
 {
-  "checked_at_jst": null,
-  "mode": "not_run",
-  "total_events": 0,
-  "source_results": [],
+  "checked_at_jst": "2026-11-06T17:09:50+09:00",
+  "mode": "free_rules",
+  "total_events": 43,
+  "source_results": [
+    {
+      "id": "jaha",
+      "name": "JAHA",
+      "pages": 3,
+      "extracted": 0,
+      "added": 0,
+      "updated": 0,
+      "status": "ok",
+      "note": ""
+    },
+    {
+      "id": "lifetail",
+      "name": "Life&Tail",
+      "pages": 1,
+      "extracted": 17,
+      "added": 17,
+      "updated": 0,
+      "status": "ok",
+      "note": ""
+    },
+    {
+      "id": "gakusai",
+      "name": "学際企画",
+      "pages": 1,
+      "extracted": 26,
+      "added": 26,
+      "updated": 0,
+      "status": "ok",
+      "note": ""
+    },
+    {
+      "id": "vetstech",
+      "name": "VETS TECH",
+      "pages": 1,
+      "extracted": 4,
+      "added": 4,
+      "updated": 0,
+      "status": "ok",
+      "note": ""
+    }
+  ],
   "warnings": [
-    "最初の巡回は未実施です。Actionsから実行してください。"
+    "SEMINAR_RADAR_CONTACT が未設定です。"
   ]
 }
