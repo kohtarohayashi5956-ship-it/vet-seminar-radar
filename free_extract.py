@@ -175,6 +175,56 @@ def _jaha(text,page,today,stats):
     return result
 
 
+JAHA_DATE_RANGE = re.compile(
+    r"(?<!\\d)(20\\d{2})[-./](1[0-2]|0?[1-9])[-./](3[01]|[12]\\d|0?[1-9])"
+    r"\\s*[～〜~–ー－-]\\s*"
+    r"(20\\d{2})[-./](1[0-2]|0?[1-9])[-./](3[01]|[12]\\d|0?[1-9])"
+)
+
+
+def _jaha_top(text, page, today, stats):
+    """Extract own dated cards from the official JAHA upcoming listing.
+
+    Each card is a status, a linked seminar title, an ISO date range,
+    prefecture and audience. Never borrow a date from an adjacent card.
+    """
+    lines = [x.strip() for x in text.splitlines() if x.strip()]
+    out = []
+    for i, line in enumerate(lines):
+        if not re.search(r"20\\d{2}[-./]\\d{1,2}[-./]\\d{1,2}", line):
+            continue
+        # Some JAHA date ranges include whitespace or a line break.
+        group = " ".join(lines[i:i + 3])
+        m = JAHA_DATE_RANGE.search(group)
+        if not m:
+            continue
+        start = _date(*m.groups()[:3])
+        end = _date(*m.groups()[3:])
+        if not start or not end or end < start:
+            continue
+        link = None
+        link_idx = None
+        for j in range(i - 1, max(-1, i - 9), -1):
+            candidate = _line_link(lines[j])
+            if candidate and len(candidate[0]) >= 6 and not re.fullmatch(
+                r"画像|詳細|MAP|前月|次月|ホーム", candidate[0], re.I
+            ):
+                link, link_idx = candidate, j
+                break
+        if not link:
+            continue
+        title, url = link
+        # Keep only this card's status/audience, not adjacent announcements.
+        context = "\n".join(lines[max(0, link_idx - 2):min(len(lines), i + 3)])
+        e = _event(title, start, url, page, context, "JAHA", end=end if end != start else None)
+        for ln in lines[max(0,link_idx - 2):link_idx]:
+            if ln in ("受付中", "受付終了", "予告", "満席"):
+                e["status"] = ln
+        out.append(e)
+    stats["jaha_date_ranges"] = len(out)
+    return out
+
+
 def _gakusai(text,page,today):
     year=_year(text)
     if not year:return []
@@ -275,7 +325,8 @@ def _lifetail(text,page,today,stats):
 
 def extract_free(source_name,page_url,hint,text,today,stats):
     source=source_name.lower().replace("&","")
-    if "jaha" in source or "日本動物病院協会" in source:raw=_jaha(text,page_url,today,stats)
+    if "jaha" in source or "日本動物病院協会" in source:
+        raw=_jaha_top(text,page_url,today,stats) if "/seminar-calendar/top/" in page_url else _jaha(text,page_url,today,stats)
     elif "学際" in source:raw=_gakusai(text,page_url,today)
     elif "vets tech" in source or "vetstech" in source:raw=_feed(text,page_url,today)
     elif "lifetail" in source or "life" in source:raw=_lifetail(text,page_url,today,stats)

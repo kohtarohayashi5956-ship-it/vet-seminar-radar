@@ -195,8 +195,20 @@ def feed_pages(src, fetcher):
 
 
 # --------------------------------------------------------------------------
+def jaha_top_pages(src, fetcher):
+    """JAHA's dated upcoming list is more stable than calendar table markup."""
+    url = src["start_url"]
+    html = fetcher.get(url)
+    hint = ("セミナーごとのリンク、開催開始日～終了日、対象者・受付状態の一覧。"
+            "開催日を公開日や申し込み期限と混同しない。")
+    yield url, html_to_text(html, url), hint
+
+
+# --------------------------------------------------------------------------
 def pages_for(src, fetcher, months):
     kind = src["kind"]
+    if kind == "jaha_top":
+        return jaha_top_pages(src, fetcher)
     if kind == "jaha_calendar":
         return jaha_pages(src, fetcher, months)
     if kind == "html_list":

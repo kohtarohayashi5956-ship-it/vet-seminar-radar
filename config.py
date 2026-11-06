@@ -38,8 +38,8 @@ SOURCES = [
     {
         "id": "jaha",
         "name": "JAHA",
-        "kind": "jaha_calendar",
-        "start_url": "https://www.jaha.or.jp/seminar-calendar/",
+        "kind": "jaha_top",
+        "start_url": "https://www.jaha.or.jp/seminar-calendar/top/",
         "enabled": True,
     },
     {
