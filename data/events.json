@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-06T18:48:16+09:00",
+ "updated": "2026-11-06T18:51:05+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -2048,7 +2048,7 @@
   "65ec275c9732": {
    "title": "第30回 日本獣医皮膚科学会学術大会",
    "start_date": "2027-03-20",
-   "end_date": null,
+   "end_date": "2027-03-21",
    "start_time": null,
    "end_time": null,
    "format": "現地",
@@ -2128,35 +2128,6 @@
    "last_seen": "2026-11-06",
    "first_seen": "2026-11-06"
   },
-  "eb487a20cc2b": {
-   "title": "第35回日本獣医がん学会は、2027年1月30日(土)、31日(日)、大阪府・ホテルニューオータニ大阪 で会場開催をいたします。",
-   "start_date": "2027-01-30",
-   "end_date": "2027-01-31",
-   "start_time": null,
-   "end_time": null,
-   "format": "現地",
-   "venue": null,
-   "prefecture": null,
-   "audience": [
-    "動物看護師"
-   ],
-   "topics": [
-    "学会・大会"
-   ],
-   "price": null,
-   "is_free": null,
-   "status": null,
-   "deadline": null,
-   "organizer": "JVCS",
-   "url": "https://www.jvcs.jp/society/",
-   "url_is_page": false,
-   "verified": true,
-   "id": "eb487a20cc2b",
-   "source": "日本獣医がん学会",
-   "source_id": "jvcs",
-   "last_seen": "2026-11-06",
-   "first_seen": "2026-11-06"
-  },
   "d125f051c2f4": {
    "title": "第36回日本獣医がん学会",
    "start_date": "2027-07-03",
@@ -2208,6 +2179,33 @@
    "id": "ac8b4a8d5899",
    "source": "日本獣医循環器学会",
    "source_id": "jsvc",
+   "last_seen": "2026-11-06",
+   "first_seen": "2026-11-06"
+  },
+  "d6fba849598a": {
+   "title": "第19回学術集会・総会",
+   "start_date": "2027-08-21",
+   "end_date": "2027-08-22",
+   "start_time": null,
+   "end_time": null,
+   "format": "現地",
+   "venue": null,
+   "prefecture": null,
+   "audience": [],
+   "topics": [
+    "学会・大会"
+   ],
+   "price": null,
+   "is_free": null,
+   "status": null,
+   "deadline": null,
+   "organizer": "JAVNU",
+   "url": "https://www.javnu.jp/",
+   "url_is_page": false,
+   "verified": true,
+   "id": "d6fba849598a",
+   "source": "JAVNU",
+   "source_id": "javnu",
    "last_seen": "2026-11-06",
    "first_seen": "2026-11-06"
   }
