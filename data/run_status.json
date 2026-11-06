@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-06T21:40:54+09:00",
+  "checked_at_jst": "2026-11-06T22:06:28+09:00",
   "mode": "free_rules",
   "total_events": 74,
   "source_results": [
@@ -15,6 +15,8 @@
       "details_accepted": 0,
       "deadlines_found": 0,
       "prices_found": 0,
+      "times_found": 0,
+      "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
     },
@@ -30,6 +32,8 @@
       "details_accepted": 14,
       "deadlines_found": 14,
       "prices_found": 8,
+      "times_found": 0,
+      "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
     },
@@ -41,10 +45,12 @@
       "added": 0,
       "updated": 26,
       "replaced_stale": 0,
-      "details_scanned": 0,
-      "details_accepted": 0,
+      "details_scanned": 2,
+      "details_accepted": 2,
       "deadlines_found": 0,
-      "prices_found": 0,
+      "prices_found": 2,
+      "times_found": 2,
+      "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
     },
@@ -60,6 +66,8 @@
       "details_accepted": 0,
       "deadlines_found": 0,
       "prices_found": 0,
+      "times_found": 0,
+      "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
     },
@@ -75,6 +83,8 @@
       "details_accepted": 0,
       "deadlines_found": 0,
       "prices_found": 0,
+      "times_found": 0,
+      "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
     },
@@ -90,6 +100,8 @@
       "details_accepted": 0,
       "deadlines_found": 0,
       "prices_found": 0,
+      "times_found": 0,
+      "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
     },
@@ -105,6 +117,8 @@
       "details_accepted": 0,
       "deadlines_found": 0,
       "prices_found": 0,
+      "times_found": 0,
+      "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
     },
@@ -120,6 +134,8 @@
       "details_accepted": 0,
       "deadlines_found": 0,
       "prices_found": 0,
+      "times_found": 0,
+      "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
     },
@@ -135,6 +151,8 @@
       "details_accepted": 0,
       "deadlines_found": 0,
       "prices_found": 0,
+      "times_found": 0,
+      "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
     }
