@@ -253,32 +253,82 @@ def _gakusai(text,page,today):
     return out
 
 
-def _feed_event_schedule(body):
-    """Extract event dates only, never an article URL, posting date or deadline."""
-    lines=[re.sub(r"<https?://[^>]*>|https?://\S+","",ln).strip() for ln in body.splitlines()]
-    # Find dates explicitly associated with an event schedule label.
-    candidates=[]
-    for i,line in enumerate(lines):
-        if EXCLUDE_DATE.search(line):continue
-        if not EVENT_LABEL.search(line):continue
-        local=" ".join(lines[i:min(len(lines),i+3)])
-        dates=_dates(local)
-        if not dates:
-            y=_year(local)
-            m=MONTH_DAY.search(local)
-            if m and y:dates=[_date(y,*m.groups())]
+def _feed_event_schedule(body, published=None):
+    """Only dates under this announcement's own schedule heading.
+
+    The article posting date is used ONLY to resolve the year of an
+    explicitly labelled month/day. It is never itself an event date.
+    """
+    lines = [re.sub(r"<https?://[^>]*>|https?://\S+", "", ln).strip()
+             for ln in body.splitlines()]
+    for i, line in enumerate(lines):
+        if EXCLUDE_DATE.search(line):
+            continue
+        is_heading = bool(EVENT_LABEL.search(line) or
+                          re.fullmatch(r"(?:日時|開催日|開催日時|開催期間|日程|配信日時)\s*[：:]?", line))
+        if not is_heading:
+            continue
+        # Use at most two following lines, stopping before a new field such
+        # as '申込締切'. This prevents a deadline from becoming a start date.
+        context = [line]
+        for following in lines[i + 1:i + 3]:
+            if EXCLUDE_DATE.search(following):
+                break
+            context.append(following)
+        local = " ".join(context)
+        dates = _dates(local)
         if dates:
-            candidates.extend(d for d in dates if d)
-    if candidates:
-        # More than one date can represent a broadcast interval; the first
-        # explicitly labelled occurrence is the event start.
-        return candidates[0]
-    # Only if a standalone full-year date line itself mentions the event and
-    # a time/online/venue, without a post/registration label.
+            return dates[0]
+        monthday = MONTH_DAY.search(local)
+        if monthday and published:
+            try:
+                postdate = datetime.date.fromisoformat(published)
+                y, m, d = postdate.year, int(monthday.group(1)), int(monthday.group(2))
+                inferred = datetime.date(y, m, d)
+                if inferred < postdate - datetime.timedelta(days=3):
+                    inferred = datetime.date(y + 1, m, d)
+                if 0 <= (inferred - postdate).days <= 370:
+                    return inferred.isoformat()
+            except ValueError:
+                pass
+    # Unlabelled full-year dates are accepted only if event is explicit
+    # on that SAME line. Ignore article URLs, publication and deadlines.
     for line in lines:
-        if EXCLUDE_DATE.search(line):continue
-        if re.search(r"ライブ配信|オンライン開催|開催\s*[:：]|セミナー開始",line) and (_dates(line)):
-            return _dates(line)[0]
+        if EXCLUDE_DATE.search(line):
+            continue
+        if re.search(r"ライブ配信|オンライン開催|開催\s*[:：]|セミナー開始", line):
+            dates = _dates(line)
+            if dates:
+                return dates[0]
+    return None
+
+
+def _feed_price(body):
+    """Require an explicit price heading; generic '無料' may refer to a gift."""
+    lines = [ln.strip() for ln in body.splitlines() if ln.strip()]
+    for i, line in enumerate(lines):
+        m = re.match(r"^(?:参加費|受講料|料金)[：:\s]*(.*)$", line)
+        if not m:
+            continue
+        value = m.group(1).strip() or (lines[i + 1] if i + 1 < len(lines) else "")
+        if len(value) > 100 or not value:
+            continue
+        if re.search(r"無料(?:\s|$|[（(])", value):
+            return "無料", True
+        if re.search(r"[0-9０-９,，]+\s*円", value):
+            return value[:100], None
+    return None, None
+
+
+def _feed_status(title, body):
+    """Avoid '満席' from sidebar recommendations or unrelated events."""
+    m = STATUS.search(title)
+    if m:
+        return m.group(0)
+    for line in body.splitlines():
+        matched = re.search(r"^(?:受付状況|申込状況|募集状況)\s*[：:]\s*(受付終了|申込終了|募集終了|受付中|申込受付中|満席|キャンセル待ち|残り\d+席)", line.strip())
+        if matched:
+            return matched.group(1)
     return None
 
 
@@ -287,14 +337,26 @@ def _feed(text,page,today):
     for chunk in re.split(r"(?m)^=====\s*$",text):
         m=re.search(r"(?m)^記事タイトル:\s*(.+)$",chunk)
         u=re.search(r"(?m)^記事URL:\s*<(https?://[^>]+)>",chunk)
-        if not (m and u):continue
+        if not (m and u):
+            continue
         title=m.group(1).strip()
-        if not re.search(r"セミナー|ライブ|講習|学会|実習|ウェビナー|勉強会|講演|講座|腫瘍|内科|外科|看護|眼科",title):continue
+        if not re.search(r"セミナー|ライブ|講習|学会|実習|ウェビナー|勉強会|講演|講座|腫瘍|内科|外科|看護|眼科",title):
+            continue
+        post = re.search(r"(?m)^公開日:\s*(20\d{2}-\d{2}-\d{2})\s*$",chunk)
         body=re.sub(r"(?m)^公開日:.*$","",chunk)
-        when=_feed_event_schedule(body)
-        # Do not include article URL or publish date in context/time extraction.
+        when=_feed_event_schedule(body, post.group(1) if post else None)
+        # Explicit labels win over unrelated sidebar text and promotions.
         content=re.sub(r"<https?://[^>]*>","",body)
-        out.append(_event(title,when,u.group(1),page,content[:5500],"VETS TECH"))
+        e=_event(title,when,u.group(1),page,content[:5500],"VETS TECH")
+        e["status"] = _feed_status(title, content)
+        e["price"], e["is_free"] = _feed_price(content)
+        if re.search(r"[\[［【]録画[\]］】]|(?:^|　)録画", title):
+            e["format"] = "オンデマンド"
+        elif re.search(r"[\[［【]ライブ[\]］】]", title):
+            e["format"] = "ライブ配信"
+        elif "実習" in title:
+            e["format"] = "現地"
+        out.append(e)
     return out
 
 
