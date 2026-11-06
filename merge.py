@@ -112,18 +112,25 @@ def _range(e):
 
 
 def _same_event(a, b):
+    """Conservatively merge *cross-source* copies, never separate sessions.
+
+    Previously a common title fragment + same calendar day collapsed different
+    sessions in a provider's course (e.g. Life&Tail morning/afternoon).
+    """
+    if a.get("source_id") == b.get("source_id"):
+        return False
     ra, rb = _range(a), _range(b)
     if not ra or not rb:
         return False
     if ra[0] > rb[1] or rb[0] > ra[1]:
         return False
-    na, nb = norm(a["title"]), norm(b["title"])
+    if a.get("start_time") and b.get("start_time") and a["start_time"] != b["start_time"]:
+        return False
+    na, nb = norm(a.get("title", "")), norm(b.get("title", ""))
     if not na or not nb:
         return False
-    short, long_ = (na, nb) if len(na) <= len(nb) else (nb, na)
-    if len(short) >= 8 and short in long_:
-        return True
-    return difflib.SequenceMatcher(None, na, nb).ratio() >= 0.8
+    # No substring matching; a common promotional series name is insufficient.
+    return na == nb or difflib.SequenceMatcher(None, na, nb).ratio() >= 0.97
 
 
 def dedupe_cross_source(events):

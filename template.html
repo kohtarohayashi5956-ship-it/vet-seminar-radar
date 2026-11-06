@@ -41,11 +41,21 @@
   .top .sub { margin: 0; font-size: 12px; color: #aeb9c7; }
   .monthnav { display: flex; align-items: center; gap: 6px; margin-left: auto; }
   .monthnav .label { min-width: 9.5em; text-align: center; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .iconbtn, .textbtn {
+  /* Navigation buttons appear on a dark header. Jump buttons live on white cards. */
+  .monthnav .iconbtn, .monthnav .textbtn {
     border: 1px solid #55657a; background: transparent; color: #fff; border-radius: var(--radius);
     padding: 5px 12px; cursor: pointer;
   }
-  .iconbtn:hover, .textbtn:hover { background: #2b3a4d; }
+  .monthnav .iconbtn:hover, .monthnav .textbtn:hover { background: #2b3a4d; }
+  .jumpbtn {
+    display: inline-block; width: auto; max-width: 100%;
+    border: 1px solid #0E7C86; background: #0E7C86; color: #fff;
+    border-radius: var(--radius); padding: 12px 18px;
+    font-size: 15px; font-weight: 700; line-height: 1.5;
+    cursor: pointer; white-space: normal; text-align: left;
+  }
+  .jumpbtn:hover, .jumpbtn:focus-visible { background: #08646d; border-color: #08646d; }
+  .jumpbtn:focus-visible { outline: 3px solid #94d9df; outline-offset: 2px; }
   .banner { background: #fff3cd; color: #5c4400; padding: 8px 20px; font-size: 13px; border-bottom: 1px solid #ecd58a; }
 
   /* ---- 絞り込み ---- */
@@ -401,7 +411,9 @@
         return e.start_date && e.start_date > mEnd && passes(e);
       }).sort(function (a, b) { return a.start_date < b.start_date ? -1 : a.start_date > b.start_date ? 1 : 0; });
       if (future.length) {
-        var jump = el("button", "textbtn", "次の開催月（" + future[0].start_date.slice(0, 7).replace("-", "年") + "月）へ：" + future.length + "件の予定");
+        var nextMonth = future[0].start_date.slice(0, 7);
+        var countInNextMonth = future.filter(function (e) { return e.start_date.slice(0, 7) === nextMonth; }).length;
+        var jump = el("button", "jumpbtn", "▶ " + nextMonth.replace("-", "年") + "月の開催予定を見る（" + countInNextMonth + "件）");
         jump.addEventListener("click", function () {
           cur = { y: +future[0].start_date.slice(0, 4), m: +future[0].start_date.slice(5, 7) };
           render();
@@ -603,6 +615,22 @@
     $("fab").addEventListener("click", function () { document.body.classList.add("open"); });
     $("closeComposer").addEventListener("click", function () { document.body.classList.remove("open"); });
 
+    // Open the nearest upcoming month when the present month has no visible
+    // future seminars. Do not start users on an empty calendar.
+    var thisMonth = monthKey(cur.y, cur.m);
+    var upcoming = EVENTS.filter(function (e) {
+      return e.start_date && endOf(e) >= todayStr && passes(e);
+    }).sort(function (a, b) {
+      return a.start_date < b.start_date ? -1 : a.start_date > b.start_date ? 1 : 0;
+    });
+    var hasCurrentMonth = upcoming.some(function (e) {
+      return e.start_date.slice(0, 7) === thisMonth ||
+             (e.start_date < thisMonth + "-01" && endOf(e).slice(0, 7) >= thisMonth);
+    });
+    if (!hasCurrentMonth && upcoming.length) {
+      cur = { y: +upcoming[0].start_date.slice(0, 4),
+              m: +upcoming[0].start_date.slice(5, 7) };
+    }
     render(); refreshComposer(true);
   }
   init();
