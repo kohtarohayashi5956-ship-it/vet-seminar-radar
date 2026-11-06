@@ -164,6 +164,10 @@ def feed_pages(src, fetcher):
                     xml_tag = ("{http://purl.org/rss/1.0/modules/content/}encoded"
                                if tag == "content:encoded" else tag)
                     ET.SubElement(item, xml_tag).text = value
+    # An HTML error page can be well-formed XML but it is not an RSS feed.
+    # Do not call a bogus response successful or delete stored events.
+    if root.tag.lower() not in ("rss", "rdf", "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}rdf"):
+        raise ValueError("RSSではないページが返されました")
     cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=src.get("max_age_days", 120))
     keyword = src.get("category_contains", "")
     items = []
