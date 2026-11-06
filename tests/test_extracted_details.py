@@ -12,6 +12,18 @@ class ExtractDetailsTest(unittest.TestCase):
         self.assertEqual(_speakers_in_title("手島健次先生「犬と猫の局所麻酔」"),"手島健次")
     def test_vetstech_speaker(self):
         self.assertEqual(_speakers_in_title("【ライブ】慢性腸症治療のその先（秋吉先生）"),"秋吉")
+    def test_speaker_with_kana_and_one_character_surname(self):
+        self.assertEqual(_speakers_in_title("奈良 なぎさ 先生"), "奈良 なぎさ")
+        self.assertEqual(_speakers_in_title("林 慶 先生 / 天野 まど香 先生"),
+                         "林 慶・天野 まど香")
+
+    def test_adjacent_speaker_names_without_separator(self):
+        self.assertEqual(_speakers_in_title("高橋洋介先生岩田泰介先生"),
+                         "高橋洋介・岩田泰介")
+
+    def test_teacher_general_word_not_speaker(self):
+        self.assertIsNone(_speakers_in_title("小動物獣医師の先生方におすすめ"))
+
     def test_no_speaker(self):
         self.assertIsNone(_speakers_in_title("愛玩動物看護師のための救急セミナー"))
     def test_deadline_only_explicit_full_year(self):

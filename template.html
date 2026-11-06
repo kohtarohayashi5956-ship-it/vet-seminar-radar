@@ -299,6 +299,38 @@
   }
   function norm(s) { return (s || "").normalize("NFKC").toLowerCase(); }
 
+
+  /* ---------- コンパクトな講座名・シリーズ日程 ---------- */
+  function displayTitle(e) {
+    if (e.source_id !== "lifetail") return e.title;
+    var parts = (e.title || "").split("｜");
+    var main = parts[0].replace(/^(?:(?:満席|残り\d+席|無料)\s*)+/, "").trim();
+    if (/^(?:無料ライブ|ライブ|無料)$/.test(main) && parts[1]) {
+      main = parts[1].trim();
+    } else if (main.length < 18 && parts[1]) {
+      main += "｜" + parts[1].trim();
+    }
+    // Preserve the distinction between morning/afternoon and day 1/day 2.
+    parts.slice(1, 4).forEach(function (p) {
+      var tag = p.trim().match(/^[＜<（(]((?:午前|午後|[１２12]日目)[^＞>）)]{0,8})[＞>）)]/);
+      if (tag && main.indexOf(tag[1]) < 0) main += "（" + tag[1] + "）";
+    });
+    return main || e.title;
+  }
+
+  function otherSessions(e) {
+    if (!e.start_date || !e.title) return [];
+    var days = {};
+    EVENTS.forEach(function (x) {
+      if (x.id !== e.id && x.source_id === e.source_id &&
+          x.title === e.title && x.start_date &&
+          x.start_date !== e.start_date && x.start_date >= todayStr) {
+        days[x.start_date] = true;
+      }
+    });
+    return Object.keys(days).sort();
+  }
+
   /* ---------- 絞り込み ---------- */
   function passes(e) {
     if (F.aud !== "all" && !audMatch(e, F.aud)) return false;
@@ -355,12 +387,12 @@
       if (days >= 0 && days <= 7) r1.appendChild(el("span", "st ok", "NEW"));
     }
     if (!e.verified) {
-      var u = el("span", "unv", "⚠要確認"); u.title = "AIの抽出結果を原文と照合しきれませんでした。原典で必ず確認してください。"; r1.appendChild(u);
+      var u = el("span", "unv", "⚠要確認"); u.title = "掲載情報の機械的照合が不十分です。AI利用の有無にかかわらず原典をご確認ください。"; r1.appendChild(u);
     }
     if (contFlag) r1.appendChild(el("span", "kv", "前月から継続"));
     body.appendChild(r1);
 
-    var h = el("div", "title"); var a = el("a", null, e.title);
+    var h = el("div", "title"); var a = el("a", null, displayTitle(e));
     a.href = e.url || "#"; a.target = "_blank"; a.rel = "noopener noreferrer";
     a.addEventListener("click", function (ev) { ev.stopPropagation(); });
     h.appendChild(a); body.appendChild(h);
@@ -375,6 +407,8 @@
     if (price) kvs.appendChild(kv("受講料", price));
     if (e.deadline) kvs.appendChild(kv("申込締切", md(e.deadline) + "（" + wd(e.deadline) + "）"));
     if ((e.topics || []).length) kvs.appendChild(kv("分野", e.topics.join("・")));
+    var other = otherSessions(e);
+    if (other.length) kvs.appendChild(kv("同じ講座の別日程", other.slice(0, 5).map(md).join("・") + (other.length > 5 ? " ほか" + (other.length - 5) + "件" : "")));
     body.appendChild(kvs);
 
     var foot = el("div", "foot");
@@ -487,7 +521,7 @@
     var line1 = "■ " + dateText(e);
     if (!multi && e.start_time) line1 += " " + e.start_time + (e.end_time ? "〜" + e.end_time : "〜");
     var pl = placeOf(e); if (pl) line1 += "｜" + pl;
-    var lines = [line1, e.title];
+    var lines = [line1, displayTitle(e)];
     var parts = [];
     if (opt.org && e.organizer) parts.push("主催：" + e.organizer);
     if (opt.aud && (e.audience || []).length) parts.push("対象：" + e.audience.join("・"));

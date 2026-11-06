@@ -112,7 +112,9 @@ def _price(context):
 def _speakers_in_title(title):
     """Only explicitly written names followed by 先生 in this event's title."""
     matches = re.findall(
-        r"(?:^|[\s　｜（(【])([一-龥々]{2,6}(?:[ 　]+[一-龥々]{1,5})?)\s*先生",
+        r"(?:(?<=先生)|(?<![一-龥々ぁ-ゖァ-ヺー]))"
+        r"([一-龥々ぁ-ゖァ-ヺー]{1,6}[ 　]+[一-龥々ぁ-ゖァ-ヺー]{1,6}"
+        r"|[一-龥々ぁ-ゖァ-ヺー]{2,8})\s*先生(?!方)",
         title,
     )
     names = []

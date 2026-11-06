@@ -6,6 +6,7 @@ import difflib
 import hashlib
 import json
 import os
+from urllib.parse import urlsplit, parse_qsl
 
 import config
 from extract import AUDIENCES, FORMATS, TOPICS, norm
@@ -136,6 +137,38 @@ def _same_event(a, b):
     return na == nb or difflib.SequenceMatcher(None, na, nb).ratio() >= 0.80
 
 
+
+def _canonical_event_url(url):
+    """Compare the actual event link, ignoring only marketing query parameters."""
+    try:
+        p = urlsplit(url or "")
+        if p.scheme not in ("http", "https") or not p.netloc:
+            return None
+        query = tuple(sorted((k, v) for k, v in parse_qsl(p.query)
+                             if not k.lower().startswith("utm_")))
+        return (p.netloc.lower().removeprefix("www."), p.path.rstrip("/"), query)
+    except ValueError:
+        return None
+
+
+def _same_source_copy(a, b):
+    """A repeated listing of one event, NOT two dates or two sessions."""
+    if not a.get("source_id") or a.get("source_id") != b.get("source_id"):
+        return False
+    if a.get("url_is_page") or b.get("url_is_page"):
+        return False
+    if not a.get("start_date") or a.get("start_date") != b.get("start_date"):
+        return False
+    # In particular, keep afternoon/evening sessions if one starts later.
+    if a.get("start_time") != b.get("start_time"):
+        return False
+    ua, ub = _canonical_event_url(a.get("url")), _canonical_event_url(b.get("url"))
+    if not ua or ua != ub:
+        return False
+    ta, tb = norm(a.get("title", "")), norm(b.get("title", ""))
+    return bool(ta and tb and difflib.SequenceMatcher(None, ta, tb).ratio() >= 0.92)
+
+
 def dedupe_cross_source(events):
     """別サイトに同じ催しが載っている場合に1件へまとめる。"""
     events = sorted(events, key=lambda e: (e.get("start_date") or "9999", -_score(e)))
@@ -145,7 +178,7 @@ def dedupe_cross_source(events):
         e.setdefault("also_listed", [])
         hit = None
         for o in out:
-            if _same_event(o, e):
+            if _same_source_copy(o, e) or _same_event(o, e):
                 hit = o
                 break
         if hit is None:
