@@ -2,6 +2,7 @@
 """巡回先ごとに「ページ本文テキスト」を作る。各関数は (url, text, hint) を返すジェネレータ。"""
 import datetime
 import email.utils
+import html as html_module
 import re
 from zoneinfo import ZoneInfo
 import xml.etree.ElementTree as ET
@@ -138,7 +139,31 @@ def single_pages(src, fetcher):
 def feed_pages(src, fetcher):
     """WordPressのRSS。セミナー関連の記事を集め、まとめてAIに渡す。"""
     xml = fetcher.get(src["feed"])
-    root = ET.fromstring(xml.encode("utf-8"))
+    try:
+        root = ET.fromstring(xml.encode("utf-8"))
+    except ET.ParseError:
+        # Some RSS responses contain malformed markup while retaining fully
+        # delimited <item> records. Recover only such closed records, never
+        # synthesize missing items or interpret unrelated HTML as an RSS feed.
+        blocks = re.findall(r"(?is)<item\b[^>]*>(.*?)</item\s*>", xml)
+        if not blocks:
+            raise ValueError("RSSの構造が不正で、解析可能なitemがありません")
+        root = ET.Element("rss")
+        for block in blocks:
+            item = ET.SubElement(root, "item")
+            for tag in ("title", "link", "pubDate", "category", "description",
+                        "content:encoded"):
+                matches = re.findall(
+                    rf"(?is)<{re.escape(tag)}(?:\s[^>]*)?>(.*?)</{re.escape(tag)}\s*>",
+                    block,
+                )
+                for value in matches[:4] if tag == "category" else matches[:1]:
+                    value = re.sub(r"^\s*<!\[CDATA\[(.*)\]\]>\s*$",
+                                   r"\1", value, flags=re.S)
+                    value = html_module.unescape(value.strip())
+                    xml_tag = ("{http://purl.org/rss/1.0/modules/content/}encoded"
+                               if tag == "content:encoded" else tag)
+                    ET.SubElement(item, xml_tag).text = value
     cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=src.get("max_age_days", 120))
     keyword = src.get("category_contains", "")
     items = []
