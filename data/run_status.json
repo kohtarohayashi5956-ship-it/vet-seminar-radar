@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-06T22:06:28+09:00",
+  "checked_at_jst": "2026-11-06T22:16:36+09:00",
   "mode": "free_rules",
   "total_events": 74,
   "source_results": [
@@ -11,9 +11,9 @@
       "added": 0,
       "updated": 18,
       "replaced_stale": 0,
-      "details_scanned": 0,
-      "details_accepted": 0,
-      "deadlines_found": 0,
+      "details_scanned": 6,
+      "details_accepted": 2,
+      "deadlines_found": 2,
       "prices_found": 0,
       "times_found": 0,
       "detail_fetch_failed": 0,

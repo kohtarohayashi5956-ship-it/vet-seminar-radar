@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-06T22:06:28+09:00",
+ "updated": "2026-11-06T22:16:36+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -1345,7 +1345,7 @@
    "price": null,
    "is_free": null,
    "status": "受付中",
-   "deadline": null,
+   "deadline": "2026-11-04",
    "organizer": "JAHA",
    "speaker": null,
    "url": "https://www.jaha.or.jp/owners/dog-training/kougi3ol/",
@@ -1552,7 +1552,7 @@
    "price": null,
    "is_free": null,
    "status": "予告",
-   "deadline": null,
+   "deadline": "2026-12-01",
    "organizer": "JAHA",
    "speaker": null,
    "url": "https://www.jaha.or.jp/owners/dog-training/kougi2_ol/",
