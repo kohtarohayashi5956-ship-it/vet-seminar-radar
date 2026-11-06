@@ -474,7 +474,7 @@ def _eduone(text, page, today, stats):
 def _jbvp(text, page, today, stats):
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     out, seen = [], set()
-    today_floor = today - datetime.timedelta(days=45)
+    today_floor = today  # new listings are upcoming-only
     for i, line in enumerate(lines):
         if not re.search(r"(?:地区大会|年次大会|企業フォーラム|WJVF)", line):
             continue
@@ -500,7 +500,7 @@ def _jbvp(text, page, today, stats):
         if k in seen:
             continue
         seen.add(k)
-        e = _event(line, start, page, page, block, "JBVP")
+        e = _event(line, start, page, page, block, "JBVP", end=_range_end(block, start))
         e["topics"] = ["学会・大会"]
         if "オンライン" in line or "オンライン配信" in block:
             e["format"] = "オンデマンド"
@@ -511,12 +511,87 @@ def _jbvp(text, page, today, stats):
     return out
 
 
+SOCIETY_TITLE_PATTERNS = {
+    "javnu": re.compile(r"第\d+回.{0,45}(?:獣医腎泌尿器学会).{0,25}(?:学術集会|総会)"),
+    "jsvd": re.compile(r"(?:第\d+回.{0,40}獣医皮膚科学会学術大会|日本医真菌学会.{0,50}共催シンポジウム)"),
+    "jvcs": re.compile(r"第\d+回.{0,30}日本獣医がん学会"),
+    "jsvc": re.compile(r"第\d+回.{0,40}日本獣医循環器学会定例大会"),
+}
+
+
+def _range_end(label, start):
+    """Second day of a clearly printed interval; never invent a missing date."""
+    cleaned = unicodedata.normalize("NFKC", label)
+    first = YMD.search(cleaned)
+    if not first:
+        return None
+    tail = cleaned[first.end():first.end()+48]
+    m = re.search(r"[～〜~・、,]\s*(?:(\d{1,2})月)?\s*(\d{1,2})日", tail)
+    if not m:
+        return None
+    sd = datetime.date.fromisoformat(start)
+    month = int(m.group(1)) if m.group(1) else sd.month
+    y = sd.year + (1 if month < sd.month else 0)
+    end = _date(y, month, int(m.group(2)))
+    return end if end and end > start else None
+
+
+def _society(text, page, today, stats, society):
+    pat = SOCIETY_TITLE_PATTERNS[society]
+    orig = [line.strip() for line in text.splitlines() if line.strip()]
+    lines = [unicodedata.normalize("NFKC", line) for line in orig]
+    out, seen = [], set()
+    for i, line in enumerate(lines):
+        if not pat.search(line) or len(line) > 115:
+            continue
+        title = orig[i]
+        # Find a nearby labelled event date, rejecting deadlines and
+        # announcement timestamps even when they occur nearer to title.
+        found = None
+        section = []
+        for j in range(i+1,min(len(lines),i+18)):
+            nxt = lines[j]
+            if j > i+1 and pat.search(nxt):
+                break
+            section.append(nxt)
+            compact = re.sub(r"\s+", "", nxt)
+            if EXCLUDE_DATE.search(compact):
+                continue
+            if not re.search(r"(?:会期|日程|日時|開催日)", compact):
+                continue
+            label = nxt + (" " + lines[j+1] if j+1<len(lines) else "")
+            dates = _dates(label)
+            if dates:
+                found = (dates[0], label)
+                break
+        if not found or found[0] < today.isoformat():
+            continue
+        start, label = found
+        key = (norm(title),start)
+        if key in seen:
+            continue
+        seen.add(key)
+        context = "\n".join(section[:15])
+        ev = _event(title,start,page,page,context,society.upper() if society!="jsvd" else "日本獣医皮膚科学会",
+                    end=_range_end(label,start))
+        ev["topics"] = ["学会・大会"]
+        ev["format"] = "オンデマンド" if "オンライン" in title or "オンライン配信" in context else "現地"
+        out.append(ev)
+    stats["society_meetings"] = len(out)
+    return out
+
+
+
 def extract_free(source_name,page_url,hint,text,today,stats):
     source=source_name.lower().replace("&","")
     if "jaha" in source or "日本動物病院協会" in source:
         raw=_jaha_top(text,page_url,today,stats) if "/seminar-calendar/top/" in page_url else _jaha(text,page_url,today,stats)
     elif "peppy" in source:raw=_peppy(text,page_url,today,stats)
     elif "eduward" in source or "eduone" in source:raw=_eduone(text,page_url,today,stats)
+    elif source in ("javnu", "日本獣医腎泌尿器学会"):raw=_society(text,page_url,today,stats,"javnu")
+    elif source in ("日本獣医皮膚科学会","jsvd"):raw=_society(text,page_url,today,stats,"jsvd")
+    elif source in ("日本獣医がん学会","jvcs"):raw=_society(text,page_url,today,stats,"jvcs")
+    elif source in ("日本獣医循環器学会","jsvc"):raw=_society(text,page_url,today,stats,"jsvc")
     elif "jbvp" in source:raw=_jbvp(text,page_url,today,stats)
     elif "学際" in source:raw=_gakusai(text,page_url,today)
     elif "vets tech" in source or "vetstech" in source:raw=_feed(text,page_url,today)

@@ -283,6 +283,8 @@ def pages_for(src, fetcher, months):
         return peppy_pages(src, fetcher)
     if kind == "eduone_lecture":
         return eduone_lecture_pages(src, fetcher)
+    if kind == "society_meeting":
+        return single_pages(src, fetcher)
     if kind == "jbvp_meetings":
         return jbvp_meeting_pages(src, fetcher)
     if kind == "jaha_top":
