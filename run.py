@@ -107,7 +107,8 @@ def main(argv):
 
     client = None
     key = os.environ.get("ANTHROPIC_API_KEY", "")
-    use_ai = args.ai or config.USE_AI
+    # AI must remain opt-in; a secret alone never enables paid API calls.
+    use_ai = args.ai or os.environ.get("SEMINAR_RADAR_USE_AI", "").strip().lower() in ("1", "true", "yes")
     if use_ai and key:
         from anthropic import Anthropic
         client = Anthropic(api_key=key)

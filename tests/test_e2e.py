@@ -79,6 +79,16 @@ class E2E(unittest.TestCase):
         run.main(["--offline", "--out", "index.html"])
         self.assertTrue(os.path.exists("index.html"))
 
+    def test_normal_free_run_without_api_key(self):
+        """Catch missing config names before deploying: actual `python run.py` path."""
+        with mock.patch.dict(os.environ, {"ANTHROPIC_API_KEY": "", "SEMINAR_RADAR_USE_AI": ""}):
+            self.assertEqual(run.main(["--out", "index.html"]), 0)
+        with open("data/run_status.json", encoding="utf-8") as f:
+            status = json.load(f)
+        self.assertEqual(status["mode"], "free_rules")
+        self.assertTrue(os.path.isfile("index.html"))
+        self.assertEqual(self.client.messages.create.call_count, 0)
+
     def test_html_payload_is_valid_json(self):
         run.main(["--ai", "--out", "index.html"])
         html = open("index.html", encoding="utf-8").read()
