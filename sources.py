@@ -205,8 +205,86 @@ def jaha_top_pages(src, fetcher):
 
 
 # --------------------------------------------------------------------------
+def peppy_pages(src, fetcher):
+    """Produce one linked list card per seminar; no assumptions about dates in nearby cards."""
+    url = src["start_url"]
+    html = fetcher.get(url)
+    soup = BeautifulSoup(html, "html.parser")
+    lines, seen = [], set()
+    for a in soup.find_all("a", href=True):
+        link = urljoin(url, a["href"])
+        p = urlparse(link)
+        if p.netloc not in ("peppy.jp", "www.peppy.jp"):
+            continue
+        if not re.search(r"(?:^|/)seminar/\d+/?$", p.path):
+            continue
+        if link in seen:
+            continue
+        seen.add(link)
+        label = a.get_text(" ", strip=True)
+        if not re.search(r"20\d{2}\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日", label):
+            continue
+        heading = a.find_previous(["h2", "h3", "h4"])
+        context = heading.get_text(" ", strip=True) if heading else ""
+        kind = ("web" if "ウェビナー" in context or "Webセミナー" in context
+                else "onsite" if "会場" in context else "unknown")
+        lines.append(f"CARD[{kind}] {label} <{link}>")
+    if lines:
+        yield url, "\n".join(lines), "PEPPY公式セミナー一覧。リンク1件が講座1件。年月は個別カード内の表記に限る。"
+    else:
+        # Emit the page so the run log records a zero-extraction source.
+        yield url, "", "一覧に日付のある講座リンクなし"
+
+
+def eduone_lecture_pages(src, fetcher):
+    """Fetch only public EDUONE lecture details, following robots and rate limiting."""
+    url = src["start_url"]
+    html = fetcher.get(url)
+    soup = BeautifulSoup(html, "html.parser")
+    links = []
+    for a in soup.find_all("a", href=True):
+        link = urljoin(url, a["href"])
+        if (re.fullmatch(r"https?://(?:www\.)?eduone\.jp/lecture/\d+/?", link)
+                and link not in links):
+            links.append(link)
+    if not links:
+        yield url, "", "公開講演会の詳細リンクなし"
+        return
+    for link in links[:src.get("max_details", 12)]:
+        try:
+            detail = fetcher.get(link)
+        except Exception:
+            # Failure of a single detail must not eliminate other lectures.
+            continue
+        doc = BeautifulSoup(detail, "html.parser")
+        title = (doc.find("meta", property="og:title") or {}).get("content", "")
+        if not title:
+            h = doc.find("h1")
+            title = h.get_text(" ", strip=True) if h else ""
+        title = re.sub(r"\s*[｜|]\s*(?:EDUONE|EDUWARD Press).*$", "", title).strip()
+        if not title or title in ("WEB講演会", "EDUONE"):
+            continue
+        body = html_to_text(detail, link)
+        record = f"TITLE: {title}\nURL: <{link}>\nBODY:\n{body[:12000]}"
+        yield link, record, "EDUWARD Press公式の講演会詳細。講演会概要の開催日時を優先。"
+
+
+def jbvp_meeting_pages(src, fetcher):
+    """Only official meeting pages; schedule found per heading, never inferred."""
+    for url in src["urls"]:
+        html = fetcher.get(url)
+        yield url, html_to_text(html, url), "JBVP公式サイト。地区大会、年次大会のタイトル直後にある日程を参照。"
+
+
+# --------------------------------------------------------------------------
 def pages_for(src, fetcher, months):
     kind = src["kind"]
+    if kind == "peppy_list":
+        return peppy_pages(src, fetcher)
+    if kind == "eduone_lecture":
+        return eduone_lecture_pages(src, fetcher)
+    if kind == "jbvp_meetings":
+        return jbvp_meeting_pages(src, fetcher)
     if kind == "jaha_top":
         return jaha_top_pages(src, fetcher)
     if kind == "jaha_calendar":

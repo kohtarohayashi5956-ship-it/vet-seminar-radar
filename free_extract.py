@@ -390,10 +390,134 @@ def _lifetail(text,page,today,stats):
     return out
 
 
+# --------------------------------------------------------------------------
+# New free sources: each record is strictly tied to its own official link.
+# --------------------------------------------------------------------------
+PEPPY_CARD = re.compile(r"^CARD\[(web|onsite|unknown)\]\s+(.+?)\s+<(https?://[^>\s]+)>$")
+PEPPY_TARGETS = re.compile(
+    r"\s+(?:受付中|受付終了|申込終了|募集終了|満席)(?=\s|$)"
+)
+PEPPY_WDAY = re.compile(r"^\s*[\(（][月火水木金土日][\)）]\s*")
+
+
+def _peppy(text, page, today, stats):
+    out = []
+    for line in text.splitlines():
+        m = PEPPY_CARD.match(line.strip())
+        if not m:
+            continue
+        kind, label, url = m.groups()
+        found = list(YMD.finditer(label))
+        if not found:
+            continue
+        dates = [_date(*d.groups()) for d in found]
+        if not dates[0]:
+            continue
+        candidate = PEPPY_WDAY.sub("", label[found[-1].end():]).strip()
+        candidate = PEPPY_TARGETS.split(candidate, 1)[0].strip()
+        candidate = candidate.lstrip("～〜~ー- ：:")
+        # Keep seminar title tied to this linked card; never borrow from neighbors.
+        if len(candidate) < 7:
+            continue
+        end = None
+        if len(found) >= 2 and dates[-1] and dates[-1] >= dates[0]:
+            between = label[found[0].end():found[1].start()]
+            if re.search(r"[～〜~－–]", between):
+                end = dates[-1]
+        e = _event(candidate, dates[0], url, page, label, "PEPPY", end=end)
+        # List headings explicitly distinguish online from in-person events.
+        if kind == "web":
+            e["format"] = "ライブ配信"
+            e["prefecture"] = None
+        elif kind == "onsite":
+            e["format"] = "現地"
+        if "【無料】" in candidate or "〖無料〗" in candidate:
+            e["price"], e["is_free"] = "無料", True
+        out.append(e)
+    stats["peppy_cards"] = len(out)
+    return out
+
+
+def _eduone(text, page, today, stats):
+    heading = re.search(r"(?m)^TITLE:\s*(.+)$", text)
+    link = re.search(r"(?m)^URL:\s*<(https?://[^>]+)>", text)
+    if not heading or not link:
+        return []
+    title = heading.group(1).strip()
+    body = text.split("BODY:\n", 1)[-1]
+    when = _feed_event_schedule(body)
+    if not when:
+        # Never classify a registration window or publication timestamp as
+        # lecture start. Explicit schedule label only.
+        stats["eduone_missing_schedule"] = stats.get("eduone_missing_schedule", 0) + 1
+        return []
+    e = _event(title, when, link.group(1), page, body, "EDUWARD Press")
+    e["price"], e["is_free"] = _feed_price(body)
+    # Lecture end time may be expressed after a repeated full date, not
+    # a conventional HH:MM-HH:MM span.
+    if not e["start_time"]:
+        detail = re.search(r"(?:開催日時|開催日)[^\n]*\n?([^\n]{0,150})", body)
+        if detail:
+            ts = re.findall(r"(?<!\d)([01]?\d|2[0-3]):([0-5]\d)", detail.group(0))
+            if ts:
+                e["start_time"] = f"{int(ts[0][0]):02d}:{ts[0][1]}"
+                if len(ts)>1:
+                    e["end_time"] = f"{int(ts[-1][0]):02d}:{ts[-1][1]}"
+    if re.search(r"オンデマンド|録画配信", title):
+        e["format"] = "オンデマンド"
+    elif e["format"] is None:
+        e["format"] = "ライブ配信"
+    stats["eduone_detail"] = stats.get("eduone_detail", 0) + 1
+    return [e]
+
+
+def _jbvp(text, page, today, stats):
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    out, seen = [], set()
+    today_floor = today - datetime.timedelta(days=45)
+    for i, line in enumerate(lines):
+        if not re.search(r"(?:地区大会|年次大会|企業フォーラム|WJVF)", line):
+            continue
+        # Event heading excludes navigation. Require a titled meeting.
+        if not re.search(r"(?:第\d+回|第\d+期|2027|2026|オンラインプログラム)", line):
+            continue
+        if len(line) > 110 or "サイトはこちら" in line:
+            continue
+        # Date must occur soon after THIS heading, before another meeting.
+        fragment = []
+        for following in lines[i+1:i+9]:
+            if re.search(r"(?:第\d+回|第\d+期)\s*.+(?:地区大会|年次大会)",following):
+                break
+            fragment.append(following)
+        block = "\n".join(fragment)
+        full = _dates(block)
+        if not full:
+            continue
+        start = full[0]
+        if start < today_floor.isoformat():
+            continue
+        k = (norm(line), start)
+        if k in seen:
+            continue
+        seen.add(k)
+        e = _event(line, start, page, page, block, "JBVP")
+        e["topics"] = ["学会・大会"]
+        if "オンライン" in line or "オンライン配信" in block:
+            e["format"] = "オンデマンド"
+        else:
+            e["format"] = "現地"
+        out.append(e)
+    stats["jbvp_meetings"] = len(out)
+    return out
+
+
 def extract_free(source_name,page_url,hint,text,today,stats):
     source=source_name.lower().replace("&","")
     if "jaha" in source or "日本動物病院協会" in source:
         raw=_jaha_top(text,page_url,today,stats) if "/seminar-calendar/top/" in page_url else _jaha(text,page_url,today,stats)
+    elif "peppy" in source:raw=_peppy(text,page_url,today,stats)
+    elif "eduward" in source or "eduone" in source:raw=_eduone(text,page_url,today,stats)
+    elif "jbvp" in source:raw=_jbvp(text,page_url,today,stats)
     elif "学際" in source:raw=_gakusai(text,page_url,today)
     elif "vets tech" in source or "vetstech" in source:raw=_feed(text,page_url,today)
     elif "lifetail" in source or "life" in source:raw=_lifetail(text,page_url,today,stats)

@@ -58,6 +58,28 @@ SOURCES = [
         "enabled": True,
     },
     {
+        "id": "peppy",
+        "name": "PEPPY",
+        "kind": "peppy_list",
+        "start_url": "https://www.peppy.jp/seminar",
+        "enabled": True,
+    },
+    {
+        "id": "eduone",
+        "name": "EDUWARD Press",
+        "kind": "eduone_lecture",
+        "start_url": "https://eduone.jp/lecture/",
+        "max_details": 12,
+        "enabled": True,
+    },
+    {
+        "id": "jbvp",
+        "name": "JBVP",
+        "kind": "jbvp_meetings",
+        "urls": ["https://www.jbvp.org/vn/", "https://www.jbvp.org/forum/"],
+        "enabled": True,
+    },
+    {
         "id": "vetstech",
         "name": "VETS TECH",
         "kind": "wp_feed",
