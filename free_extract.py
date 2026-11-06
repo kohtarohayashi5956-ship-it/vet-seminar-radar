@@ -565,6 +565,46 @@ def _range_end(label, start):
     return end if end and end > start else None
 
 
+def _jsvd_participant_deadline(lines, index, event_pat, event_date):
+    """Read ONLY attendee-registration periods within this JSVD event card.
+
+    Explicitly ignore abstract submissions, membership deadlines and
+    unrelated meeting dates on the same society's long homepage.
+    """
+    for j in range(index + 1, min(len(lines), index + 20)):
+        text = lines[j]
+        if event_pat.search(text):
+            break  # Next society event begins.
+        item = re.sub(r"\s+", "", text)
+        if not re.match(r"^(?:参加受付期間|参加申込期間|事前参加登録期間)[|:：]?", item):
+            continue
+        if "演題" in item or "抄録" in item:
+            continue
+        piece = item
+        # Some sites put the label and dates on different table lines.
+        if not YMD.search(piece) and j + 1 < len(lines) and not event_pat.search(lines[j+1]):
+            piece += lines[j+1].strip()
+        full = list(YMD.finditer(piece))
+        if not full:
+            continue
+        first = _date(*full[0].groups())
+        if not first:
+            continue
+        if len(full) >= 2:
+            deadline = _date(*full[-1].groups())
+        else:
+            tail = piece[full[0].end():]
+            m = re.search(r"[～〜~－–-]\s*(\d{1,2})月\s*(\d{1,2})日", tail)
+            if not m:
+                continue
+            month, day = map(int, m.groups())
+            year = int(full[0].group(1)) + (1 if month < int(full[0].group(2)) else 0)
+            deadline = _date(year, month, day)
+        if deadline and first <= deadline <= event_date:
+            return deadline
+    return None
+
+
 def _society(text, page, today, stats, society):
     pat = SOCIETY_TITLE_PATTERNS[society]
     orig = [line.strip() for line in text.splitlines() if line.strip()]
@@ -619,6 +659,8 @@ def _society(text, page, today, stats, society):
                     end=_range_end(label,start))
         ev["topics"] = ["学会・大会"]
         ev["format"] = "オンデマンド" if "オンライン" in title or "オンライン配信" in context else "現地"
+        if society == "jsvd" and "共催シンポジウム" in title:
+            ev["deadline"] = _jsvd_participant_deadline(lines, i, pat, start)
         out.append(ev)
     stats["society_meetings"] = len(out)
     return out
