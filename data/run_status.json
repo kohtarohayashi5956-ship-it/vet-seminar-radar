@@ -1,7 +1,7 @@
 {
-  "checked_at_jst": "2026-11-06T17:53:02+09:00",
+  "checked_at_jst": "2026-11-06T18:03:48+09:00",
   "mode": "free_rules",
-  "total_events": 38,
+  "total_events": 47,
   "source_results": [
     {
       "id": "jaha",
@@ -19,9 +19,9 @@
       "name": "Life&Tail",
       "pages": 1,
       "extracted": 17,
-      "added": 17,
-      "updated": 0,
-      "replaced_stale": 17,
+      "added": 0,
+      "updated": 17,
+      "replaced_stale": 0,
       "status": "ok",
       "note": ""
     },
@@ -41,9 +41,9 @@
       "name": "VETS TECH",
       "pages": 3,
       "extracted": 5,
-      "added": 5,
-      "updated": 0,
-      "replaced_stale": 4,
+      "added": 1,
+      "updated": 4,
+      "replaced_stale": 0,
       "status": "ok",
       "note": ""
     }
