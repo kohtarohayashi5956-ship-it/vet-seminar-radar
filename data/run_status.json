@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-06T18:51:05+09:00",
+  "checked_at_jst": "2026-11-06T18:54:46+09:00",
   "mode": "free_rules",
   "total_events": 79,
   "source_results": [
@@ -52,8 +52,8 @@
       "name": "JAVNU",
       "pages": 1,
       "extracted": 1,
-      "added": 1,
-      "updated": 0,
+      "added": 0,
+      "updated": 1,
       "replaced_stale": 0,
       "status": "ok",
       "note": ""
@@ -76,7 +76,7 @@
       "extracted": 2,
       "added": 0,
       "updated": 2,
-      "replaced_stale": 1,
+      "replaced_stale": 0,
       "status": "ok",
       "note": ""
     },
@@ -94,16 +94,17 @@
     {
       "id": "vetstech",
       "name": "VETS TECH",
-      "pages": 3,
-      "extracted": 5,
-      "added": 1,
-      "updated": 4,
+      "pages": 0,
+      "extracted": 0,
+      "added": 0,
+      "updated": 0,
       "replaced_stale": 0,
-      "status": "ok",
-      "note": ""
+      "status": "error",
+      "note": "エラー: mismatched tag: line 93, column 2"
     }
   ],
   "warnings": [
-    "SEMINAR_RADAR_CONTACT が未設定です。"
+    "SEMINAR_RADAR_CONTACT が未設定です。",
+    "VETS TECH: エラー: mismatched tag: line 93, column 2"
   ]
 }
