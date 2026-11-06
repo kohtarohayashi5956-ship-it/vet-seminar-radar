@@ -526,6 +526,7 @@
         kvs.appendChild(certLink);
       }
     }
+    if (e.certification_program) kvs.appendChild(kv("認定医講習科目", e.certification_program));
     if ((e.topics || []).length) kvs.appendChild(kv("分野", e.topics.join("・")));
     var other = otherSessions(e);
     if (other.length) kvs.appendChild(kv("同じ講座の別日程", other.slice(0, 5).map(md).join("・") + (other.length > 5 ? " ほか" + (other.length - 5) + "件" : "")));
@@ -650,6 +651,7 @@
     if (opt.deadline && e.deadline) parts.push("参加申込締切：" + md(e.deadline) + "（" + wd(e.deadline) + "）");
     if (opt.abstractDeadline && e.abstract_deadline) parts.push("演題募集締切：" + md(e.abstract_deadline) + "（" + wd(e.abstract_deadline) + "）");
     if (opt.cert && e.certification_note) parts.push("認定医関連：" + e.certification_note);
+    if (opt.cert && e.certification_program) parts.push("認定医講習科目：" + e.certification_program);
     if (parts.length) lines.push(parts.join("／"));
     if (e.url) lines.push(e.url);
     return lines.join("\n");

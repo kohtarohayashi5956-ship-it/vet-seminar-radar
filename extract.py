@@ -242,6 +242,7 @@ def validate(raw_items, text, page_url, today, stats):
             "detail_url": _str(it.get("detail_url")),
             "certification_note": _str(it.get("certification_note")),
             "certification_url": _str(it.get("certification_url")),
+            "certification_program": _str(it.get("certification_program")),
             "organizer": _str(it.get("organizer")),
             "speaker": _str(it.get("speaker")),
             "url": url,

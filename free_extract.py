@@ -148,6 +148,7 @@ def _event(title,when,url,page,context="",organizer=None,end=None):
         "price":price,"is_free":free,"status":m.group(0) if m else None,
         "deadline":None,"abstract_deadline":None,"detail_url":None,
         "certification_note":None,"certification_url":None,
+        "certification_program":None,
         "speaker":_speakers_in_title(title),"organizer":organizer,"url":url or page,"evidence":title.strip()}
 
 
@@ -612,24 +613,31 @@ def _range_end(label, start):
 
 
 def _jsvd_participant_deadline(lines, index, event_pat, event_date):
-    """Read ONLY attendee-registration periods within this JSVD event card.
+    """Participant registration only; tolerate HTML table cells on separate lines.
 
-    Explicitly ignore abstract submissions, membership deadlines and
-    unrelated meeting dates on the same society's long homepage.
+    JA/JSVD homepages often use <th>参加受付期間</th><td>...</td>, whose
+    extracted text spans multiple lines. Bound parsing to the matching
+    symposium and never use abstract, sponsor or exhibition deadlines.
     """
-    for j in range(index + 1, min(len(lines), index + 20)):
-        text = lines[j]
-        if event_pat.search(text):
-            break  # Next society event begins.
-        item = re.sub(r"\s+", "", text)
-        if not re.match(r"^(?:参加受付期間|参加申込期間|事前参加登録期間)[|:：]?", item):
+    for j in range(index + 1, min(len(lines), index + 42)):
+        if event_pat.search(lines[j]):
+            break
+        label = re.sub(r"\s+", "", lines[j])
+        if not re.match(r"^参加(?:受付|申込|申し込み)期間[|:：]?", label):
             continue
-        if "演題" in item or "抄録" in item:
-            continue
-        piece = item
-        # Some sites put the label and dates on different table lines.
-        if not YMD.search(piece) and j + 1 < len(lines) and not event_pat.search(lines[j+1]):
-            piece += lines[j+1].strip()
+        # A date can occupy several adjacent table cells/lines; stop before
+        # the next labeled field or prose so unrelated dates cannot enter.
+        parts = [label]
+        for nextline in lines[j+1:min(len(lines),j+9)]:
+            compact = re.sub(r"\s+", "", nextline)
+            if (event_pat.search(nextline)
+                or re.match(r"^(?:参加ご希望|参加費|参加費用|会場|日程|演題|申込み|お申込み|"
+                            r"申込はこちら|次回|AiANZ|認定医更新)", compact)):
+                break
+            parts.append(compact)
+            if len(YMD.findall("".join(parts))) >= 2:
+                break
+        piece = "".join(parts)
         full = list(YMD.finditer(piece))
         if not full:
             continue
@@ -640,17 +648,16 @@ def _jsvd_participant_deadline(lines, index, event_pat, event_date):
             deadline = _date(*full[-1].groups())
         else:
             tail = piece[full[0].end():]
-            m = re.search(r"(?:\([月火水木金土日]\))?\s*[～〜~－–-]\s*(\d{1,2})月\s*(\d{1,2})日", tail)
+            m = re.search(r"(?:\([月火水木金土日]\))?\s*[～〜~－–-]\s*"
+                          r"(\d{1,2})月\s*(\d{1,2})日", tail)
             if not m:
                 continue
             month, day = map(int, m.groups())
-            year = int(full[0].group(1)) + (1 if month < int(full[0].group(2)) else 0)
+            year = int(full[0].group(1)) + (month < int(full[0].group(2)))
             deadline = _date(year, month, day)
         if deadline and first <= deadline <= event_date:
             return deadline
     return None
-
-
 
 # Only meeting+date combinations with explicitly supported official information.
 # Never infer credentials from the title or from a different society's page.

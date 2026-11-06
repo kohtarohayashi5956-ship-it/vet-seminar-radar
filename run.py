@@ -107,6 +107,7 @@ def main(argv):
     from detail_enrich import enrich_lifetail
     from gakusai_enrich import enrich_gakusai
     from jaha_enrich import enrich_jaha
+    from society_enrich import enrich_jsvc
 
     client = None
     key = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -179,6 +180,9 @@ def main(argv):
             log("  詳細補完: " + str(stats.get("details_scanned", 0)) +
                 "ページ / 開催時刻 " + str(stats.get("times_found", 0)) +
                 "件 / 料金 " + str(stats.get("prices_found", 0)) + "件")
+        elif src["id"] == "jsvc" and not note and fresh:
+            fresh = enrich_jsvc(fresh, fetcher, today, stats)
+            log("  認定医講習科目補完: " + str(stats.get("certification_programs_found", 0)) + "件")
         if not note and pages and fresh:
             added, updated, replaced = merge.reconcile_source(store, fresh, src, today)
         else:
