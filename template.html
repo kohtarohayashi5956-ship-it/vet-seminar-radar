@@ -369,6 +369,7 @@
     var place = [e.prefecture, e.venue].filter(Boolean).join(" ");
     if (place) kvs.appendChild(kv("会場", place));
     if (e.organizer) kvs.appendChild(kv("主催", e.organizer));
+    if (e.speaker) kvs.appendChild(kv("講師", e.speaker));
     if ((e.audience || []).length) kvs.appendChild(kv("対象", e.audience.join("・")));
     var price = e.price || (e.is_free ? "無料" : "");
     if (price) kvs.appendChild(kv("受講料", price));

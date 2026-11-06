@@ -109,6 +109,32 @@ def _price(context):
     return None,None
 
 
+def _speakers_in_title(title):
+    """Only explicitly written names followed by 先生 in this event's title."""
+    matches = re.findall(
+        r"(?:^|[\s　｜（(【])([一-龥々]{2,6}(?:[ 　]+[一-龥々]{1,5})?)\s*先生",
+        title,
+    )
+    names = []
+    for name in matches:
+        clean = " ".join(name.split())
+        if clean not in names:
+            names.append(clean)
+    return "・".join(names[:3]) if names else None
+
+
+def _explicit_deadline(body):
+    """A deadline needs a labelled full-year date; never infer from other dates."""
+    lines = [line.strip() for line in body[:2500].splitlines() if line.strip()]
+    for i, line in enumerate(lines):
+        if not re.match(r"^(?:申込締切|お申込み締切|申し込み締切|受付締切|申込期限|応募締切)[：:\s]?",line):
+            continue
+        dates = _dates(line + (" " + lines[i+1] if i+1<len(lines) else ""))
+        if dates:
+            return dates[0]
+    return None
+
+
 def _event(title,when,url,page,context="",organizer=None,end=None):
     fmt=_fmt(context+" "+title)
     t1,t2=_times(context)
@@ -118,7 +144,7 @@ def _event(title,when,url,page,context="",organizer=None,end=None):
         "format":fmt,"venue":None,"prefecture":_pref(context+" "+title,fmt),
         "audience":_audience(context+" "+title),"topics":_topics(title),
         "price":price,"is_free":free,"status":m.group(0) if m else None,
-        "deadline":None,"organizer":organizer,"url":url or page,"evidence":title.strip()}
+        "deadline":None,"speaker":_speakers_in_title(title),"organizer":organizer,"url":url or page,"evidence":title.strip()}
 
 
 def _line_link(line):
@@ -350,6 +376,7 @@ def _feed(text,page,today):
         e=_event(title,when,u.group(1),page,content[:5500],"VETS TECH")
         e["status"] = _feed_status(title, content)
         e["price"], e["is_free"] = _feed_price(content)
+        e["deadline"] = _explicit_deadline(content)
         if re.search(r"[\[［【]録画[\]］】]|(?:^|　)録画", title):
             e["format"] = "オンデマンド"
         elif re.search(r"[\[［【]ライブ[\]］】]", title):

@@ -239,6 +239,7 @@ def validate(raw_items, text, page_url, today, stats):
             "status": _str(it.get("status")),
             "deadline": _date(it.get("deadline")),
             "organizer": _str(it.get("organizer")),
+            "speaker": _str(it.get("speaker")),
             "url": url,
             "url_is_page": url_is_page,
             "verified": bool(title_ok and ev_ok and date_ok),
