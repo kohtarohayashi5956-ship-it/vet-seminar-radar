@@ -220,6 +220,8 @@ def _jaha_top(text, page, today, stats):
                        if re.match(r"^対象\s*[：:]", ln)), "")
         context = title + "\n" + line + "\n" + target
         e = _event(title, start, url, page, context, "JAHA", end=end if end != start else None)
+        # Audience must come only from the explicit 対象 field, never the title.
+        e["audience"] = _audience(target)
         for ln in lines[max(0,link_idx - 2):link_idx]:
             if ln in ("受付中", "受付終了", "予告", "満席"):
                 e["status"] = ln
