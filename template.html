@@ -174,6 +174,24 @@
     background:#f5f8fb; color:#475365; border-bottom:1px solid var(--line);
     font-size:12px; }
   .quality-strip strong { color:var(--ink); font-weight:700; }
+
+  /* Upcoming deadlines, independent of the viewed calendar month. */
+  .deadline-panel { padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  .deadline-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .deadline-head h2 { margin:0; font-size:15px; font-weight:750; }
+  .deadline-head label { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--muted); }
+  .deadline-head select { border:1px solid var(--line); color:var(--ink); background:var(--panel);
+    border-radius:var(--radius); padding:5px 8px; font:inherit; }
+  .deadline-list { display:grid; gap:6px; margin-top:8px; }
+  .deadline-row { display:flex; align-items:center; flex-wrap:wrap; gap:7px 12px;
+    border:1px solid var(--line); border-radius:var(--radius); padding:8px 10px; }
+  .deadline-row a { color:var(--ink); font-size:13px; font-weight:700;
+    text-decoration:none; flex:1; min-width:175px; }
+  .deadline-row a:hover, .deadline-row a:focus-visible { text-decoration:underline; color:var(--accent); }
+  .deadline-date { font-size:12px; font-weight:750; color:var(--accent); white-space:nowrap; }
+  .deadline-urgent { color:var(--warn); }
+  .deadline-sub { font-size:11px; color:var(--muted); }
+  .deadline-note, .deadline-empty { font-size:11px; color:var(--muted); margin:7px 0 0; }
 </style>
 </head>
 <body>
@@ -207,6 +225,21 @@
   <label class="chk"><input type="checkbox" id="fHidePast" checked>終了を隠す</label>
   <label class="chk"><input type="checkbox" id="fGeneral">一般向けも表示</label>
   <input type="search" id="fQ" placeholder="キーワード" aria-label="キーワード検索">
+</section>
+
+<section class="deadline-panel" aria-label="申込締切が近い講座">
+  <div class="deadline-head">
+    <h2>申込締切が近い講座</h2>
+    <label for="deadlineWindow">期間
+      <select id="deadlineWindow" aria-label="申込締切までの期間">
+        <option value="7">7日以内</option>
+        <option value="30" selected>30日以内</option>
+        <option value="90">90日以内</option>
+      </select>
+    </label>
+  </div>
+  <div class="deadline-list" id="deadlineList" aria-live="polite"></div>
+  <p class="deadline-note">日程不明・締切不明の講座は含みません。申込状況は必ず公式サイトで確認してください。</p>
 </section>
 
 <div class="layout">
@@ -294,7 +327,11 @@
     if (want === "獣医師") return a.indexOf("獣医師") >= 0;
     return a.indexOf("動物看護師") >= 0 || a.indexOf("動物病院スタッフ") >= 0;
   }
-  function isFree(e) { return e.is_free === true || /無料/.test(e.price || ""); }
+  function isFree(e) {
+    // "無料会員 50,000円" is a paid member tier, never free entry.
+    if (/^\s*無料会員/.test(e.price || "")) return false;
+    return e.is_free === true || /^\s*(?:(?:参加費|受講料)[：:\s]*)?無料(?:\s*[（(]税込[）)])?\s*$/.test(e.price || "");
+  }
   function statusClass(s) {
     if (!s) return "";
     if (/終了|締切済|受付停止/.test(s)) return "off";
@@ -355,6 +392,48 @@
       if (hay.indexOf(q) < 0) return false;
     }
     return true;
+  }
+
+
+  /* ---------- 申込締切を横断検索（閲覧月とは独立） ---------- */
+  function deadlineDays(dateStr) {
+    var a = dateStr.split("-").map(Number);
+    var b = todayStr.split("-").map(Number);
+    return Math.round((Date.UTC(a[0], a[1] - 1, a[2]) -
+                       Date.UTC(b[0], b[1] - 1, b[2])) / 86400000);
+  }
+  function renderDeadlinePanel() {
+    var limit = +$("deadlineWindow").value || 30;
+    var eligible = EVENTS.filter(function (e) {
+      if (!e.deadline || !e.start_date || !passes(e)) return false;
+      var days = deadlineDays(e.deadline);
+      return days >= 0 && days <= limit && endOf(e) >= todayStr;
+    }).sort(function (a, b) {
+      if (a.deadline !== b.deadline) return a.deadline < b.deadline ? -1 : 1;
+      return a.start_date < b.start_date ? -1 : a.start_date > b.start_date ? 1 : 0;
+    });
+    var target = $("deadlineList");
+    target.textContent = "";
+    if (!eligible.length) {
+      target.appendChild(el("p", "deadline-empty", "表示条件に一致する、期限が確認できる講座はありません。"));
+      return;
+    }
+    eligible.slice(0, 8).forEach(function (e) {
+      var days = deadlineDays(e.deadline);
+      var row = el("div", "deadline-row");
+      var due = el("span", "deadline-date" + (days <= 7 ? " deadline-urgent" : ""),
+                   days === 0 ? "締切 今日" : "締切 " + md(e.deadline) + "（あと" + days + "日）");
+      row.appendChild(due);
+      var link = el("a", null, displayTitle(e));
+      link.href = e.url || "#"; link.target = "_blank"; link.rel = "noopener noreferrer";
+      row.appendChild(link);
+      row.appendChild(el("span", "deadline-sub",
+        "開催 " + md(e.start_date) + "｜" + (e.source || "取得元不明")));
+      target.appendChild(row);
+    });
+    if (eligible.length > 8) {
+      target.appendChild(el("p", "deadline-note", "ほか " + (eligible.length - 8) + " 件。期間や絞り込み条件を変更してください。"));
+    }
   }
 
   /* ---------- 一覧の描画 ---------- */
@@ -442,6 +521,7 @@
   }
 
   function render() {
+    renderDeadlinePanel();
     var mStart = monthKey(cur.y, cur.m) + "-01";
     var last = new Date(cur.y, cur.m, 0).getDate();
     var mEnd = monthKey(cur.y, cur.m) + "-" + pad(last);
@@ -665,6 +745,7 @@
     fillSelect("fOrg", "すべて", uniq(EVENTS.map(function (e) { return e.organizer || e.source; })));
     ["fOnsite", "fLive", "fOnd", "fFree", "fHidePast", "fGeneral"].forEach(function (id) { $(id).addEventListener("change", render); });
     $("fQ").addEventListener("input", render);
+    $("deadlineWindow").addEventListener("change", render);
 
     $("prev").addEventListener("click", function () { cur.m--; if (cur.m < 1) { cur.m = 12; cur.y--; } render(); });
     $("next").addEventListener("click", function () { cur.m++; if (cur.m > 12) { cur.m = 1; cur.y++; } render(); });
