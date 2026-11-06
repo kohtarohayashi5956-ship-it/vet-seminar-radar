@@ -71,7 +71,7 @@ def _audience(context):
     if "動物看護師" in context or "愛玩動物看護師" in context or "看護師向け" in context: items.append("動物看護師")
     if "トリマー" in context: items.append("トリマー")
     if "獣医学生" in context or "獣医学部生" in context: items.append("学生")
-    if "一般すべて" in context or "飼い主向け" in context: items.append("一般")
+    if re.search(r"一般[・･、\\s]*すべて|対象[：:]\\s*一般|飼い主向け", context): items.append("一般")
     if "動物病院関係者" in context or "動物病院スタッフ" in context: items.append("動物病院スタッフ")
     return [a for a in items if a in AUDIENCES]
 
@@ -214,8 +214,11 @@ def _jaha_top(text, page, today, stats):
         if not link:
             continue
         title, url = link
-        # Keep only this card's status/audience, not adjacent announcements.
-        context = "\n".join(lines[max(0, link_idx - 2):min(len(lines), i + 3)])
+        # The audience is the explicit label immediately after the date;
+        # content before the title can belong to the previous card.
+        target = next((ln for ln in lines[i + 1:i + 3]
+                       if re.match(r"^対象\\s*[：:]", ln)), "")
+        context = title + "\n" + line + "\n" + target
         e = _event(title, start, url, page, context, "JAHA", end=end if end != start else None)
         for ln in lines[max(0,link_idx - 2):link_idx]:
             if ln in ("受付中", "受付終了", "予告", "満席"):
