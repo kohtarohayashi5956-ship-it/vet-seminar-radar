@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-06T18:06:58+09:00",
+ "updated": "2026-11-06T18:11:04+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -1322,8 +1322,7 @@
    "prefecture": "東京都",
    "audience": [
     "獣医師",
-    "学生",
-    "動物病院スタッフ"
+    "学生"
    ],
    "topics": [
     "内分泌",
@@ -1353,8 +1352,7 @@
    "venue": null,
    "prefecture": "東京都",
    "audience": [
-    "獣医師",
-    "学生"
+    "一般"
    ],
    "topics": [
     "行動・しつけ"
@@ -1415,9 +1413,7 @@
    "prefecture": null,
    "audience": [
     "獣医師",
-    "動物看護師",
-    "学生",
-    "動物病院スタッフ"
+    "動物看護師"
    ],
    "topics": [],
    "price": null,
@@ -1444,8 +1440,7 @@
    "venue": null,
    "prefecture": "東京都",
    "audience": [
-    "獣医師",
-    "動物看護師"
+    "一般"
    ],
    "topics": [
     "行動・しつけ"
@@ -1503,7 +1498,7 @@
    "venue": null,
    "prefecture": "東京都",
    "audience": [
-    "動物看護師"
+    "一般"
    ],
    "topics": [],
    "price": null,
@@ -1557,7 +1552,7 @@
    "venue": null,
    "prefecture": "東京都",
    "audience": [
-    "動物病院スタッフ"
+    "一般"
    ],
    "topics": [
     "行動・しつけ"
@@ -1646,8 +1641,7 @@
    "prefecture": null,
    "audience": [
     "獣医師",
-    "動物看護師",
-    "動物病院スタッフ"
+    "動物看護師"
    ],
    "topics": [],
    "price": null,
@@ -1674,8 +1668,7 @@
    "venue": null,
    "prefecture": "東京都",
    "audience": [
-    "獣医師",
-    "動物看護師"
+    "一般"
    ],
    "topics": [
     "行動・しつけ"
@@ -1733,7 +1726,7 @@
    "venue": null,
    "prefecture": "東京都",
    "audience": [
-    "動物看護師"
+    "一般"
    ],
    "topics": [],
    "price": null,
@@ -1787,8 +1780,7 @@
    "venue": null,
    "prefecture": "東京都",
    "audience": [
-    "動物看護師",
-    "動物病院スタッフ"
+    "動物看護師"
    ],
    "topics": [
     "看護・技術"
