@@ -74,6 +74,7 @@ def main(argv):
     ap = argparse.ArgumentParser(description="セミナーレーダー（個人用）")
     ap.add_argument("--demo", action="store_true")
     ap.add_argument("--offline", action="store_true")
+    ap.add_argument("--ai", action="store_true", help="Allow paid AI only for pages with zero free results")
     ap.add_argument("--only", default="")
     ap.add_argument("--months", type=int, default=config.MONTHS_AHEAD)
     ap.add_argument("--debug", action="store_true")
@@ -100,15 +101,19 @@ def main(argv):
     # ---- 通常実行 ----
     from fetcher import Blocked, Disallowed, Fetcher
     from extract import Extractor
+    from free_extract import extract_free
     from sources import pages_for
 
     client = None
     key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if key:
+    use_ai = args.ai or os.environ.get("SEMINAR_RADAR_USE_AI", "").strip().lower() in ("1", "true", "yes")
+    if key and use_ai:
         from anthropic import Anthropic
         client = Anthropic(api_key=key)
+    elif use_ai:
+        log("AIモード指定ですがAPIキーがありません。無料抽出のみ実行します。")
     else:
-        log("注意: ANTHROPIC_API_KEY が未設定です。前回までに解析済みのページ以外は読み取れません。")
+        log("モード: 無料ルール抽出（API料金なし）")
     if not config.CONTACT:
         log("注意: 連絡先が未設定です（環境変数 SEMINAR_RADAR_CONTACT）。相手サイトに分かるよう設定を推奨します。")
 
@@ -119,8 +124,8 @@ def main(argv):
     summary = []
     health = []
     warnings = []
-    if not key:
-        warnings.append("ANTHROPIC_API_KEY が未設定です。未解析ページからの自動抽出は行われません。")
+    if use_ai and not key:
+        warnings.append("AIモード指定ですがAPIキーがないため無料抽出のみです。")
     if not config.CONTACT:
         warnings.append("SEMINAR_RADAR_CONTACT が未設定です。")
 
@@ -137,7 +142,10 @@ def main(argv):
                     os.makedirs(cache_dir, exist_ok=True)
                     with open(os.path.join(cache_dir, f"{src['id']}-{n}.txt"), "w", encoding="utf-8") as f:
                         f.write(text)
-                got = extractor.extract(src["name"], url, hint, text, today, stats)
+                got = extract_free(src["name"], url, hint, text, today, stats)
+                if not got and client is not None:
+                    got = extractor.extract(src["name"], url, hint, text, today, stats)
+                    stats["ai_fallback_pages"] = stats.get("ai_fallback_pages", 0) + 1
                 log(f"      → {len(got)}件を抽出")
                 fresh.extend(got)
         except Disallowed as ex:
@@ -164,7 +172,7 @@ def main(argv):
     events = merge.dedupe_cross_source(list(store.values()) + manual)
     status = {
         "checked_at_jst": datetime.datetime.now(ZoneInfo("Asia/Tokyo")).isoformat(timespec="seconds"),
-        "mode": "AI" if key else "cached_only",
+        "mode": "free_with_optional_ai" if client is not None else "free_rules",
         "total_events": len(events),
         "source_results": health,
         "warnings": warnings,

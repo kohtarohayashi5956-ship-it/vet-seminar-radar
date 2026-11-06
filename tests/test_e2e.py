@@ -55,7 +55,7 @@ class E2E(unittest.TestCase):
     def test_full_flow(self):
         import datetime
         with mock.patch.object(run, "local_today", return_value=datetime.date(2026, 11, 6)):
-            rc = run.main(["--out", "index.html"])
+            rc = run.main(["--ai", "--out", "index.html"])
         self.assertEqual(rc, 0)
         self.assertTrue(os.path.exists("index.html"))
         store = json.load(open("data/events.json", encoding="utf-8"))["events"]
@@ -69,7 +69,7 @@ class E2E(unittest.TestCase):
         # 2回目はキャッシュで、AIを呼ばない
         calls = self.client.messages.create.call_count
         with mock.patch.object(run, "local_today", return_value=datetime.date(2026, 11, 7)):
-            run.main(["--out", "index.html"])
+            run.main(["--ai", "--out", "index.html"])
         self.assertEqual(self.client.messages.create.call_count, calls)
         store = json.load(open("data/events.json", encoding="utf-8"))["events"]
         ev = list(store.values())[0]
@@ -80,7 +80,7 @@ class E2E(unittest.TestCase):
         self.assertTrue(os.path.exists("index.html"))
 
     def test_html_payload_is_valid_json(self):
-        run.main(["--out", "index.html"])
+        run.main(["--ai", "--out", "index.html"])
         html = open("index.html", encoding="utf-8").read()
         s = html.index('id="payload" type="application/json">') + len('id="payload" type="application/json">')
         e = html.index("</script>", s)

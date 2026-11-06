@@ -38,6 +38,8 @@ jobs:
       - name: Fetch seminar listings and render website
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Variable=1 か明示 --ai のときだけAIを利用
+          SEMINAR_RADAR_USE_AI: ${{ vars.SEMINAR_RADAR_USE_AI }}
           SEMINAR_RADAR_CONTACT: ${{ secrets.SEMINAR_RADAR_CONTACT }}
         run: python run.py
       - name: Validate public outputs
