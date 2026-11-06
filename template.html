@@ -387,6 +387,20 @@
       r1.appendChild(el("span", "badge " + cls, e.format));
     }
     if (e.status) r1.appendChild(el("span", "st " + statusClass(e.status), e.status));
+    // An explicitly collected registration deadline may be different from
+    // the event date. Highlight it without claiming the organiser is closed.
+    if (e.deadline && e.start_date && e.start_date >= todayStr) {
+      var dDays = Math.round((parse(e.deadline).getTime() - parse(todayStr).getTime()) / 86400000);
+      if (dDays < 0) {
+        var closedHint = el("span", "st off", "締切日経過・受付要確認");
+        closedHint.title = "公表された締切日を経過しています。追加募集の有無は公式サイトで確認してください。";
+        r1.appendChild(closedHint);
+      } else if (dDays <= 7) {
+        var urgent = el("span", "st warn", dDays === 0 ? "申込締切 今日" : "申込締切まで " + dDays + "日");
+        urgent.title = "公式サイトで締切日・受付状況をご確認ください。";
+        r1.appendChild(urgent);
+      }
+    }
     if (e.first_seen) {
       var days = Math.floor((parse(todayStr).getTime() - parse(e.first_seen).getTime()) / 86400000);
       if (days >= 0 && days <= 7) r1.appendChild(el("span", "st ok", "NEW"));

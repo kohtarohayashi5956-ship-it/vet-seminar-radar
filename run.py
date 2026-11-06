@@ -106,6 +106,7 @@ def main(argv):
     from sources import pages_for
     from detail_enrich import enrich_lifetail
     from gakusai_enrich import enrich_gakusai
+    from jaha_enrich import enrich_jaha
 
     client = None
     key = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -164,6 +165,10 @@ def main(argv):
             log(f"  ! {note}")
         # Optional, bounded enrichment after the successful source listing.
         # A detail-page failure never removes or invalidates a valid card.
+        if src["id"] == "jaha" and not note and fresh:
+            fresh = enrich_jaha(fresh, fetcher, today, stats)
+            log("  JAHA個別ページ: " + str(stats.get("details_scanned", 0)) +
+                "ページ / 締切確認 " + str(stats.get("deadlines_found", 0)) + "件")
         if src["id"] == "lifetail" and not note and fresh:
             fresh = enrich_lifetail(fresh, fetcher, today, stats)
             log("  詳細補完: " + str(stats.get("details_scanned", 0)) +
