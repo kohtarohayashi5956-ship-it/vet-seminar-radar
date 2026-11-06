@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-06T18:54:46+09:00",
+ "updated": "2026-11-06T18:58:11+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -1229,6 +1229,7 @@
    "status": null,
    "deadline": null,
    "organizer": "VETS TECH",
+   "speaker": null,
    "url": "https://vets-tech.jp/2026/11/04/vetslabo-opth-2027/117488/?utm_source=rss&utm_medium=rss&utm_campaign=vetslabo-opth-2027",
    "url_is_page": false,
    "verified": true,
@@ -1256,6 +1257,7 @@
    "status": null,
    "deadline": null,
    "organizer": "VETS TECH",
+   "speaker": "平島",
    "url": "https://vets-tech.jp/2026/09/29/zenoqaq-opexam-vol1/113767/?utm_source=rss&utm_medium=rss&utm_campaign=zenoqaq-opexam-vol1",
    "url_is_page": false,
    "verified": false,
@@ -1852,6 +1854,7 @@
    "status": null,
    "deadline": null,
    "organizer": "VETS TECH",
+   "speaker": "秋吉",
    "url": "https://vets-tech.jp/2026/10/27/vets-tech-web-seminar-vol83/116565/?utm_source=rss&utm_medium=rss&utm_campaign=vets-tech-web-seminar-vol83",
    "url_is_page": false,
    "verified": true,
@@ -1881,6 +1884,7 @@
    "status": null,
    "deadline": null,
    "organizer": "VETS TECH",
+   "speaker": "藤田",
    "url": "https://vets-tech.jp/2026/10/22/vets-tech-web-seminar-vol82/116254/?utm_source=rss&utm_medium=rss&utm_campaign=vets-tech-web-seminar-vol82",
    "url_is_page": false,
    "verified": true,

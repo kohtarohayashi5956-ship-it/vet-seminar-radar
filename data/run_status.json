@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-06T18:54:46+09:00",
+  "checked_at_jst": "2026-11-06T18:58:11+09:00",
   "mode": "free_rules",
   "total_events": 79,
   "source_results": [
@@ -94,17 +94,16 @@
     {
       "id": "vetstech",
       "name": "VETS TECH",
-      "pages": 0,
-      "extracted": 0,
-      "added": 0,
-      "updated": 0,
+      "pages": 3,
+      "extracted": 5,
+      "added": 1,
+      "updated": 4,
       "replaced_stale": 0,
-      "status": "error",
-      "note": "エラー: mismatched tag: line 93, column 2"
+      "status": "ok",
+      "note": ""
     }
   ],
   "warnings": [
-    "SEMINAR_RADAR_CONTACT が未設定です。",
-    "VETS TECH: エラー: mismatched tag: line 93, column 2"
+    "SEMINAR_RADAR_CONTACT が未設定です。"
   ]
 }
