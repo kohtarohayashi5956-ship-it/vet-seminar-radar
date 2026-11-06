@@ -1,7 +1,7 @@
 {
-  "checked_at_jst": "2026-11-06T17:09:50+09:00",
+  "checked_at_jst": "2026-11-06T17:53:02+09:00",
   "mode": "free_rules",
-  "total_events": 43,
+  "total_events": 38,
   "source_results": [
     {
       "id": "jaha",
@@ -10,8 +10,9 @@
       "extracted": 0,
       "added": 0,
       "updated": 0,
-      "status": "ok",
-      "note": ""
+      "replaced_stale": 0,
+      "status": "empty",
+      "note": "ページ取得成功・イベント抽出0件（構造または対象日を要確認）"
     },
     {
       "id": "lifetail",
@@ -20,6 +21,7 @@
       "extracted": 17,
       "added": 17,
       "updated": 0,
+      "replaced_stale": 17,
       "status": "ok",
       "note": ""
     },
@@ -28,23 +30,27 @@
       "name": "学際企画",
       "pages": 1,
       "extracted": 26,
-      "added": 26,
-      "updated": 0,
+      "added": 0,
+      "updated": 26,
+      "replaced_stale": 0,
       "status": "ok",
       "note": ""
     },
     {
       "id": "vetstech",
       "name": "VETS TECH",
-      "pages": 1,
-      "extracted": 4,
-      "added": 4,
+      "pages": 3,
+      "extracted": 5,
+      "added": 5,
       "updated": 0,
+      "replaced_stale": 4,
       "status": "ok",
       "note": ""
     }
   ],
   "warnings": [
-    "SEMINAR_RADAR_CONTACT が未設定です。"
+    "SEMINAR_RADAR_CONTACT が未設定です。",
+    "JAHA: ページ取得成功・イベント抽出0件（構造または対象日を要確認）",
+    "JAHA: ページ取得成功・イベント抽出0件（構造または対象日を要確認）"
   ]
 }
