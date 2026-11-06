@@ -104,6 +104,7 @@ def main(argv):
     from extract import Extractor
     from free_extract import extract_free
     from sources import pages_for
+    from detail_enrich import enrich_lifetail
 
     client = None
     key = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -160,6 +161,13 @@ def main(argv):
             note = f"エラー: {ex}"
         if note:
             log(f"  ! {note}")
+        # Optional, bounded enrichment after the successful source listing.
+        # A detail-page failure never removes or invalidates a valid card.
+        if src["id"] == "lifetail" and not note and fresh:
+            fresh = enrich_lifetail(fresh, fetcher, today, stats)
+            log("  詳細補完: " + str(stats.get("details_scanned", 0)) +
+                "ページ / 締切 " + str(stats.get("deadlines_found", 0)) +
+                "件 / 料金 " + str(stats.get("prices_found", 0)) + "件")
         if not note and pages and fresh:
             added, updated, replaced = merge.reconcile_source(store, fresh, src, today)
         else:
@@ -173,6 +181,10 @@ def main(argv):
         health.append({"id": src["id"], "name": src["name"], "pages": pages,
                        "extracted": len(fresh), "added": added, "updated": updated,
                        "replaced_stale": replaced,
+                       "details_scanned": stats.get("details_scanned", 0),
+                       "details_accepted": stats.get("details_accepted", 0),
+                       "deadlines_found": stats.get("deadlines_found", 0),
+                       "prices_found": stats.get("prices_found", 0),
                        "status": ("error" if note.startswith(("取得", "エラー")) else "empty") if note else ("empty" if not pages else "ok"),
                        "note": note[:250] if note else ("対象ページなし" if not pages else "")})
         if note:
