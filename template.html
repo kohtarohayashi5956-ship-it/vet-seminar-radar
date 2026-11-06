@@ -110,6 +110,8 @@
   .title { margin: 3px 0 4px; font-size: 15px; font-weight: 700; line-height: 1.5; }
   .title a { color: var(--ink); text-decoration: none; }
   .title a:hover { text-decoration: underline; color: var(--accent); }
+  .detail-link { display:inline-block; font-size:12px; font-weight:650; color:var(--accent); margin:0 0 5px; }
+  .detail-link:hover, .detail-link:focus-visible { text-decoration:underline; }
   .kvs { display: flex; flex-wrap: wrap; gap: 2px 16px; font-size: 12.5px; color: var(--ink); }
   .kv b { font-weight: 400; color: var(--muted); margin-right: 5px; }
   .foot { margin-top: 5px; font-size: 11.5px; color: var(--muted); }
@@ -255,7 +257,8 @@
       <label><input type="checkbox" id="oOrg" checked>主催</label>
       <label><input type="checkbox" id="oAud" checked>対象</label>
       <label><input type="checkbox" id="oPrice" checked>受講料</label>
-      <label><input type="checkbox" id="oDeadline" checked>申込締切</label>
+      <label><input type="checkbox" id="oDeadline" checked>参加申込締切</label>
+      <label><input type="checkbox" id="oAbstractDeadline" checked>演題募集締切</label>
     </div>
     <label class="field">見出し（空欄なら自動）<input type="text" id="tHead" placeholder="例: 11月のセミナー情報（2026年11月）"></label>
     <label class="field">案内の一言<input type="text" id="tIntro"></label>
@@ -291,7 +294,7 @@
   function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { /* 保存できなくても動作は続ける */ } }
 
   var sel = new Set(load("sr.sel", []).filter(function (id) { return BYID[id]; }));
-  var opt = Object.assign({ emoji: true, org: true, aud: true, price: true, deadline: true,
+  var opt = Object.assign({ emoji: true, org: true, aud: true, price: true, deadline: true, abstractDeadline: true,
     head: "", intro: "気になるものがあればご覧ください。",
     note: "※日時・料金は変更されることがあります。必ずリンク先で最新情報をご確認ください。" }, load("sr.opt", {}));
   var dirty = false;
@@ -494,6 +497,13 @@
     a.href = e.url || "#"; a.target = "_blank"; a.rel = "noopener noreferrer";
     a.addEventListener("click", function (ev) { ev.stopPropagation(); });
     h.appendChild(a); body.appendChild(h);
+    if (e.detail_url && e.detail_url !== e.url) {
+      var details = el("a", "detail-link", "公式の個別案内を見る");
+      details.href = e.detail_url;
+      details.target = "_blank"; details.rel = "noopener noreferrer";
+      details.addEventListener("click", function(ev) { ev.stopPropagation(); });
+      body.appendChild(details);
+    }
 
     var kvs = el("div", "kvs");
     var place = [e.prefecture, e.venue].filter(Boolean).join(" ");
@@ -503,7 +513,8 @@
     if ((e.audience || []).length) kvs.appendChild(kv("対象", e.audience.join("・")));
     var price = e.price || (e.is_free ? "無料" : "");
     if (price) kvs.appendChild(kv("受講料", price));
-    if (e.deadline) kvs.appendChild(kv("申込締切", md(e.deadline) + "（" + wd(e.deadline) + "）"));
+    if (e.deadline) kvs.appendChild(kv("参加申込締切", md(e.deadline) + "（" + wd(e.deadline) + "）"));
+    if (e.abstract_deadline) kvs.appendChild(kv("演題募集締切", md(e.abstract_deadline) + "（" + wd(e.abstract_deadline) + "）"));
     if ((e.topics || []).length) kvs.appendChild(kv("分野", e.topics.join("・")));
     var other = otherSessions(e);
     if (other.length) kvs.appendChild(kv("同じ講座の別日程", other.slice(0, 5).map(md).join("・") + (other.length > 5 ? " ほか" + (other.length - 5) + "件" : "")));
@@ -625,7 +636,8 @@
     if (opt.org && e.organizer) parts.push("主催：" + e.organizer);
     if (opt.aud && (e.audience || []).length) parts.push("対象：" + e.audience.join("・"));
     if (opt.price) { var pr = e.price || (e.is_free ? "無料" : ""); if (pr) parts.push("受講料：" + pr); }
-    if (opt.deadline && e.deadline) parts.push("申込締切：" + md(e.deadline) + "（" + wd(e.deadline) + "）");
+    if (opt.deadline && e.deadline) parts.push("参加申込締切：" + md(e.deadline) + "（" + wd(e.deadline) + "）");
+    if (opt.abstractDeadline && e.abstract_deadline) parts.push("演題募集締切：" + md(e.abstract_deadline) + "（" + wd(e.abstract_deadline) + "）");
     if (parts.length) lines.push(parts.join("／"));
     if (e.url) lines.push(e.url);
     return lines.join("\n");
@@ -716,7 +728,8 @@
         ["収載", total + "件"],
         ["開催日", EVENTS.filter(function(e) { return !!e.start_date; }).length + "/" + total],
         ["料金", EVENTS.filter(function(e) { return !!e.price || e.is_free === true; }).length + "/" + total],
-        ["申込締切", EVENTS.filter(function(e) { return !!e.deadline; }).length + "/" + total],
+        ["参加申込締切", EVENTS.filter(function(e) { return !!e.deadline; }).length + "/" + total],
+        ["演題募集締切", EVENTS.filter(function(e) { return !!e.abstract_deadline; }).length + "/" + total],
         ["巡回", good + "/" + (st.source_results || []).length + "情報源"]
       ];
       metrics.forEach(function (item) {
@@ -751,7 +764,7 @@
     $("next").addEventListener("click", function () { cur.m++; if (cur.m > 12) { cur.m = 1; cur.y++; } render(); });
     $("today").addEventListener("click", function () { cur = { y: now.getFullYear(), m: now.getMonth() + 1 }; render(); });
 
-    var map = { oEmoji: "emoji", oOrg: "org", oAud: "aud", oPrice: "price", oDeadline: "deadline" };
+    var map = { oEmoji: "emoji", oOrg: "org", oAud: "aud", oPrice: "price", oDeadline: "deadline", oAbstractDeadline: "abstractDeadline" };
     Object.keys(map).forEach(function (id) {
       $(id).checked = !!opt[map[id]];
       $(id).addEventListener("change", function () { opt[map[id]] = $(id).checked; save("sr.opt", opt); refreshComposer(); });

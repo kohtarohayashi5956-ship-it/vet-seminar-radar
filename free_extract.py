@@ -146,7 +146,8 @@ def _event(title,when,url,page,context="",organizer=None,end=None):
         "format":fmt,"venue":None,"prefecture":_pref(context+" "+title,fmt),
         "audience":_audience(context+" "+title),"topics":_topics(title),
         "price":price,"is_free":free,"status":m.group(0) if m else None,
-        "deadline":None,"speaker":_speakers_in_title(title),"organizer":organizer,"url":url or page,"evidence":title.strip()}
+        "deadline":None,"abstract_deadline":None,"detail_url":None,
+        "speaker":_speakers_in_title(title),"organizer":organizer,"url":url or page,"evidence":title.strip()}
 
 
 def _line_link(line):
@@ -500,6 +501,49 @@ def _eduone(text, page, today, stats):
     return [e]
 
 
+
+# Official, *event-specific* conference notices verified on 2026-11-07.
+# The original source URL is retained; this is a separate details link.
+JBVP_DETAIL_LINKS = {
+    "名古屋": ("2027-02-28", "https://www.jbvp.org/regional/nagoya.html"),
+    "京都": ("2027-03-07", "https://www.jbvp.org/regional/kyoto.html"),
+    "九州": ("2027-03-21", "https://www.jbvp.org/regional/kyushu.html"),
+    "東北": ("2027-03-28", "https://www.jbvp.org/regional/tohoku.html"),
+    "北海道": ("2027-03-28", "https://www.jbvp.org/regional/hokkaido.html"),
+}
+
+
+def _jbvp_detail_url(title, start_date):
+    if "地区大会" not in title:
+        return None
+    for region, (date, official_url) in JBVP_DETAIL_LINKS.items():
+        if region in title and date == start_date:
+            return official_url
+    return None
+
+
+def _jsvd_abstract_deadline(lines, index, event_pat, event_date):
+    """Separate scientific abstract submission from event registration.
+
+    The conference's own explicit "一般演題募集" range is required. Dates
+    mentioned under other events, membership, or registration are ignored.
+    """
+    for j in range(index + 1, min(index + 31, len(lines))):
+        line = lines[j]
+        if event_pat.search(line):
+            break
+        compact = re.sub(r"\s+", "", line)
+        if not re.match(r"^(?:一般演題募集|演題募集期間|一般講演募集|抄録募集期間)[|:：]?", compact):
+            continue
+        date_string = compact
+        if len(_dates(date_string)) < 2 and j + 1 < len(lines) and not event_pat.search(lines[j+1]):
+            date_string += lines[j+1].strip()
+        matches = _dates(date_string)
+        if len(matches) >= 2 and matches[0] <= matches[-1] <= event_date:
+            return matches[-1]
+    return None
+
+
 def _jbvp(text, page, today, stats):
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     out, seen = [], set()
@@ -531,6 +575,7 @@ def _jbvp(text, page, today, stats):
         seen.add(k)
         e = _event(line, start, page, page, block, "JBVP", end=_range_end(block, start))
         e["topics"] = ["学会・大会"]
+        e["detail_url"] = _jbvp_detail_url(line, start)
         if "オンライン" in line or "オンライン配信" in block:
             e["format"] = "オンデマンド"
         else:
@@ -661,6 +706,12 @@ def _society(text, page, today, stats, society):
         ev["format"] = "オンデマンド" if "オンライン" in title or "オンライン配信" in context else "現地"
         if society == "jsvd" and "共催シンポジウム" in title:
             ev["deadline"] = _jsvd_participant_deadline(lines, i, pat, start)
+            if start == "2026-11-22":
+                ev["detail_url"] = "https://2026.jsmm.org/"
+        if society == "jsvd" and "学術大会" in title:
+            ev["abstract_deadline"] = _jsvd_abstract_deadline(lines, i, pat, start)
+            if start == "2027-03-20":
+                ev["detail_url"] = "https://www.jsvd.jp/topics/30meeting/announcement.html"
         out.append(ev)
     stats["society_meetings"] = len(out)
     return out

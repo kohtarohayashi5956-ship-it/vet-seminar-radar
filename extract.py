@@ -238,6 +238,8 @@ def validate(raw_items, text, page_url, today, stats):
             "is_free": True if it.get("is_free") is True else None,
             "status": _str(it.get("status")),
             "deadline": _date(it.get("deadline")),
+            "abstract_deadline": _date(it.get("abstract_deadline")),
+            "detail_url": _str(it.get("detail_url")),
             "organizer": _str(it.get("organizer")),
             "speaker": _str(it.get("speaker")),
             "url": url,

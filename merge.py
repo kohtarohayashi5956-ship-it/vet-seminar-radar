@@ -16,7 +16,7 @@ MANUAL_PATH = os.path.join("data", "manual_events.csv")
 
 FIELDS = ["title", "start_date", "end_date", "start_time", "end_time", "format", "venue",
           "prefecture", "audience", "topics", "price", "is_free", "status", "deadline",
-          "organizer", "speaker", "url", "url_is_page", "verified"]
+          "organizer", "speaker", "url", "detail_url", "abstract_deadline", "url_is_page", "verified"]
 
 
 def event_id(source_id, title, start_date):
@@ -25,7 +25,7 @@ def event_id(source_id, title, start_date):
 
 def _score(e):
     keys = ["start_date", "start_time", "format", "venue", "prefecture", "price", "status",
-            "deadline", "organizer", "end_date"]
+            "deadline", "abstract_deadline", "organizer", "end_date"]
     s = sum(1 for k in keys if e.get(k))
     s += len(e.get("audience") or []) + len(e.get("topics") or [])
     if e.get("verified"):
@@ -228,7 +228,8 @@ def load_manual(today):
                 "topics": _split_list(row.get("topics"), TOPICS),
                 "price": g("price"), "is_free": True if (g("price") or "").startswith("無料") else None,
                 "status": g("status"), "deadline": g("deadline"), "organizer": g("organizer"),
-                "speaker": g("speaker"), "url": g("url"), "url_is_page": False, "verified": True,
+                "speaker": g("speaker"), "url": g("url"), "detail_url": g("detail_url"),
+                "abstract_deadline": g("abstract_deadline"), "url_is_page": False, "verified": True,
                 "source": "手動", "source_id": "manual", "manual": True,
                 "first_seen": today.isoformat(), "last_seen": today.isoformat(),
             })
