@@ -1,7 +1,7 @@
 {
-  "checked_at_jst": "2026-11-06T18:35:48+09:00",
+  "checked_at_jst": "2026-11-06T18:43:29+09:00",
   "mode": "free_rules",
-  "total_events": 65,
+  "total_events": 74,
   "source_results": [
     {
       "id": "jaha",
@@ -37,18 +37,53 @@
       "note": ""
     },
     {
+      "id": "peppy",
+      "name": "PEPPY",
+      "pages": 0,
+      "extracted": 0,
+      "added": 0,
+      "updated": 0,
+      "replaced_stale": 0,
+      "status": "error",
+      "note": "取得しませんでした（robots.txt）: robots.txt で許可されていません: https://www.peppy.jp/seminar"
+    },
+    {
+      "id": "eduone",
+      "name": "EDUWARD Press",
+      "pages": 0,
+      "extracted": 0,
+      "added": 0,
+      "updated": 0,
+      "replaced_stale": 0,
+      "status": "error",
+      "note": "取得しませんでした（robots.txt）: robots.txt で許可されていません: https://eduone.jp/lecture/"
+    },
+    {
+      "id": "jbvp",
+      "name": "JBVP",
+      "pages": 2,
+      "extracted": 9,
+      "added": 9,
+      "updated": 0,
+      "replaced_stale": 0,
+      "status": "ok",
+      "note": ""
+    },
+    {
       "id": "vetstech",
       "name": "VETS TECH",
       "pages": 3,
       "extracted": 5,
-      "added": 3,
-      "updated": 2,
-      "replaced_stale": 2,
+      "added": 1,
+      "updated": 4,
+      "replaced_stale": 0,
       "status": "ok",
       "note": ""
     }
   ],
   "warnings": [
-    "SEMINAR_RADAR_CONTACT が未設定です。"
+    "SEMINAR_RADAR_CONTACT が未設定です。",
+    "PEPPY: 取得しませんでした（robots.txt）: robots.txt で許可されていません: https://www.peppy.jp/seminar",
+    "EDUWARD Press: 取得しませんでした（robots.txt）: robots.txt で許可されていません: https://eduone.jp/lecture/"
   ]
 }
