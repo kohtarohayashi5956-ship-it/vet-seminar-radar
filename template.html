@@ -170,6 +170,10 @@
   @media (prefers-reduced-motion: no-preference) {
     @media (max-width: 960px) { .composer { transition: transform .18s ease-out; } }
   }
+  .quality-strip { display:flex; gap:14px; flex-wrap:wrap; padding:8px 16px;
+    background:#f5f8fb; color:#475365; border-bottom:1px solid var(--line);
+    font-size:12px; }
+  .quality-strip strong { color:var(--ink); font-weight:700; }
 </style>
 </head>
 <body>
@@ -185,6 +189,7 @@
     <button class="textbtn" id="today">今月</button>
   </nav>
 </header>
+<div id="quality" class="quality-strip" aria-label="収集情報の充足状況"></div>
 <div id="banner"></div>
 
 <section class="filters" aria-label="絞り込み">
@@ -609,6 +614,25 @@
   function init() {
     $("updated").textContent = "最終更新 " + (DATA.generated || "") + (DATA.sources_summary ? "　" + DATA.sources_summary : "");
     var st = DATA.run_status || {};
+
+    if (!DATA.demo) {
+      var total = EVENTS.length, quality = $("quality");
+      var good = (st.source_results || []).filter(function (x) { return x.status === "ok"; }).length;
+      var metrics = [
+        ["収載", total + "件"],
+        ["開催日", EVENTS.filter(function(e) { return !!e.start_date; }).length + "/" + total],
+        ["料金", EVENTS.filter(function(e) { return !!e.price || e.is_free === true; }).length + "/" + total],
+        ["申込締切", EVENTS.filter(function(e) { return !!e.deadline; }).length + "/" + total],
+        ["巡回", good + "/" + (st.source_results || []).length + "情報源"]
+      ];
+      metrics.forEach(function (item) {
+        var span = el("span");
+        span.appendChild(el("strong", null, item[0] + " "));
+        span.appendChild(document.createTextNode(item[1]));
+        quality.appendChild(span);
+      });
+      quality.title = "公開データの記載充足率です。人手で確認・保証された件数ではありません。";
+    }
     if (!DATA.demo && st.warnings && st.warnings.length) {
       var warn = el("div", "banner", "巡回の注意：" + st.warnings.join(" ／ "));
       $("banner").appendChild(warn);
