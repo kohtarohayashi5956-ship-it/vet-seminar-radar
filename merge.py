@@ -70,6 +70,23 @@ def update_store(store, fresh, source, _unused, today):
     return added, updated
 
 
+def reconcile_source(store, fresh, source, today):
+    """Replace stale records after a *complete, nonempty* source scan.
+
+    This removes previously misassigned dates, without deleting records when
+    the source is blocked, empty, or failed part way through collection.
+    """
+    if not fresh:
+        return 0, 0, 0
+    fresh_ids = {event_id(source["id"], e["title"], e.get("start_date")) for e in fresh}
+    old_ids = {k for k, e in store.items() if e.get("source_id") == source["id"]}
+    added, updated = update_store(store, fresh, source, None, today)
+    obsolete = old_ids - fresh_ids
+    for k in obsolete:
+        store.pop(k, None)
+    return added, updated, len(obsolete)
+
+
 def purge(store, today):
     drop = []
     for eid, e in store.items():

@@ -3,7 +3,8 @@
 """セミナーレーダー（個人用・非公開）。
 
   python run.py --demo         画面の確認（サンプルデータ。通信しません）
-  python run.py                巡回 → AIで抽出 → index.html を生成
+  python run.py                巡回 → 無料ルール抽出（必要なら明示AI）→ index.html を生成
+  python run.py --ai           無料抽出0件のページでAIを使う（キーと料金が必要）
   python run.py --offline      通信せず、蓄積済みのデータから index.html を作り直す
   python run.py --only jaha,vetstech   指定した巡回先だけ
   python run.py --months 2     何か月分（JAHAのカレンダー）を見るか
@@ -74,7 +75,7 @@ def main(argv):
     ap = argparse.ArgumentParser(description="セミナーレーダー（個人用）")
     ap.add_argument("--demo", action="store_true")
     ap.add_argument("--offline", action="store_true")
-    ap.add_argument("--ai", action="store_true", help="Allow paid AI only for pages with zero free results")
+    ap.add_argument("--ai", action="store_true", help="無料抽出0件のページだけClaude APIを使う（有料）")
     ap.add_argument("--only", default="")
     ap.add_argument("--months", type=int, default=config.MONTHS_AHEAD)
     ap.add_argument("--debug", action="store_true")
@@ -106,14 +107,14 @@ def main(argv):
 
     client = None
     key = os.environ.get("ANTHROPIC_API_KEY", "")
-    use_ai = args.ai or os.environ.get("SEMINAR_RADAR_USE_AI", "").strip().lower() in ("1", "true", "yes")
-    if key and use_ai:
+    use_ai = args.ai or config.USE_AI
+    if use_ai and key:
         from anthropic import Anthropic
         client = Anthropic(api_key=key)
     elif use_ai:
-        log("AIモード指定ですがAPIキーがありません。無料抽出のみ実行します。")
+        log("注意: AIモードを指定しましたがANTHROPIC_API_KEYがありません。無料抽出のみ実行します。")
     else:
-        log("モード: 無料ルール抽出（API料金なし）")
+        log("モード: 無料ルール抽出（Claude APIは呼びません）")
     if not config.CONTACT:
         log("注意: 連絡先が未設定です（環境変数 SEMINAR_RADAR_CONTACT）。相手サイトに分かるよう設定を推奨します。")
 
@@ -143,6 +144,8 @@ def main(argv):
                     with open(os.path.join(cache_dir, f"{src['id']}-{n}.txt"), "w", encoding="utf-8") as f:
                         f.write(text)
                 got = extract_free(src["name"], url, hint, text, today, stats)
+                # AI is costly and strictly opt-in. It is only a fallback for
+                # pages where source-specific free parsing found no seminars.
                 if not got and client is not None:
                     got = extractor.extract(src["name"], url, hint, text, today, stats)
                     stats["ai_fallback_pages"] = stats.get("ai_fallback_pages", 0) + 1
@@ -156,12 +159,20 @@ def main(argv):
             note = f"エラー: {ex}"
         if note:
             log(f"  ! {note}")
-        added, updated = merge.update_store(store, fresh, src, None, today)
+        if not note and pages and fresh:
+            added, updated, replaced = merge.reconcile_source(store, fresh, src, today)
+        else:
+            added, updated = merge.update_store(store, fresh, src, None, today)
+            replaced = 0
+        if not note and pages and not fresh:
+            note = "ページ取得成功・イベント抽出0件（構造または対象日を要確認）"
+            warnings.append(src["name"] + ": " + note)
         extra = "".join(f" {k}={v}" for k, v in stats.items())
         summary.append((src["name"], pages, len(fresh), added, updated, note or ("OK" + extra)))
         health.append({"id": src["id"], "name": src["name"], "pages": pages,
                        "extracted": len(fresh), "added": added, "updated": updated,
-                       "status": "error" if note else ("empty" if not pages else "ok"),
+                       "replaced_stale": replaced,
+                       "status": ("error" if note.startswith(("取得", "エラー")) else "empty") if note else ("empty" if not pages else "ok"),
                        "note": note[:250] if note else ("対象ページなし" if not pages else "")})
         if note:
             warnings.append(src["name"] + ": " + note[:120])
@@ -184,7 +195,7 @@ def main(argv):
     log(f"{'巡回先':<12}{'ページ':>6}{'抽出':>6}{'新規':>6}{'更新':>6}  状況")
     for name, pages, got, added, updated, st in summary:
         log(f"{name:<12}{pages:>6}{got:>6}{added:>6}{updated:>6}  {st}")
-    log(f"AI呼び出し {extractor.calls}回 / キャッシュ利用 {extractor.cache_hits}回 / 古いデータの削除 {dropped}件")
+    log(f"AI呼び出し {extractor.calls}回 / AIキャッシュ利用 {extractor.cache_hits}回 / 古いデータの削除 {dropped}件")
     log(f"手動登録 {len(manual)}件 / 画面に出る合計 {len(events)}件 → {args.out}")
     if args.open:
         webbrowser.open("file://" + os.path.abspath(args.out))

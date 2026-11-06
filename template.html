@@ -223,7 +223,7 @@
   </aside>
 </div>
 <button id="fab">告知文を作る（<span id="fabCount">0</span>）</button>
-<p class="disclaimer">一覧は主催者の公開情報をルールで自動抽出したものです（任意のAI補助を含む場合があります）。日時・料金・受付状況は取得時点の情報で、誤りを含む可能性があります。告知する前に、必ず原典のページで確認してください。</p>
+<p class="disclaimer">一覧は主催者の公開ページからルール方式で自動抽出した情報です（明示的にAIを有効化した場合のみAI補助）。日時・料金・受付状況は取得時点の情報で、読み取り違いを含む可能性があります。告知する前に、必ず原典のページで確認してください。</p>
 
 <script id="payload" type="application/json">/*__PAYLOAD__*/null</script>
 <script>
@@ -396,7 +396,18 @@
 
     var list = $("list"); list.textContent = "";
     if (!dated.length) {
-      list.appendChild(el("div", "empty", "この月に表示できるセミナーがありません。絞り込みを緩めるか、別の月を選んでください。"));
+      list.appendChild(el("div", "empty", "この月に表示できるセミナーがありません。日付のあるセミナーは他の月に登録されている可能性があります。"));
+      var future = EVENTS.filter(function (e) {
+        return e.start_date && e.start_date > mEnd && passes(e);
+      }).sort(function (a, b) { return a.start_date < b.start_date ? -1 : a.start_date > b.start_date ? 1 : 0; });
+      if (future.length) {
+        var jump = el("button", "textbtn", "次の開催月（" + future[0].start_date.slice(0, 7).replace("-", "年") + "月）へ：" + future.length + "件の予定");
+        jump.addEventListener("click", function () {
+          cur = { y: +future[0].start_date.slice(0, 4), m: +future[0].start_date.slice(5, 7) };
+          render();
+        });
+        var hint = el("div", "empty"); hint.appendChild(jump); list.appendChild(hint);
+      }
     }
     var groups = {};
     dated.forEach(function (e) {

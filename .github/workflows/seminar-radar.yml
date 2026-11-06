@@ -2,9 +2,21 @@ name: Vet Seminar Radar
 
 on:
   schedule:
-    # 月・木曜日 06:00 JST（前日21:00 UTC）。サイト負荷とAPIコストを抑えるため週2回。
+    # 月・木曜日 06:00 JST（前日21:00 UTC）。無料ルール抽出を週2回。
     - cron: '0 21 * * 0,3'
   workflow_dispatch:
+  # 修正を反映したときに実サイト巡回も検証する。
+  # Actions自身によるデータ更新のコミットはGitHub側で再実行されない。
+  push:
+    branches: [main]
+    paths:
+      - 'free_extract.py'
+      - 'sources.py'
+      - 'merge.py'
+      - 'run.py'
+      - 'template.html'
+      - '.github/workflows/seminar-radar.yml'
+      - 'tests/**'
 
 permissions:
   contents: write
@@ -38,7 +50,7 @@ jobs:
       - name: Fetch seminar listings and render website
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Variable=1 か明示 --ai のときだけAIを利用
+          # APIキーだけではAIは動かない。Variablesで1を明示した場合のみ使用。
           SEMINAR_RADAR_USE_AI: ${{ vars.SEMINAR_RADAR_USE_AI }}
           SEMINAR_RADAR_CONTACT: ${{ secrets.SEMINAR_RADAR_CONTACT }}
         run: python run.py

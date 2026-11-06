@@ -16,6 +16,52 @@ NS = {"content": "http://purl.org/rss/1.0/modules/content/"}
 
 
 # --------------------------------------------------------------------------
+def _jaha_table_text(html, base_url):
+    """Preserve date-to-event association in HTML calendar tables.
+
+    The generic text conversion can merge/split cells in ways that hide date
+    markers. The fallback remains the generic text when no table rows match.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    heading = re.search(r"(20\d{2})\s*年\s*(1[0-2]|[1-9])\s*月", soup.get_text(" ", strip=True))
+    if not heading:
+        return None
+    month = int(heading.group(2))
+    lines = [heading.group(1) + "年" + heading.group(2) + "月"]
+    found = 0
+    for table in soup.find_all("table"):
+        active_date = None
+        for tr in table.find_all("tr"):
+            cells = tr.find_all(["td", "th"], recursive=False)
+            if not cells:
+                continue
+            cell_texts = [x.get_text(" ", strip=True) for x in cells]
+            for value in cell_texts:
+                m = re.match(r"^\s*(1[0-2]|0?[1-9])\s*/\s*([12]?\d|3[01])(?=\D|$)", value)
+                if m and int(m.group(1)) == month:
+                    active_date = f"{int(m.group(1))}/{int(m.group(2))}"
+                    break
+            if not active_date:
+                continue
+            candidates = []
+            for a in tr.find_all("a", href=True):
+                title = a.get_text(" ", strip=True)
+                url = urljoin(base_url, a["href"])
+                if (len(title) < 6 or title in ("詳細", "MAP", "前月", "次月")
+                        or "/seminar-calendar" in url):
+                    continue
+                candidates.append((title, url))
+            if not candidates:
+                continue
+            for title, url in candidates:
+                lines.append(active_date)
+                lines.append(" ".join(cell_texts[:3])[:200])
+                lines.append(title + " <" + url + ">")
+                lines.append(" ".join(cell_texts[3:])[:400])
+                found += 1
+    return "\n".join(lines) if found else None
+
+
 def jaha_pages(src, fetcher, months):
     """JAHAのセミナーカレンダー。月ごとのページを「次月」リンクでたどる。"""
     url = src["start_url"]
@@ -33,7 +79,7 @@ def jaha_pages(src, fetcher, months):
         page_month = (datetime.date(int(match.group(1)), int(match.group(2)), 1)
                       if match else None)
         if page_month is None or page_month >= current:
-            yield url, html_to_text(html, url), hint
+            yield url, (_jaha_table_text(html, url) or html_to_text(html, url)), hint
             collected += 1
         if collected >= months:
             break
@@ -120,10 +166,22 @@ def feed_pages(src, fetcher):
     batch, size = [], 0
     for it in items:
         body = html_to_text(it["html"], it["link"] or src["feed"])
-        if len(body) < 300 and it["link"]:
+        # RSS bodies can be abstracts even when >300 characters.  When a
+        # seminar's actual schedule is missing, fetch its public detail page
+        # under the same robots.txt / rate-limit policy.  Never treat an
+        # article's URL date or its publication date as a seminar date.
+        has_schedule = re.search(
+            r"(?:開催日時|開催日|開催期間|開催予定日|配信日時|配信期間|日時[：:]|日程[：:]).{0,120}"
+            r"(?:20\d{2}|[1-9]|1[0-2])", body, re.S
+        )
+        if it["link"] and (len(body) < 300 or not has_schedule):
             try:
-                body = html_to_text(fetcher.get(it["link"]), it["link"])[:8000]
-            except Exception:  # noqa: BLE001 - 記事単位の失敗は無視して続ける
+                detail_html = fetcher.get(it["link"])
+                if not re.search(r"<rss\b|<feed\b", detail_html[:1500], re.I):
+                    detailed = html_to_text(detail_html, it["link"])
+                    if detailed.strip():
+                        body = detailed[:16000]
+            except Exception:  # noqa: BLE001 - fail closed, retain the feed text
                 pass
         block = (f"=====\n記事タイトル: {it['title']}\n記事URL: <{it['link']}>\n"
                  f"公開日: {it['pub'].date().isoformat()}\n{body[:6000]}\n")
