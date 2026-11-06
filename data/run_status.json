@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-06T18:11:04+09:00",
+  "checked_at_jst": "2026-11-06T18:35:48+09:00",
   "mode": "free_rules",
   "total_events": 65,
   "source_results": [
@@ -41,9 +41,9 @@
       "name": "VETS TECH",
       "pages": 3,
       "extracted": 5,
-      "added": 1,
-      "updated": 4,
-      "replaced_stale": 0,
+      "added": 3,
+      "updated": 2,
+      "replaced_stale": 2,
       "status": "ok",
       "note": ""
     }
