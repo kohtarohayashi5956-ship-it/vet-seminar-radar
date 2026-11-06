@@ -16,6 +16,13 @@ class SocietyTests(unittest.TestCase):
         self.assertEqual(ev[0]["start_date"],"2027-08-21")
         self.assertEqual(ev[0]["end_date"],"2027-08-22")
 
+    def test_javnu_short_homepage_heading(self):
+        text = ("第19回学術集会・総会\n2027年8月21日（土）〜22日（日）\n"
+                "ベルサール飯田橋ファースト")
+        ev = extract_free("JAVNU","https://www.javnu.jp/","",text,TODAY,{})
+        self.assertEqual(len(ev),1)
+        self.assertEqual(ev[0]["end_date"],"2027-08-22")
+
     def test_jsvd_ignores_submission_deadline(self):
         text=("第30回 日本獣医皮膚科学会学術大会\n"
               "日程 | 2027 年 3 月 20 日（土）・21日（日）\n"
@@ -32,6 +39,13 @@ class SocietyTests(unittest.TestCase):
         ev=extract_free("日本獣医がん学会","https://www.jvcs.jp/society/","",text,TODAY,{})
         self.assertEqual(len(ev),1)
         self.assertEqual(ev[0]["start_date"],"2027-01-30")
+
+    def test_jvcs_prose_is_not_a_separate_meeting(self):
+        text = ("第35回日本獣医がん学会\n"
+                "日 時：2027年1月30日(土)、31日(日)\n"
+                "第35回日本獣医がん学会は、2027年1月30日(土)、31日(日)、大阪府で会場開催をいたします。\n")
+        ev = extract_free("日本獣医がん学会","https://www.jvcs.jp/society/","",text,TODAY,{})
+        self.assertEqual(len(ev),1)
 
     def test_jsvc_meeting(self):
         text=("第125回日本獣医循環器学会定例大会\n開催案内\n"

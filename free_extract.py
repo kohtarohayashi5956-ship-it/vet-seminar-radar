@@ -512,7 +512,7 @@ def _jbvp(text, page, today, stats):
 
 
 SOCIETY_TITLE_PATTERNS = {
-    "javnu": re.compile(r"第\d+回.{0,45}(?:獣医腎泌尿器学会).{0,25}(?:学術集会|総会)"),
+    "javnu": re.compile(r"第\d+回\s*(?:日本獣医腎泌尿器学会\s*)?学術集会(?:・総会)?"),
     "jsvd": re.compile(r"(?:第\d+回.{0,40}獣医皮膚科学会学術大会|日本医真菌学会.{0,50}共催シンポジウム)"),
     "jvcs": re.compile(r"第\d+回.{0,30}日本獣医がん学会"),
     "jsvc": re.compile(r"第\d+回.{0,40}日本獣医循環器学会定例大会"),
@@ -526,7 +526,7 @@ def _range_end(label, start):
     if not first:
         return None
     tail = cleaned[first.end():first.end()+48]
-    m = re.search(r"[～〜~・、,]\s*(?:(\d{1,2})月)?\s*(\d{1,2})日", tail)
+    m = re.search(r"[～〜~・、,]\s*(?:(\d{1,2})\s*月)?\s*(\d{1,2})\s*日", tail)
     if not m:
         return None
     sd = datetime.date.fromisoformat(start)
@@ -542,7 +542,11 @@ def _society(text, page, today, stats, society):
     lines = [unicodedata.normalize("NFKC", line) for line in orig]
     out, seen = [], set()
     for i, line in enumerate(lines):
-        if not pat.search(line) or len(line) > 115:
+        match = pat.search(line)
+        if not match or len(line) > 115:
+            continue
+        # A heading is a name, not a long sentence mentioning another meeting.
+        if len(line[match.end():].strip()) > 5:
             continue
         title = orig[i]
         # Find a nearby labelled event date, rejecting deadlines and
@@ -564,6 +568,16 @@ def _society(text, page, today, stats, society):
             if dates:
                 found = (dates[0], label)
                 break
+        if not found and society == "javnu":
+            # The JAVNU homepage prints the congress date immediately under
+            # '第19回学術集会・総会' without a separate 会期 label.
+            for line_after in lines[i+1:min(len(lines),i+5)]:
+                if EXCLUDE_DATE.search(line_after):
+                    continue
+                dates = _dates(line_after)
+                if dates:
+                    found = (dates[0], line_after)
+                    break
         if not found or found[0] < today.isoformat():
             continue
         start, label = found
