@@ -61,5 +61,23 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add index.html data/events.json data/run_status.json
-          git diff --staged --quiet || git commit -m "Update seminar digest $(date -u +%Y-%m-%d)"
-          git push
+          if ! git diff --staged --quiet; then
+            git commit -m "Update seminar digest $(date -u +%Y-%m-%d)"
+          fi
+          # A code change may land while this 2-4 minute crawl is running.
+          # Rebase generated outputs on the new head instead of rejecting
+          # the push, and NEVER force-push or silently discard conflicts.
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "::error::Updated source conflicts with generated digest; keeping published data unchanged."
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep "$((attempt * 2))"
+          done
+          echo "::error::Unable to push seminar digest after retries."
+          exit 1
