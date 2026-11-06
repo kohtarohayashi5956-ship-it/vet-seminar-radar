@@ -176,9 +176,9 @@ def _jaha(text,page,today,stats):
 
 
 JAHA_DATE_RANGE = re.compile(
-    r"(?<!\\d)(20\\d{2})[-./](1[0-2]|0?[1-9])[-./](3[01]|[12]\\d|0?[1-9])"
-    r"\\s*[～〜~–ー－-]\\s*"
-    r"(20\\d{2})[-./](1[0-2]|0?[1-9])[-./](3[01]|[12]\\d|0?[1-9])"
+    r"(?<!\d)(20\d{2})[-./](1[0-2]|0?[1-9])[-./](3[01]|[12]\d|0?[1-9])"
+    r"\s*[～〜~–ー－-]\s*"
+    r"(20\d{2})[-./](1[0-2]|0?[1-9])[-./](3[01]|[12]\d|0?[1-9])"
 )
 
 
@@ -191,7 +191,7 @@ def _jaha_top(text, page, today, stats):
     lines = [x.strip() for x in text.splitlines() if x.strip()]
     out = []
     for i, line in enumerate(lines):
-        if not re.search(r"20\\d{2}[-./]\\d{1,2}[-./]\\d{1,2}", line):
+        if not re.search(r"20\d{2}[-./]\d{1,2}[-./]\d{1,2}", line):
             continue
         # Some JAHA date ranges include whitespace or a line break.
         group = " ".join(lines[i:i + 3])
