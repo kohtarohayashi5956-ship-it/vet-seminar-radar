@@ -105,6 +105,7 @@ def main(argv):
     from free_extract import extract_free
     from sources import pages_for
     from detail_enrich import enrich_lifetail
+    from gakusai_enrich import enrich_gakusai
 
     client = None
     key = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -168,6 +169,11 @@ def main(argv):
             log("  詳細補完: " + str(stats.get("details_scanned", 0)) +
                 "ページ / 締切 " + str(stats.get("deadlines_found", 0)) +
                 "件 / 料金 " + str(stats.get("prices_found", 0)) + "件")
+        elif src["id"] == "gakusai" and not note and fresh:
+            fresh = enrich_gakusai(fresh, fetcher, today, stats)
+            log("  詳細補完: " + str(stats.get("details_scanned", 0)) +
+                "ページ / 開催時刻 " + str(stats.get("times_found", 0)) +
+                "件 / 料金 " + str(stats.get("prices_found", 0)) + "件")
         if not note and pages and fresh:
             added, updated, replaced = merge.reconcile_source(store, fresh, src, today)
         else:
@@ -185,6 +191,8 @@ def main(argv):
                        "details_accepted": stats.get("details_accepted", 0),
                        "deadlines_found": stats.get("deadlines_found", 0),
                        "prices_found": stats.get("prices_found", 0),
+                       "times_found": stats.get("times_found", 0),
+                       "detail_fetch_failed": stats.get("detail_fetch_failed", 0),
                        "status": ("error" if note.startswith(("取得", "エラー")) else "empty") if note else ("empty" if not pages else "ok"),
                        "note": note[:250] if note else ("対象ページなし" if not pages else "")})
         if note:
