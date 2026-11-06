@@ -1,0 +1,12 @@
+# Raw scraped pages and AI extraction cache are never public.
+/cache/
+/data/extract_cache.json
+/data/extract_cache.json.*
+/.venv/
+/.pytest_cache/
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.*
+*.log

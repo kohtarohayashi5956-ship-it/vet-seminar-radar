@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Vet Seminar Radar — 獣医系セミナー情報</title>
+<style>
+  :root {
+    --bg: #eef1f5;
+    --panel: #ffffff;
+    --ink: #1b2531;
+    --muted: #5a6675;
+    --line: #d3dae3;
+    --accent: #0e7c86;
+    --accent-soft: #e9f6f7;
+    --ok: #1c7248;
+    --warn: #9a5a08;
+    --off: #8792a0;
+    --sat: #2563a8;
+    --sun: #b0302b;
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+    font-size: 14px; line-height: 1.65;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: var(--accent); }
+  :focus-visible { outline: 3px solid #7f97f0; outline-offset: 2px; }
+
+  /* ---- 上部 ---- */
+  .top {
+    background: #16294a; color: #fff; padding: 14px 20px 12px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 28px;
+  }
+  .top h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: .02em; }
+  .top .sub { margin: 0; font-size: 12px; color: #aeb9c7; }
+  .monthnav { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+  .monthnav .label { min-width: 9.5em; text-align: center; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .iconbtn, .textbtn {
+    border: 1px solid #55657a; background: transparent; color: #fff; border-radius: var(--radius);
+    padding: 5px 12px; cursor: pointer;
+  }
+  .iconbtn:hover, .textbtn:hover { background: #2b3a4d; }
+  .banner { background: #fff3cd; color: #5c4400; padding: 8px 20px; font-size: 13px; border-bottom: 1px solid #ecd58a; }
+
+  /* ---- 絞り込み ---- */
+  .filters {
+    background: var(--panel); border-bottom: 1px solid var(--line);
+    padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center;
+  }
+  .group { display: flex; align-items: center; gap: 6px; }
+  .group > .gl { color: var(--muted); font-size: 12px; margin-right: 2px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .seg button {
+    border: 0; background: #fff; padding: 4px 11px; cursor: pointer; border-right: 1px solid var(--line);
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .filters select, .filters input[type="search"] {
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 4px 8px; background: #fff; max-width: 14em;
+  }
+  .filters label.chk { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+
+  /* ---- 本体 ---- */
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 20px; padding: 18px 20px 80px; align-items: start; }
+  .empty { background: var(--panel); border: 1px dashed var(--line); padding: 28px; border-radius: var(--radius); color: var(--muted); }
+
+  .day { display: grid; grid-template-columns: 78px minmax(0, 1fr); margin-bottom: 14px; }
+  .rail { text-align: center; padding-top: 10px; }
+  .rail .num { font-size: 30px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  .rail .wd { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .rail.sat .num, .rail.sat .wd { color: var(--sat); }
+  .rail.sun .num, .rail.sun .wd { color: var(--sun); }
+  .rail .to { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .cards { border-left: 2px solid var(--line); padding-left: 14px; display: grid; gap: 8px; }
+
+  .card {
+    position: relative; display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 10px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 11px 14px 11px 12px; cursor: pointer;
+  }
+  .card:hover { border-color: #aab6c6; }
+  .card.sel { background: var(--accent-soft); border-color: var(--accent); }
+  .card.past { opacity: .55; }
+  .card input[type="checkbox"] { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--accent); cursor: pointer; }
+  .row1 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 13px; }
+  .time { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .badge { font-size: 11.5px; line-height: 1; padding: 3px 7px; border-radius: 3px; border: 1px solid var(--ink); white-space: nowrap; }
+  .badge.f-live { background: var(--ink); color: #fff; }
+  .badge.f-ond { border-style: dashed; color: var(--muted); border-color: var(--muted); }
+  .badge.f-hyb { background: linear-gradient(90deg, #fff 50%, var(--ink) 50%); color: var(--accent); border-color: var(--ink); }
+  .st { font-size: 12px; font-weight: 700; }
+  .st.ok { color: var(--ok); } .st.warn { color: var(--warn); } .st.off { color: var(--off); }
+  .unv { font-size: 12px; font-weight: 700; color: var(--warn); }
+  .title { margin: 3px 0 4px; font-size: 15px; font-weight: 700; line-height: 1.5; }
+  .title a { color: var(--ink); text-decoration: none; }
+  .title a:hover { text-decoration: underline; color: var(--accent); }
+  .kvs { display: flex; flex-wrap: wrap; gap: 2px 16px; font-size: 12.5px; color: var(--ink); }
+  .kv b { font-weight: 400; color: var(--muted); margin-right: 5px; }
+  .foot { margin-top: 5px; font-size: 11.5px; color: var(--muted); }
+
+  details.undated { margin-top: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 14px; }
+  details.undated summary { cursor: pointer; font-weight: 700; }
+  details.undated .card { margin-top: 8px; }
+
+  /* ---- 告知文パネル ---- */
+  .composer {
+    position: sticky; top: 14px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 14px; display: grid; gap: 10px;
+    max-height: calc(100vh - 28px); overflow: auto;
+  }
+  .composer h2 { margin: 0; font-size: 15px; }
+  .composer .hint { margin: 0; color: var(--muted); font-size: 12px; }
+  .picked { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; max-height: 150px; overflow: auto; }
+  .picked li { display: flex; gap: 8px; align-items: baseline; font-size: 12.5px; border-bottom: 1px solid #eef1f5; padding-bottom: 3px; }
+  .picked li span.d { color: var(--muted); font-variant-numeric: tabular-nums; flex: none; }
+  .picked li span.t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .picked button { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 0 4px; font-size: 16px; line-height: 1; }
+  .opts { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; }
+  .opts label { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+  .field { display: grid; gap: 3px; font-size: 12px; color: var(--muted); }
+  .field input[type="text"] { border: 1px solid var(--line); border-radius: var(--radius); padding: 5px 8px; color: var(--ink); background: #fff; width: 100%; }
+  #out { width: 100%; min-height: 280px; resize: vertical; border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; line-height: 1.7; background: #fbfcfd; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .btn { border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: var(--radius); padding: 7px 16px; cursor: pointer; font-weight: 700; }
+  .btn:hover { background: #0b6871; }
+  .btn.ghost { background: #fff; color: var(--accent); font-weight: 400; }
+  .btn.ghost:hover { background: var(--accent-soft); }
+  .btn:disabled { opacity: .45; cursor: default; }
+  #status { font-size: 12.5px; color: var(--ok); min-height: 1.4em; }
+  #dirtyNote { font-size: 12px; color: var(--warn); }
+  .closebtn { display: none; }
+  #fab { display: none; }
+  .disclaimer { color: var(--muted); font-size: 12px; padding: 0 20px 28px; }
+
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: minmax(0, 1fr); padding: 12px 12px 90px; }
+    .top, .filters { padding-left: 12px; padding-right: 12px; }
+    .monthnav { margin-left: 0; width: 100%; justify-content: space-between; }
+    .day { grid-template-columns: 56px minmax(0, 1fr); }
+    .rail .num { font-size: 24px; }
+    .cards { padding-left: 8px; }
+    .composer {
+      position: fixed; left: 0; right: 0; bottom: 0; top: auto; max-height: 88vh; border-radius: 12px 12px 0 0;
+      transform: translateY(105%); z-index: 20; box-shadow: 0 -8px 30px rgba(0,0,0,.25);
+    }
+    body.open .composer { transform: none; }
+    .closebtn { display: inline-block; justify-self: end; }
+    #fab {
+      display: block; position: fixed; right: 14px; bottom: 14px; z-index: 15; border: 0; border-radius: 999px;
+      background: var(--accent); color: #fff; padding: 12px 20px; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,.3);
+    }
+    body.open #fab { display: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @media (max-width: 960px) { .composer { transition: transform .18s ease-out; } }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>Vet Seminar Radar — 獣医系セミナー情報</h1>
+    <p class="sub" id="updated"></p>
+  </div>
+  <nav class="monthnav" aria-label="月の切り替え">
+    <button class="iconbtn" id="prev" aria-label="前の月">◀</button>
+    <div class="label" id="monthLabel" aria-live="polite"></div>
+    <button class="iconbtn" id="next" aria-label="次の月">▶</button>
+    <button class="textbtn" id="today">今月</button>
+  </nav>
+</header>
+<div id="banner"></div>
+
+<section class="filters" aria-label="絞り込み">
+  <div class="group"><span class="gl">職種</span>
+    <div class="seg" id="fAud"></div></div>
+  <div class="group"><span class="gl">地域</span>
+    <div class="seg" id="fRegion"></div></div>
+  <div class="group"><span class="gl">形式</span>
+    <label class="chk"><input type="checkbox" id="fOnsite" checked>現地</label>
+    <label class="chk"><input type="checkbox" id="fLive" checked>ライブ配信</label>
+    <label class="chk"><input type="checkbox" id="fOnd">オンデマンド</label></div>
+  <div class="group"><span class="gl">分野</span><select id="fTopic" aria-label="分野"></select></div>
+  <div class="group"><span class="gl">主催</span><select id="fOrg" aria-label="主催"></select></div>
+  <label class="chk"><input type="checkbox" id="fFree">無料のみ</label>
+  <label class="chk"><input type="checkbox" id="fHidePast" checked>終了を隠す</label>
+  <label class="chk"><input type="checkbox" id="fGeneral">一般向けも表示</label>
+  <input type="search" id="fQ" placeholder="キーワード" aria-label="キーワード検索">
+</section>
+
+<div class="layout">
+  <main id="list" aria-label="セミナー一覧"></main>
+
+  <aside class="composer" id="composer" aria-label="告知文の作成">
+    <button class="btn ghost closebtn" id="closeComposer">閉じる</button>
+    <h2>告知文を作る（<span id="selCount">0</span>件を選択中）</h2>
+    <p class="hint">一覧のチェックボックスで選ぶと、日付順の文面ができます。月をまたいで選べます。</p>
+    <ul class="picked" id="picked"></ul>
+    <div class="opts" role="group" aria-label="載せる項目">
+      <label><input type="checkbox" id="oEmoji" checked>絵文字</label>
+      <label><input type="checkbox" id="oOrg" checked>主催</label>
+      <label><input type="checkbox" id="oAud" checked>対象</label>
+      <label><input type="checkbox" id="oPrice" checked>受講料</label>
+      <label><input type="checkbox" id="oDeadline" checked>申込締切</label>
+    </div>
+    <label class="field">見出し（空欄なら自動）<input type="text" id="tHead" placeholder="例: 11月のセミナー情報（2026年11月）"></label>
+    <label class="field">案内の一言<input type="text" id="tIntro"></label>
+    <label class="field">末尾の注意書き<input type="text" id="tNote"></label>
+    <textarea id="out" aria-label="告知文（直接編集できます）" spellcheck="false"></textarea>
+    <div id="dirtyNote" hidden>文面を手で編集したため、選択や項目を変えても自動では更新しません。</div>
+    <div class="actions">
+      <button class="btn" id="copy" disabled>文面をコピー</button>
+      <button class="btn ghost" id="regen">自動作成に戻す</button>
+      <button class="btn ghost" id="clear">選択を全部外す</button>
+      <span id="status" role="status"></span>
+    </div>
+  </aside>
+</div>
+<button id="fab">告知文を作る（<span id="fabCount">0</span>）</button>
+<p class="disclaimer">一覧はAIが各サイトの本文から抽出したものです。日時・料金・受付状況は取得時点の情報で、誤りを含む可能性があります。告知する前に、必ず原典のページで確認してください。</p>
+
+<script id="payload" type="application/json">{"generated": "2026-11-06 14:49 JST", "demo": false, "sources_summary": "", "events": [], "run_status": {"checked_at_jst": null, "mode": "not_run", "total_events": 0, "source_results": [], "warnings": ["最初の巡回は未実施です。Actionsから実行してください。"]}}</script>
+<script>
+(function () {
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("payload").textContent);
+  var EVENTS = DATA.events || [];
+  var BYID = {}; EVENTS.forEach(function (e) { BYID[e.id] = e; });
+  var WD = ["日", "月", "火", "水", "木", "金", "土"];
+  var KANTO = ["東京都", "神奈川県", "埼玉県", "千葉県", "茨城県", "栃木県", "群馬県", "静岡県"];
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---------- 保存 ---------- */
+  function load(key, fallback) {
+    try { var v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); } catch (e) { return fallback; }
+  }
+  function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { /* 保存できなくても動作は続ける */ } }
+
+  var sel = new Set(load("sr.sel", []).filter(function (id) { return BYID[id]; }));
+  var opt = Object.assign({ emoji: true, org: true, aud: true, price: true, deadline: true,
+    head: "", intro: "気になるものがあればご覧ください。",
+    note: "※日時・料金は変更されることがあります。必ずリンク先で最新情報をご確認ください。" }, load("sr.opt", {}));
+  var dirty = false;
+
+  var now = new Date();
+  var todayStr = ymd(now);
+  var cur = { y: now.getFullYear(), m: now.getMonth() + 1 };
+  var F = { aud: "all", region: "all" };
+
+  /* ---------- 日付ヘルパー ---------- */
+  function ymd(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function parse(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function md(s) { var d = parse(s); return (d.getMonth() + 1) + "/" + d.getDate(); }
+  function wd(s) { return WD[parse(s).getDay()]; }
+  function endOf(e) { return e.end_date || e.start_date; }
+  function monthKey(y, m) { return y + "-" + pad(m); }
+
+  /* ---------- 分類 ---------- */
+  function isOnline(e) { return e.format === "ライブ配信" || e.format === "オンデマンド"; }
+  function regionOf(e) {
+    if (isOnline(e)) return "online";
+    if (e.prefecture && KANTO.indexOf(e.prefecture) >= 0) return "kanto";
+    return "other";
+  }
+  function isGeneralOnly(e) {
+    var a = e.audience || [];
+    return a.length > 0 && a.every(function (x) { return x === "一般"; });
+  }
+  function audMatch(e, want) {
+    var a = e.audience || [];
+    if (a.length === 0) return true;
+    if (want === "獣医師") return a.indexOf("獣医師") >= 0;
+    return a.indexOf("動物看護師") >= 0 || a.indexOf("動物病院スタッフ") >= 0;
+  }
+  function isFree(e) { return e.is_free === true || /無料/.test(e.price || ""); }
+  function statusClass(s) {
+    if (!s) return "";
+    if (/終了|締切済|受付停止/.test(s)) return "off";
+    if (/満席|キャンセル待ち|残り|締切|あと/.test(s)) return "warn";
+    if (/受付中|申込受付|募集中/.test(s)) return "ok";
+    return "";
+  }
+  function norm(s) { return (s || "").normalize("NFKC").toLowerCase(); }
+
+  /* ---------- 絞り込み ---------- */
+  function passes(e) {
+    if (F.aud !== "all" && !audMatch(e, F.aud)) return false;
+    if (!$("fGeneral").checked && isGeneralOnly(e)) return false;
+    var f = e.format;
+    if (f === "オンデマンド" && !$("fOnd").checked) return false;
+    if (f === "ライブ配信" && !$("fLive").checked) return false;
+    if ((f === "現地" || f === "ハイブリッド" || !f) && !$("fOnsite").checked) return false;
+    if (F.region !== "all" && regionOf(e) !== F.region) return false;
+    var tp = $("fTopic").value; if (tp && (e.topics || []).indexOf(tp) < 0) return false;
+    var og = $("fOrg").value; if (og && e.organizer !== og && e.source !== og) return false;
+    if ($("fFree").checked && !isFree(e)) return false;
+    if ($("fHidePast").checked && e.start_date && endOf(e) < todayStr) return false;
+    var q = norm($("fQ").value).trim();
+    if (q) {
+      var hay = norm([e.title, e.venue, e.organizer, e.price, (e.topics || []).join(" ")].join(" "));
+      if (hay.indexOf(q) < 0) return false;
+    }
+    return true;
+  }
+
+  /* ---------- 一覧の描画 ---------- */
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function kv(label, value) {
+    var s = el("span", "kv"); s.appendChild(el("b", null, label)); s.appendChild(document.createTextNode(value)); return s;
+  }
+  function timeText(e) {
+    if (!e.start_time) return "";
+    return e.start_time + (e.end_time ? "〜" + e.end_time : "〜");
+  }
+
+  function card(e, contFlag) {
+    var lab = el("label", "card" + (sel.has(e.id) ? " sel" : "") + (e.start_date && endOf(e) < todayStr ? " past" : ""));
+    var cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = sel.has(e.id);
+    cb.setAttribute("aria-label", e.title + " を告知文に入れる");
+    cb.addEventListener("change", function () { toggle(e.id, cb.checked); lab.classList.toggle("sel", cb.checked); });
+    lab.appendChild(cb);
+    var body = el("div", "body");
+
+    var r1 = el("div", "row1");
+    var t = timeText(e); if (t) r1.appendChild(el("span", "time", t));
+    if (e.format) {
+      var cls = e.format === "ライブ配信" ? "f-live" : e.format === "オンデマンド" ? "f-ond" : e.format === "ハイブリッド" ? "f-hyb" : "f-site";
+      r1.appendChild(el("span", "badge " + cls, e.format));
+    }
+    if (e.status) r1.appendChild(el("span", "st " + statusClass(e.status), e.status));
+    if (e.first_seen) {
+      var days = Math.floor((parse(todayStr).getTime() - parse(e.first_seen).getTime()) / 86400000);
+      if (days >= 0 && days <= 7) r1.appendChild(el("span", "st ok", "NEW"));
+    }
+    if (!e.verified) {
+      var u = el("span", "unv", "⚠要確認"); u.title = "AIの抽出結果を原文と照合しきれませんでした。原典で必ず確認してください。"; r1.appendChild(u);
+    }
+    if (contFlag) r1.appendChild(el("span", "kv", "前月から継続"));
+    body.appendChild(r1);
+
+    var h = el("div", "title"); var a = el("a", null, e.title);
+    a.href = e.url || "#"; a.target = "_blank"; a.rel = "noopener noreferrer";
+    a.addEventListener("click", function (ev) { ev.stopPropagation(); });
+    h.appendChild(a); body.appendChild(h);
+
+    var kvs = el("div", "kvs");
+    var place = [e.prefecture, e.venue].filter(Boolean).join(" ");
+    if (place) kvs.appendChild(kv("会場", place));
+    if (e.organizer) kvs.appendChild(kv("主催", e.organizer));
+    if ((e.audience || []).length) kvs.appendChild(kv("対象", e.audience.join("・")));
+    var price = e.price || (e.is_free ? "無料" : "");
+    if (price) kvs.appendChild(kv("受講料", price));
+    if (e.deadline) kvs.appendChild(kv("申込締切", md(e.deadline) + "（" + wd(e.deadline) + "）"));
+    if ((e.topics || []).length) kvs.appendChild(kv("分野", e.topics.join("・")));
+    body.appendChild(kvs);
+
+    var foot = el("div", "foot");
+    var bits = ["取得元: " + (e.source || "不明")];
+    if ((e.also_listed || []).length) bits.push("他の掲載: " + e.also_listed.join("・"));
+    if (e.last_seen) bits.push("最終確認 " + md(e.last_seen));
+    foot.textContent = bits.join("　");
+    body.appendChild(foot);
+
+    lab.appendChild(body);
+    return lab;
+  }
+
+  function render() {
+    var mStart = monthKey(cur.y, cur.m) + "-01";
+    var last = new Date(cur.y, cur.m, 0).getDate();
+    var mEnd = monthKey(cur.y, cur.m) + "-" + pad(last);
+    $("monthLabel").textContent = cur.y + "年" + cur.m + "月";
+
+    var dated = [], undated = [];
+    EVENTS.forEach(function (e) {
+      if (!passes(e)) return;
+      if (!e.start_date) { undated.push(e); return; }
+      if (e.start_date <= mEnd && endOf(e) >= mStart) dated.push(e);
+    });
+    dated.sort(function (a, b) {
+      var ka = (a.start_date < mStart ? mStart : a.start_date), kb = (b.start_date < mStart ? mStart : b.start_date);
+      return ka < kb ? -1 : ka > kb ? 1 : ((a.start_time || "99") < (b.start_time || "99") ? -1 : 1);
+    });
+
+    var list = $("list"); list.textContent = "";
+    if (!dated.length) {
+      list.appendChild(el("div", "empty", "この月に表示できるセミナーがありません。絞り込みを緩めるか、別の月を選んでください。"));
+    }
+    var groups = {};
+    dated.forEach(function (e) {
+      var k = e.start_date < mStart ? mStart : e.start_date;
+      (groups[k] = groups[k] || []).push(e);
+    });
+    Object.keys(groups).sort().forEach(function (k) {
+      var d = parse(k), dow = d.getDay();
+      var day = el("section", "day");
+      var rail = el("div", "rail" + (dow === 6 ? " sat" : dow === 0 ? " sun" : ""));
+      rail.appendChild(el("div", "num", String(d.getDate())));
+      rail.appendChild(el("div", "wd", WD[dow]));
+      var multi = groups[k].filter(function (e) { return e.end_date && e.end_date > k; });
+      if (multi.length === 1) {
+        var ed = multi[0].end_date;
+        rail.appendChild(el("div", "to", "〜" + (ed.slice(0, 7) === k.slice(0, 7) ? parse(ed).getDate() : md(ed)) + "（" + wd(ed) + "）"));
+      }
+      day.appendChild(rail);
+      var cards = el("div", "cards");
+      groups[k].forEach(function (e) { cards.appendChild(card(e, e.start_date < mStart)); });
+      day.appendChild(cards);
+      list.appendChild(day);
+    });
+
+    if (undated.length) {
+      var det = document.createElement("details"); det.className = "undated";
+      det.appendChild(el("summary", null, "日程が分からないもの（" + undated.length + "件）"));
+      undated.forEach(function (e) { det.appendChild(card(e, false)); });
+      list.appendChild(det);
+    }
+  }
+
+  /* ---------- 選択と告知文 ---------- */
+  function toggle(id, on) {
+    if (on) sel.add(id); else sel.delete(id);
+    save("sr.sel", Array.from(sel));
+    refreshComposer();
+  }
+  function selectedEvents() {
+    return Array.from(sel).map(function (id) { return BYID[id]; }).filter(Boolean).sort(function (a, b) {
+      var sa = a.start_date || "9999", sb = b.start_date || "9999";
+      return sa < sb ? -1 : sa > sb ? 1 : ((a.start_time || "99") < (b.start_time || "99") ? -1 : 1);
+    });
+  }
+  function prefShort(p) { if (!p) return ""; if (p === "京都府") return "京都"; if (p === "北海道") return p; return p.replace(/[都府県]$/, ""); }
+  function placeOf(e) {
+    if (e.format === "ライブ配信") return "ライブ配信";
+    if (e.format === "オンデマンド") return "オンデマンド配信";
+    var loc = [prefShort(e.prefecture), e.venue].filter(Boolean).join("・");
+    if (e.format === "ハイブリッド") return (loc ? loc + "＋" : "") + "ライブ配信";
+    return loc;
+  }
+  function dateText(e) {
+    if (!e.start_date) return "日程未定";
+    var s = md(e.start_date) + "（" + wd(e.start_date) + "）";
+    if (e.end_date && e.end_date > e.start_date) {
+      var same = e.end_date.slice(0, 7) === e.start_date.slice(0, 7);
+      s += "〜" + (same ? parse(e.end_date).getDate() : md(e.end_date)) + "（" + wd(e.end_date) + "）";
+    }
+    return s;
+  }
+  function eventText(e) {
+    var multi = e.end_date && e.end_date > e.start_date;
+    var line1 = "■ " + dateText(e);
+    if (!multi && e.start_time) line1 += " " + e.start_time + (e.end_time ? "〜" + e.end_time : "〜");
+    var pl = placeOf(e); if (pl) line1 += "｜" + pl;
+    var lines = [line1, e.title];
+    var parts = [];
+    if (opt.org && e.organizer) parts.push("主催：" + e.organizer);
+    if (opt.aud && (e.audience || []).length) parts.push("対象：" + e.audience.join("・"));
+    if (opt.price) { var pr = e.price || (e.is_free ? "無料" : ""); if (pr) parts.push("受講料：" + pr); }
+    if (opt.deadline && e.deadline) parts.push("申込締切：" + md(e.deadline) + "（" + wd(e.deadline) + "）");
+    if (parts.length) lines.push(parts.join("／"));
+    if (e.url) lines.push(e.url);
+    return lines.join("\n");
+  }
+  function autoHeader(list) {
+    var keys = {};
+    list.forEach(function (e) { if (e.start_date) keys[e.start_date.slice(0, 7)] = 1; });
+    var ks = Object.keys(keys);
+    var base = "セミナー情報";
+    if (ks.length === 1) { var y = ks[0].slice(0, 4), m = +ks[0].slice(5); base = m + "月のセミナー情報（" + y + "年" + m + "月）"; }
+    return (opt.emoji ? "📢 " : "") + base;
+  }
+  function compose() {
+    var list = selectedEvents();
+    if (!list.length) return "";
+    var head = opt.head && opt.head.trim() ? ((opt.emoji ? "📢 " : "") + opt.head.trim()) : autoHeader(list);
+    var out = [head];
+    if (opt.intro && opt.intro.trim()) out.push(opt.intro.trim());
+    out.push("");
+    out.push(list.map(eventText).join("\n\n"));
+    if (opt.note && opt.note.trim()) { out.push(""); out.push(opt.note.trim()); }
+    return out.join("\n");
+  }
+
+  function refreshComposer(force) {
+    var list = selectedEvents();
+    $("selCount").textContent = list.length;
+    $("fabCount").textContent = list.length;
+    var ul = $("picked"); ul.textContent = "";
+    list.forEach(function (e) {
+      var li = el("li");
+      li.appendChild(el("span", "d", e.start_date ? md(e.start_date) : "未定"));
+      li.appendChild(el("span", "t", e.title));
+      var x = el("button", null, "×"); x.setAttribute("aria-label", e.title + " を外す");
+      x.addEventListener("click", function () { toggle(e.id, false); render(); });
+      li.appendChild(x); ul.appendChild(li);
+    });
+    if (!dirty || force) {
+      $("out").value = compose();
+      dirty = false; $("dirtyNote").hidden = true;
+    }
+    $("copy").disabled = !$("out").value.trim();
+  }
+
+  function copyText() {
+    var text = $("out").value;
+    var done = function () { flash("コピーしました。Larkに貼り付けてください。"); };
+    if (navigator.clipboard && window.isSecureContext !== false) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+    function fallback() {
+      var ta = $("out"); ta.focus(); ta.select();
+      try { document.execCommand("copy") ? done() : flash("コピーできませんでした。文面を選択して手動でコピーしてください。"); }
+      catch (e) { flash("コピーできませんでした。文面を選択して手動でコピーしてください。"); }
+    }
+  }
+  var flashTimer;
+  function flash(msg) { $("status").textContent = msg; clearTimeout(flashTimer); flashTimer = setTimeout(function () { $("status").textContent = ""; }, 4000); }
+
+  /* ---------- 初期化 ---------- */
+  function seg(container, items, key) {
+    items.forEach(function (it) {
+      var b = el("button", null, it[1]); b.type = "button"; b.dataset.v = it[0];
+      b.setAttribute("aria-pressed", String(F[key] === it[0]));
+      b.addEventListener("click", function () {
+        F[key] = it[0];
+        Array.prototype.forEach.call(container.children, function (c) { c.setAttribute("aria-pressed", String(c.dataset.v === F[key])); });
+        render();
+      });
+      container.appendChild(b);
+    });
+  }
+  function fillSelect(id, label, values) {
+    var s = $(id); s.appendChild(new Option(label, ""));
+    values.forEach(function (v) { s.appendChild(new Option(v, v)); });
+    s.addEventListener("change", render);
+  }
+  function uniq(arr) { return Array.from(new Set(arr.filter(Boolean))).sort(); }
+
+  function init() {
+    $("updated").textContent = "最終更新 " + (DATA.generated || "") + (DATA.sources_summary ? "　" + DATA.sources_summary : "");
+    var st = DATA.run_status || {};
+    if (!DATA.demo && st.warnings && st.warnings.length) {
+      var warn = el("div", "banner", "巡回の注意：" + st.warnings.join(" ／ "));
+      $("banner").appendChild(warn);
+    }
+    if (!DATA.demo && !EVENTS.length) {
+      $("banner").appendChild(el("div", "banner", "掲載情報はまだありません。収集が未実行、AIキー未設定、または該当イベントがない可能性があります。"));
+    }
+    if (DATA.demo) {
+      var b = el("div", "banner", "これはサンプル表示です。載っているセミナーは架空のもので、実際のデータではありません。");
+      $("banner").appendChild(b);
+    }
+    seg($("fAud"), [["all", "すべて"], ["獣医師", "獣医師"], ["動物看護師", "看護師"]], "aud");
+    seg($("fRegion"), [["all", "すべて"], ["kanto", "関東・静岡"], ["online", "オンライン"], ["other", "その他"]], "region");
+    var topics = []; EVENTS.forEach(function (e) { topics = topics.concat(e.topics || []); });
+    fillSelect("fTopic", "すべて", uniq(topics));
+    fillSelect("fOrg", "すべて", uniq(EVENTS.map(function (e) { return e.organizer || e.source; })));
+    ["fOnsite", "fLive", "fOnd", "fFree", "fHidePast", "fGeneral"].forEach(function (id) { $(id).addEventListener("change", render); });
+    $("fQ").addEventListener("input", render);
+
+    $("prev").addEventListener("click", function () { cur.m--; if (cur.m < 1) { cur.m = 12; cur.y--; } render(); });
+    $("next").addEventListener("click", function () { cur.m++; if (cur.m > 12) { cur.m = 1; cur.y++; } render(); });
+    $("today").addEventListener("click", function () { cur = { y: now.getFullYear(), m: now.getMonth() + 1 }; render(); });
+
+    var map = { oEmoji: "emoji", oOrg: "org", oAud: "aud", oPrice: "price", oDeadline: "deadline" };
+    Object.keys(map).forEach(function (id) {
+      $(id).checked = !!opt[map[id]];
+      $(id).addEventListener("change", function () { opt[map[id]] = $(id).checked; save("sr.opt", opt); refreshComposer(); });
+    });
+    [["tHead", "head"], ["tIntro", "intro"], ["tNote", "note"]].forEach(function (p) {
+      $(p[0]).value = opt[p[1]] || "";
+      $(p[0]).addEventListener("input", function () { opt[p[1]] = $(p[0]).value; save("sr.opt", opt); refreshComposer(); });
+    });
+    $("out").addEventListener("input", function () {
+      dirty = true; $("dirtyNote").hidden = false; $("copy").disabled = !$("out").value.trim();
+    });
+    $("copy").addEventListener("click", copyText);
+    $("regen").addEventListener("click", function () { refreshComposer(true); });
+    $("clear").addEventListener("click", function () { sel.clear(); save("sr.sel", []); dirty = false; render(); refreshComposer(true); });
+    $("fab").addEventListener("click", function () { document.body.classList.add("open"); });
+    $("closeComposer").addEventListener("click", function () { document.body.classList.remove("open"); });
+
+    render(); refreshComposer(true);
+  }
+  init();
+  window.__sr = { compose: compose, sel: sel, render: render, state: function () { return { cur: cur, F: F, opt: opt }; } };
+})();
+</script>
+</body>
+</html>

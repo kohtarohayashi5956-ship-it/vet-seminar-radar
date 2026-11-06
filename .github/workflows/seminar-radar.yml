@@ -1,0 +1,51 @@
+name: Vet Seminar Radar
+
+on:
+  schedule:
+    # 月・木曜日 06:00 JST（前日21:00 UTC）。サイト負荷とAPIコストを抑えるため週2回。
+    - cron: '0 21 * * 0,3'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vet-seminar-radar
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -q
+      # Extract cache is private GitHub Actions storage, NOT part of GitHub Pages or git history.
+      - name: Restore previous extraction cache
+        uses: actions/cache@v4
+        with:
+          path: data/extract_cache.json
+          key: extract-v1-${{ github.run_id }}
+          restore-keys: |
+            extract-v1-
+      - name: Fetch seminar listings and render website
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SEMINAR_RADAR_CONTACT: ${{ secrets.SEMINAR_RADAR_CONTACT }}
+        run: python run.py
+      - name: Validate public outputs
+        run: python validate_public.py
+      - name: Commit public digest and run status
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add index.html data/events.json data/run_status.json
+          git diff --staged --quiet || git commit -m "Update seminar digest $(date -u +%Y-%m-%d)"
+          git push
