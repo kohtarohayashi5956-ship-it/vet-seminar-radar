@@ -121,7 +121,29 @@ def _explicit_course_fee(lines):
         ]
         if not eligible:
             continue
-        price = "／".join(eligible[:3])[:300]
+        # Tabular prices must retain the explicitly printed audience tiers.
+        # Match only unique published table-header layouts and their row labels.
+        # All other formats stay in their original visible order.
+        whole = " ".join(values)
+        amounts = [m.group(0).replace(" ", "").replace("，", ",")
+                   for value in eligible for m in FEE_AMOUNT.finditer(value)]
+        price = None
+        if (all(word in whole for word in ("通常料金", "JAHA会員料金", "学生料金"))
+                and "一括申込" in whole and len(amounts) >= 3):
+            labels = ("一般", "JAHA会員", "学生")
+            pairs = ["一括" + (" " if i == 0 else "") + label + " " + amount
+                     for i, (label, amount) in enumerate(zip(labels, amounts[:3]))]
+            if "単回申込" in whole and len(amounts) >= 4:
+                pairs.append("単回（再受講） " + amounts[3])
+            price = "／".join(pairs)
+        elif (all(word in whole for word in ("JAHA会員", "会員外一般", "全5回一括", "単回申込"))
+              and len(amounts) >= 4):
+            price = ("全5回一括：JAHA会員 " + amounts[0] +
+                     "／一般 " + amounts[1] +
+                     "；単回：JAHA会員 " + amounts[2] +
+                     "／一般 " + amounts[3])
+        if not price:
+            price = "／".join(eligible[:3])[:300]
         explicitly_free = bool(
             len(eligible) == 1
             and re.fullmatch(r"無料|無料[（(][^）)]{1,35}[）)]", eligible[0])
