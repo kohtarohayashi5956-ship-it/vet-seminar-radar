@@ -1,7 +1,29 @@
 {
-  "checked_at_jst": "2026-11-07T16:33:09+09:00",
+  "checked_at_jst": "2026-11-07T17:21:06+09:00",
   "mode": "free_rules",
   "total_events": 82,
+  "data_quality": {
+    "total": 82,
+    "field_presence": {
+      "start_date": 81,
+      "start_time": 19,
+      "price": 14,
+      "deadline": 14,
+      "topics": 66,
+      "audience": 41,
+      "url": 82
+    },
+    "field_presence_pct": {
+      "start_date": 98.8,
+      "start_time": 23.2,
+      "price": 17.1,
+      "deadline": 17.1,
+      "topics": 80.5,
+      "audience": 50.0,
+      "url": 100.0
+    },
+    "note": "Field presence only; dates, prices and details are not independently verified."
+  },
   "source_results": [
     {
       "id": "jaha",
@@ -178,8 +200,8 @@
       "name": "日本愛玩動物看護師会",
       "pages": 1,
       "extracted": 1,
-      "added": 1,
-      "updated": 0,
+      "added": 0,
+      "updated": 1,
       "replaced_stale": 0,
       "details_scanned": 0,
       "details_accepted": 0,
@@ -195,8 +217,8 @@
       "name": "動物臨床医学会",
       "pages": 1,
       "extracted": 1,
-      "added": 1,
-      "updated": 0,
+      "added": 0,
+      "updated": 1,
       "replaced_stale": 0,
       "details_scanned": 0,
       "details_accepted": 0,
