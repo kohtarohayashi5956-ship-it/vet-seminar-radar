@@ -104,11 +104,15 @@ def _explicit_course_fee(lines):
             values.append(rest)
         # Real JAHA price tables can have multiple separate header/cell
         # lines between the section heading and the first amount.
-        for next_line in lines[index + 1:index + 17]:
-            if (FEE_STOP.match(next_line)
-                    or FEE_HEADING.match(next_line)
-                    or re.search(r"<https?://", next_line)):
+        for next_line in lines[index + 1:index + 35]:
+            if FEE_STOP.match(next_line) or FEE_HEADING.match(next_line):
                 break
+            # An unrelated navigation link is not a reason to read fees
+            # from another section. Skip links, but keep labelled prices.
+            if re.search(r"<https?://", next_line):
+                if FEE_AMOUNT.search(next_line):
+                    values.append(re.split(r"<https?://", next_line, maxsplit=1)[0])
+                continue
             values.append(next_line)
         eligible = [
             value for value in values
@@ -172,6 +176,49 @@ def _short_date_session_time(lines, start_date):
     return next(iter(candidates)) if len(candidates) == 1 else None
 
 
+def _date_from_numbered_course(lines, event):
+    """Corroborate a session using an explicit academic year and round/date.
+
+    This applies only to JAHA's published numbered schedule table; it does
+    not extrapolate dates from registration or cancellation prose.
+    """
+    title = event.get("title") or ""
+    date_str = event.get("start_date")
+    round_match = re.search(r"第\s*([1-9])\s*回", unicodedata.normalize("NFKC", title))
+    if not round_match or not date_str:
+        return False
+    try:
+        target = datetime.date.fromisoformat(date_str)
+    except ValueError:
+        return False
+    round_num = round_match.group(1)
+    year_heading = next((int(m.group(1)) for line in lines
+                         if (m := re.search(r"(20\d{2})年度(?:開催スケジュール|講座内容)", line))), None)
+    if year_heading is None:
+        return False
+    if not (target.year == year_heading or target.year == year_heading + 1):
+        return False
+    occurrences = []
+    for i, line in enumerate(lines):
+        if not re.match(rf"^第\s*{round_num}\s*回(?:\s|\||$)", line):
+            continue
+        # Include short, split table-cell date; stop at another numbered round.
+        scope = " ".join(lines[i:min(len(lines), i+4)])
+        if re.search(r"受付|キャンセル|申込締切", scope):
+            continue
+        matched = re.search(
+            r"(?<!\d)(1[0-2]|0?[1-9])\s*月\s*(3[01]|[12]\d|0?[1-9])"
+            r"\s*(?:[～〜~-]\s*(?:3[01]|[12]\d|0?[1-9]))?\s*日", scope
+        )
+        if not matched:
+            continue
+        month, day = map(int, matched.groups())
+        year = year_heading + (month < 4)
+        if (year, month, day) == (target.year, target.month, target.day):
+            occurrences.append(scope)
+    return len(occurrences) == 1
+
+
 def parse_jaha_detail(text, event):
     start_date = event.get("start_date")
     if not start_date:
@@ -186,7 +233,9 @@ def parse_jaha_detail(text, event):
         and not EXCLUDE.search(line)
         and start_date in _dates(line)
     ]
-    if not schedule_matches and not _short_date_session_time(lines, start_date):
+    if (not schedule_matches
+            and not _short_date_session_time(lines, start_date)
+            and not _date_from_numbered_course(lines, event)):
         return {}
     out = {}
     deadline = _registration_deadline(lines, start_date)
