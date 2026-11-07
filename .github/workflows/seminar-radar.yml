@@ -14,7 +14,13 @@ on:
       - 'sources.py'
       - 'merge.py'
       - 'run.py'
+      - 'config.py'
+      - 'quality.py'
+      - 'extract.py'
+      - 'render.py'
+      - '*_enrich.py'
       - 'template.html'
+      - 'data/manual_events.csv'
       - '.github/workflows/seminar-radar.yml'
       - 'tests/**'
 
@@ -64,15 +70,15 @@ jobs:
           if ! git diff --staged --quiet; then
             git commit -m "Update seminar digest $(date -u +%Y-%m-%d)"
           fi
-          # A code change may land while this 2-4 minute crawl is running.
-          # Rebase generated outputs on the new head instead of rejecting
-          # the push, and NEVER force-push or silently discard conflicts.
+          # Each code push queues its own collection run. If main changed
+          # while this run crawled, its output is stale by definition.
+          # Never rebase stale generated JSON/HTML over a newer code version.
+          # A queued run on the latest main will publish the current digest.
           for attempt in 1 2 3; do
             git fetch origin main
-            if ! git rebase origin/main; then
-              git rebase --abort || true
-              echo "::error::Updated source conflicts with generated digest; keeping published data unchanged."
-              exit 1
+            if [ "$(git rev-parse origin/main)" != "$GITHUB_SHA" ]; then
+              echo "::notice::Main changed during crawl; discarding this stale digest. Latest queued run will publish fresh data."
+              exit 0
             fi
             if git push origin HEAD:main; then
               exit 0
