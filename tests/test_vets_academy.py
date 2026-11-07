@@ -58,6 +58,8 @@ class AcademyListingTests(unittest.TestCase):
         events = extract_free("VETS ACADEMY", PAGE, "", text, TODAY, {})
         self.assertEqual(len(events), 3)
         first, live, onsite = events
+        self.assertEqual(first["url"], "https://academy.eduone.jp/seminar/detail/10201")
+        self.assertFalse(first["url_is_page"])
         self.assertEqual(first["start_date"], "2026-12-21")
         self.assertEqual(first["end_date"], "2027-02-15")
         self.assertEqual(first["format"], "オンデマンド")
