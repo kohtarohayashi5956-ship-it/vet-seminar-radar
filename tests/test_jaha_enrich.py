@@ -42,6 +42,41 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertEqual(out["start_time"], "14:00")
         self.assertEqual(out["end_time"], "17:00")
 
+    def test_jaha_fee_table_with_split_labels_and_cell_rows(self):
+        page = (
+            "2026年11月7日 開催\n"
+            "受講料・お申込み <https://www.jaha.or.jp/#fee>\n"
+            "受講料(税込)\n"
+            "JAHA会員\n会員外一般\n学生\n"
+            "申し込み区分\nオンライン受講料金\n"
+            "全5回一括\n19,800円\n27,500円\n"
+            "単回申込\n4,950円\n7,150円\n"
+            "お申込み\n"
+        )
+        out = parse_jaha_detail(page, event())
+        self.assertIn("19,800円", out["price"])
+        self.assertIn("27,500円", out["price"])
+        self.assertNotIn("is_free", out)
+
+    def test_jaha_fee_navigation_only_is_not_a_fee_section(self):
+        page = (
+            "2026年11月7日 開催\n"
+            "受講料・お申込 <https://www.jaha.or.jp/#fees>\n"
+            "キャンセル規定\n手数料1,000円\n"
+        )
+        out = parse_jaha_detail(page, event())
+        self.assertNotIn("price", out)
+
+    def test_jaha_fee_cannot_capture_cancellation_after_heading(self):
+        page = (
+            "2026年11月7日 開催\n"
+            "受講料（税込）\n"
+            "本講座の料金はお問い合わせください\n"
+            "キャンセル規定\n手数料1,000円\n"
+        )
+        out = parse_jaha_detail(page, event())
+        self.assertNotIn("price", out)
+
     def test_jaha_fee_requires_matching_course_date(self):
         self.assertEqual(parse_jaha_detail(PAGE, event("2026-11-08")), {})
 
