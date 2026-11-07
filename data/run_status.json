@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-07T23:10:55+09:00",
+  "checked_at_jst": "2026-11-07T23:41:21+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
@@ -481,7 +481,7 @@
       "added": 0,
       "updated": 8,
       "replaced_stale": 0,
-      "details_scanned": 2,
+      "details_scanned": 5,
       "details_accepted": 0,
       "deadlines_found": 0,
       "prices_found": 0,
