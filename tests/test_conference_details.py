@@ -46,6 +46,48 @@ class TestConferenceDetails(unittest.TestCase):
         self.assertIsNone(_jbvp_detail_url("第7回 名古屋地区大会","2028-03-05"))
         self.assertIsNone(_jbvp_detail_url("第29回 年次大会2027","2027-09-25"))
 
+    def test_jbvp_region_venue_from_exact_listing_card(self):
+        text = (
+            "第7回 名古屋地区大会\n"
+            "日程：\n2027年2月28日(日)\n"
+            "会場：\nウインクあいち（愛知県産業労働センター）\n"
+            "第20回 京都地区大会\n"
+            "日程：2027年3月7日(日)\n"
+            "会場：TKPガーデンシティ京都タワーホテル\n"
+            "第23回 九州地区大会\n"
+            "日程：\n2027年3月21日(日)\n"
+            "会場：\n福岡国際会議場\n"
+        )
+        events = extract_free("JBVP", "https://www.jbvp.org/vn/", "", text, NOW, {})
+        self.assertEqual(len(events), 3)
+        venues = {e["start_date"]: e["venue"] for e in events}
+        self.assertEqual(venues["2027-02-28"], "ウインクあいち(愛知県産業労働センター)")
+        self.assertEqual(venues["2027-03-07"], "TKPガーデンシティ京都タワーホテル")
+        self.assertEqual(venues["2027-03-21"], "福岡国際会議場")
+
+    def test_jbvp_venue_not_borrowed_from_next_meeting(self):
+        text = (
+            "第7回 名古屋地区大会\n"
+            "日程：2027年2月28日(日)\n"
+            "第20回 京都地区大会\n"
+            "日程：2027年3月7日(日)\n"
+            "会場：TKPガーデンシティ京都タワーホテル\n"
+        )
+        events = extract_free("JBVP", "https://www.jbvp.org/vn/", "", text, NOW, {})
+        self.assertEqual(len(events), 2)
+        self.assertIsNone(events[0]["venue"])
+        self.assertEqual(events[1]["venue"], "TKPガーデンシティ京都タワーホテル")
+
+    def test_jbvp_venue_rejected_without_date_label(self):
+        text = (
+            "第7回 名古屋地区大会\n"
+            "2027年2月28日(日)\n"
+            "会場：ウインクあいち\n"
+        )
+        events = extract_free("JBVP", "https://www.jbvp.org/vn/", "", text, NOW, {})
+        self.assertEqual(len(events), 1)
+        self.assertIsNone(events[0]["venue"])
+
     def test_jbvp_link_survives_extraction_and_store(self):
         text="第7回 名古屋地区大会\n日程：\n2027年2月28日(日)\n会場：ウインクあいち"
         e=extract_free("JBVP","https://www.jbvp.org/vn/","",text,NOW,{})
