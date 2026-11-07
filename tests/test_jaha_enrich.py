@@ -58,6 +58,44 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertIn("27,500円", out["price"])
         self.assertNotIn("is_free", out)
 
+    def test_jaha_member_student_tiers_keep_correct_labels(self):
+        page = (
+            "2026年度開催スケジュール\n"
+            "第3回 | 12月1～7日 | 子犬のケア\n"
+            "受講料(税込)\n"
+            "通常料金 | JAHA会員料金 | 学生料金\n"
+            "一括申込 | 59,400円 | 52,800円 | 29,700円\n"
+            "単回申込（再受講者向け） | 8,800円\n"
+            "お申込み\n"
+        )
+        item = event("2026-12-01",
+                     "https://www.jaha.or.jp/training/seminar/puppy/basic/")
+        item["title"] = "ベーシックコース第3回"
+        got = parse_jaha_detail(page, item)["price"]
+        self.assertIn("一般 59,400円", got)
+        self.assertIn("JAHA会員 52,800円", got)
+        self.assertIn("学生 29,700円", got)
+        self.assertIn("単回（再受講） 8,800円", got)
+
+    def test_jaha_senior_care_fee_tiers_retain_one_off_and_series(self):
+        page = (
+            "2026年度 講座内容（全5回）\n"
+            "第2回 | がんとケア | 12月9日 14:00-17:00\n"
+            "受講料(税込)\n"
+            "JAHA会員 | 会員外一般\n"
+            "全5回一括 | 19,800円 | 27,500円\n"
+            "単回申込 | 4,950円 | 7,150円\n"
+            "お申込\n"
+        )
+        item = event("2026-12-09",
+                     "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "シニアケア講座・第2回"
+        got = parse_jaha_detail(page, item)["price"]
+        self.assertIn("全5回一括：JAHA会員 19,800円", got)
+        self.assertIn("一般 27,500円", got)
+        self.assertIn("単回：JAHA会員 4,950円", got)
+        self.assertIn("一般 7,150円", got)
+
     def test_jaha_fee_navigation_only_is_not_a_fee_section(self):
         page = (
             "2026年11月7日 開催\n"
