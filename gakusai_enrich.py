@@ -42,7 +42,8 @@ def parse_gakusai(text, event):
                        ["来場受講料", "ウェブ受講料", "開催にあたって"], 28)
     start = event.get("start_date")
     idx = next((i for i, ln in enumerate(schedule)
-                if start and start in _dates(ln)), None)
+                if start and _dates(ln) == [start]
+                and len(re.findall(r"\d{1,2}月\d{1,2}日", ln)) == 1), None)
     if idx is None:
         return {}
     date_line = schedule[idx]
@@ -50,9 +51,9 @@ def parse_gakusai(text, event):
     if event.get("start_time") and t1 and event["start_time"] != t1:
         return {}
     out = {}
-    if t1:
+    if t1 and not event.get("start_time"):
         out["start_time"] = t1
-    if t2:
+    if t2 and not event.get("end_time"):
         out["end_time"] = t2
     if event.get("format") not in ("ライブ配信", "オンデマンド"):
         out["format"] = "現地"
@@ -83,8 +84,9 @@ def parse_gakusai(text, event):
                 if value not in prices:
                     prices.append(value)
         if prices:
-            out["price"] = "／".join(prices[:3])
-            out["is_free"] = None
+            if not event.get("price"):
+                out["price"] = "／".join(prices[:3])
+                out["is_free"] = None
     # Do not equate cancellation deadlines with registration deadlines.
     return out
 
@@ -109,9 +111,12 @@ def enrich_gakusai(events, fetcher, today, stats):
         details = parse_gakusai(fetched[url], event)
         if not details:
             continue
-        previous = (event.get("price"), event.get("start_time"), event.get("venue"))
+        previous = (event.get("price"), event.get("start_time"), event.get("end_time"),
+                    event.get("venue"), event.get("prefecture"), event.get("format"))
         event.update(details)
-        accepted += previous != (event.get("price"), event.get("start_time"), event.get("venue"))
+        current = (event.get("price"), event.get("start_time"), event.get("end_time"),
+                   event.get("venue"), event.get("prefecture"), event.get("format"))
+        accepted += previous != current
         prices += bool(details.get("price"))
         times += bool(details.get("start_time"))
     stats["details_scanned"] = len(fetched)
