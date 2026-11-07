@@ -359,6 +359,9 @@ def vets_academy_pages(src, fetcher):
                          kind=kind, audiences=audiences,
                          status=status, free=free)
         lines.append("ACADEMY_CARD " + json.dumps(card_data, ensure_ascii=False))
+        # Preserve the exact official URL in the standard <URL> evidence
+        # format expected by extract.validate(); JSON alone is insufficient.
+        lines.append("OFFICIAL_LINK <" + link + ">")
     yield url, "\n".join(lines), "VETS ACADEMY公式・講習カードごとの開催日または配信期間。"
 
 
