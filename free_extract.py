@@ -277,13 +277,13 @@ def _gakusai(text,page,today):
         # An unlinked "詳細はこちら" is not evidence of a published detail page.
         detail = None
         for candidate in seg:
-            m = re.search(r"(?:»|›|>)\\s*詳細はこちら\\s*<(https?://[^>\\s]+)>", candidate)
+            m = re.search(r"(?:»|›|>)\s*詳細はこちら\s*<(https?://[^>\s]+)>", candidate)
             if not m:
                 continue
             u = urlparse(m.group(1))
             if (u.scheme == "https"
                     and u.hostname in ("www.gakusai.co.jp", "gakusai.co.jp")
-                    and re.fullmatch(r"/vet/vet-seminar/\\d+/?", u.path)):
+                    and re.fullmatch(r"/vet/vet-seminar/\d+/?", u.path)):
                 detail = m.group(1)
                 break
         date_line=next((s for s in seg[1:8] if MONTH_DAY.search(s) and not s.startswith("No.")),"")
