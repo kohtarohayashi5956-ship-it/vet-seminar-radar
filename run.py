@@ -213,6 +213,7 @@ def main(argv):
                        "deadlines_found": stats.get("deadlines_found", 0),
                        "prices_found": stats.get("prices_found", 0),
                        "times_found": stats.get("times_found", 0),
+                       "venues_found": stats.get("venues_found", 0),
                        "detail_fetch_failed": stats.get("detail_fetch_failed", 0),
                        "status": ("error" if note.startswith(("取得", "エラー")) else "empty") if note else ("empty" if not pages else "ok"),
                        "note": note[:250] if note else ("対象ページなし" if not pages else "")})
