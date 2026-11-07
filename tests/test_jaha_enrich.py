@@ -229,6 +229,41 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertEqual(out["price"], "一般10,000円")
         self.assertNotIn("is_free", out)
 
+    def test_jaha_dog_lecture_full_course_and_single_price_tiers(self):
+        text = (
+            "講義３オンライン\n"
+            "２０２６年１１月７日（土）１１月１４日（土）の２回に分けて配信\n"
+            "パート１ １１月７日 14:00-17:00\n"
+            "パート２ １１月１４日 14:00-17:00\n"
+            "備考\n"
+            "動物病院スタッフのみ単発受講可能\n"
+            "受講料\n"
+            "（２回通し料金・税込）\n"
+            "通常受講：一般料金19,800円、JAHA会員16,500円、学生料金9,900円\n"
+            "単発受講：一般料金22,000円、JAHA会員18,700円\n"
+            "お申し込み\n"
+        )
+        for day in ("2026-11-07", "2026-11-14"):
+            result = parse_jaha_detail(text, event(day))
+            price = result["price"]
+            self.assertIn("2回通し：一般 19,800円", price)
+            self.assertIn("JAHA会員 16,500円", price)
+            self.assertIn("学生 9,900円", price)
+            self.assertIn("単発：一般 22,000円", price)
+            self.assertIn("JAHA会員 18,700円", price)
+            self.assertNotIn("is_free", result)
+
+    def test_jaha_dog_lecture_does_not_use_just_the_note_fee(self):
+        text = (
+            "2026年11月7日 14:00-17:00 開催\n"
+            "備考\n単発受講（会員18,700円／一般22,000円）\n"
+            "受講料\n"
+            "通常受講：一般料金19,800円、JAHA会員16,500円\n"
+            "お申し込み\n"
+        )
+        got = parse_jaha_detail(text, event())
+        self.assertNotIn("単発：", got.get("price", ""))
+
     def test_jaha_explicit_inline_paid_fee(self):
         text = ("2026年11月7日 14:00〜17:00 開催\n"
                 "受講料：会員5,000円、一般8,000円\n")
