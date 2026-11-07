@@ -452,6 +452,11 @@ def _peppy(text, page, today, stats):
         if not m:
             continue
         kind, label, url = m.groups()
+        parsed = urlparse(url)
+        if (parsed.scheme != "https"
+                or parsed.hostname not in ("peppy.jp", "www.peppy.jp")
+                or not re.fullmatch(r"/seminar/\d+/?", parsed.path)):
+            continue
         found = list(YMD.finditer(label))
         if not found:
             continue
