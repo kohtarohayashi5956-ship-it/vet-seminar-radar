@@ -73,7 +73,10 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertTrue(out["is_free"])
 
     def test_registration_range_start_and_explicit_end(self):
-        self.assertEqual(parse_jaha_detail(PAGE,event()),{"deadline":"2026-11-04"})
+        self.assertEqual(parse_jaha_detail(PAGE,event()), {
+            "deadline": "2026-11-04",
+            "price": "通常受講:一般料金19,800円、JAHA会員16,500円",
+        })
 
     def test_explicit_single_date_schedule_times(self):
         text = ("2026年11月7日 14:00〜17:00 開催\n"
