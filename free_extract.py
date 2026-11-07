@@ -687,14 +687,15 @@ def _jbvp(text, page, today, stats):
         seen.add(k)
         e = _event(line, start, page, page, block, "JBVP", end=_range_end(block, start))
         e["topics"] = ["学会・大会"]
-        venue = _jbvp_listing_venue(fragment, start)
-        if venue:
-            e["venue"] = venue
+        online = "オンライン" in line or "オンライン配信" in block
+        e["format"] = "オンデマンド" if online else "現地"
+        # 配信方法・配信場所を実在する物理会場として登録しない。
+        # Official physical meeting venues are extracted only for onsite cards.
+        if not online:
+            venue = _jbvp_listing_venue(fragment, start)
+            if venue and not re.fullmatch(r"(?:オンライン|オンライン配信|WEB|Web|Zoom|ウェブ配信|配信のみ)", venue, re.I):
+                e["venue"] = venue
         e["detail_url"] = _jbvp_detail_url(line, start)
-        if "オンライン" in line or "オンライン配信" in block:
-            e["format"] = "オンデマンド"
-        else:
-            e["format"] = "現地"
         out.append(e)
     stats["jbvp_meetings"] = len(out)
     return out
