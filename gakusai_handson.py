@@ -73,7 +73,8 @@ def _courses(text):
             continue
         dates = []
         applications = {}
-        for line in segment[marker + 1:]:
+        application_lines = segment[marker + 1:]
+        for position, line in enumerate(application_lines):
             if "会場申込" not in line:
                 continue
             m = MONTHDAY.search(line)
@@ -90,6 +91,12 @@ def _courses(text):
                 # The actual booking URL must occur in THIS dated venue row.
                 # Never invent one or accept unrelated/external domains.
                 link = re.search(r"<(https://[^<>\s]+)>", line)
+                if not link and position + 1 < len(application_lines):
+                    following = application_lines[position + 1]
+                    # html_to_text may put an anchor label + URL on the
+                    # immediately next line. Only a booking label is eligible.
+                    if ("会場申込" in following or following.startswith("申込先")):
+                        link = re.search(r"<(https://[^<>\s]+)>", following)
                 if link:
                     try:
                         parsed = urlsplit(link.group(1))
