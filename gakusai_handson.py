@@ -9,6 +9,7 @@ import datetime
 import difflib
 import re
 import unicodedata
+from urllib.parse import urlsplit
 
 from extract import html_to_text
 from free_extract import _dates
@@ -71,6 +72,7 @@ def _courses(text):
         if set(fees) != {"会員", "一般"}:
             continue
         dates = []
+        applications = {}
         for line in segment[marker + 1:]:
             if "会場申込" not in line:
                 continue
@@ -85,10 +87,22 @@ def _courses(text):
             city = next((name for name in CITY if name in line), None)
             if city:
                 dates.append((date, city))
+                # The actual booking URL must occur in THIS dated venue row.
+                # Never invent one or accept unrelated/external domains.
+                link = re.search(r"<(https://[^<>\s]+)>", line)
+                if link:
+                    try:
+                        parsed = urlsplit(link.group(1))
+                    except ValueError:
+                        parsed = None
+                    if (parsed and parsed.hostname == "seminar.gakusai.co.jp"
+                            and parsed.username is None and parsed.password is None
+                            and parsed.path.startswith("/")):
+                        applications[(date, city)] = link.group(1)
         if not dates:
             continue
         blocks.append(dict(id=match.group(1), title=title,
-                           dates=dates, fees=fees))
+                           dates=dates, applications=applications, fees=fees))
     # A course may have several nav anchors or repeated markup fragments.
     return list({x["id"]: x for x in blocks}.values())
 
@@ -151,10 +165,15 @@ def enrich_handson(events, fetcher, today, stats):
         event["is_free"] = None
         if not event.get("format"):
             event["format"] = "現地"
+        selected_city = city or matches[0][1]
         if not event.get("prefecture"):
-            selected_city = city or matches[0][1]
             event["prefecture"] = {"東京":"東京都","大阪":"大阪府",
                                    "宮崎":"宮崎県","福岡":"福岡県"}[selected_city]
+        application = course["applications"].get((event["start_date"], selected_city))
+        if application and not event.get("detail_url"):
+            event["detail_url"] = application
+            stats["handson_applications_found"] = (
+                stats.get("handson_applications_found", 0) + 1)
         added += 1
     stats["handson_pages"] = 1
     stats["handson_course_cards"] = len(courses)
