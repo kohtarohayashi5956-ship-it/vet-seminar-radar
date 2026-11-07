@@ -219,6 +219,41 @@ def _date_from_numbered_course(lines, event):
     return len(occurrences) == 1
 
 
+def _numbered_course_time(lines, event):
+    """Use only a uniquely dated row of an explicitly year-anchored course."""
+    if not _date_from_numbered_course(lines, event):
+        return None
+    target = datetime.date.fromisoformat(event["start_date"])
+    title = unicodedata.normalize("NFKC", event.get("title") or "")
+    match = re.search(r"第\s*([1-9])\s*回", title)
+    if not match:
+        return None
+    n = match.group(1)
+    schedules = set()
+    for i, line in enumerate(lines):
+        if not re.match(rf"^第\s*{n}\s*回(?:\s|\||$)", line):
+            continue
+        for nxt in lines[i:min(len(lines), i+4)]:
+            if nxt != line and re.match(r"^第\s*[1-9]\s*回(?:\s|\||$)", nxt):
+                break
+            if REGISTRATION.match(nxt) or EXCLUDE.search(nxt):
+                continue
+            dates = _dates(nxt)
+            short = SHORT.findall(nxt)
+            # Exactly one same-day date must appear WITH its time range.
+            if len(short) != 1:
+                continue
+            mon, day = map(int, short[0])
+            if (mon, day) != (target.month, target.day):
+                continue
+            if dates and dates != [target.isoformat()]:
+                continue
+            first, last = _times(nxt)
+            if first and last:
+                schedules.add((first, last))
+    return next(iter(schedules)) if len(schedules) == 1 else None
+
+
 def parse_jaha_detail(text, event):
     start_date = event.get("start_date")
     if not start_date:
@@ -258,10 +293,13 @@ def parse_jaha_detail(text, event):
         if t1 and t2:
             matches.append((t1, t2))
     session_time = _short_date_session_time(lines, start_date)
-    # If both fully dated and short-dated schedules exist, require agreement.
+    numbered_time = _numbered_course_time(lines, event)
+    # Independent corroborations must agree; never prefer one conflicting row.
     distinct = set(matches)
     if session_time:
         distinct.add(session_time)
+    if numbered_time:
+        distinct.add(numbered_time)
     if len(distinct) == 1:
         t1, t2 = next(iter(distinct))
         if not event.get("start_time") or event["start_time"] == t1:
