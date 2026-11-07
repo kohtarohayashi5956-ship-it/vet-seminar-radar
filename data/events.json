@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-07T21:26:46+09:00",
+ "updated": "2026-11-07T21:32:07+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -2160,7 +2160,7 @@
    "start_time": null,
    "end_time": null,
    "format": "現地",
-   "venue": null,
+   "venue": "ウインクあいち（愛知県産業労働センター）",
    "prefecture": "愛知県",
    "audience": [],
    "topics": [
@@ -2193,7 +2193,7 @@
    "start_time": null,
    "end_time": null,
    "format": "現地",
-   "venue": null,
+   "venue": "TKPガーデンシティ京都タワーホテル",
    "prefecture": "京都府",
    "audience": [],
    "topics": [
@@ -2226,7 +2226,7 @@
    "start_time": null,
    "end_time": null,
    "format": "現地",
-   "venue": null,
+   "venue": "福岡国際会議場",
    "prefecture": "福岡県",
    "audience": [],
    "topics": [
@@ -2259,7 +2259,7 @@
    "start_time": null,
    "end_time": null,
    "format": "現地",
-   "venue": null,
+   "venue": "仙台国際センター",
    "prefecture": null,
    "audience": [],
    "topics": [
@@ -2292,7 +2292,7 @@
    "start_time": null,
    "end_time": null,
    "format": "現地",
-   "venue": null,
+   "venue": "札幌コンベンションセンター",
    "prefecture": null,
    "audience": [],
    "topics": [
@@ -2325,7 +2325,7 @@
    "start_time": null,
    "end_time": null,
    "format": "オンデマンド",
-   "venue": null,
+   "venue": "オンライン配信",
    "prefecture": null,
    "audience": [],
    "topics": [
@@ -2358,7 +2358,7 @@
    "start_time": "18:30",
    "end_time": "21:00",
    "format": "現地",
-   "venue": null,
+   "venue": "ホテルニューオータニ東京 宴会場階〈鳳凰の間〉",
    "prefecture": "東京都",
    "audience": [],
    "topics": [
@@ -2391,7 +2391,7 @@
    "start_time": null,
    "end_time": null,
    "format": "現地",
-   "venue": null,
+   "venue": "ホテルニューオータニ（東京都千代田区紀尾井町4-1）",
    "prefecture": "東京都",
    "audience": [],
    "topics": [
