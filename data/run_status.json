@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-07T21:23:00+09:00",
+  "checked_at_jst": "2026-11-07T21:26:46+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
@@ -7,6 +7,7 @@
     "field_presence": {
       "start_date": 81,
       "start_time": 21,
+      "venue": 18,
       "price": 16,
       "deadline": 16,
       "topics": 66,
@@ -16,6 +17,7 @@
     "field_presence_pct": {
       "start_date": 98.8,
       "start_time": 25.6,
+      "venue": 22.0,
       "price": 19.5,
       "deadline": 19.5,
       "topics": 80.5,
@@ -38,6 +40,7 @@
       "deadlines_found": 2,
       "prices_found": 0,
       "times_found": 0,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -55,6 +58,7 @@
       "deadlines_found": 14,
       "prices_found": 8,
       "times_found": 0,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -72,6 +76,7 @@
       "deadlines_found": 0,
       "prices_found": 2,
       "times_found": 2,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -89,6 +94,7 @@
       "deadlines_found": 0,
       "prices_found": 0,
       "times_found": 0,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -106,6 +112,7 @@
       "deadlines_found": 0,
       "prices_found": 0,
       "times_found": 0,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -123,6 +130,7 @@
       "deadlines_found": 0,
       "prices_found": 0,
       "times_found": 0,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -140,6 +148,7 @@
       "deadlines_found": 0,
       "prices_found": 0,
       "times_found": 0,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -157,6 +166,7 @@
       "deadlines_found": 0,
       "prices_found": 0,
       "times_found": 0,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -174,6 +184,7 @@
       "deadlines_found": 2,
       "prices_found": 2,
       "times_found": 2,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -191,6 +202,7 @@
       "deadlines_found": 0,
       "prices_found": 0,
       "times_found": 0,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -208,6 +220,7 @@
       "deadlines_found": 0,
       "prices_found": 0,
       "times_found": 0,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -225,6 +238,7 @@
       "deadlines_found": 0,
       "prices_found": 0,
       "times_found": 0,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -242,6 +256,7 @@
       "deadlines_found": 0,
       "prices_found": 0,
       "times_found": 0,
+      "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
