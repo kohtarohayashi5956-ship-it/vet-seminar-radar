@@ -53,6 +53,30 @@ class FreeTests(unittest.TestCase):
   items=extract_free("学際企画",page,"",text,datetime.date(2026,11,7),{})
   self.assertEqual([x["url"] for x in items],[page,page])
 
+def test_peppy_linked_card_dates_and_source_isolation(self):
+  page="https://www.peppy.jp/seminar"
+  text=(
+   "CARD[web] 2026年11月11日 (水)～2027年3月17日 (水) 愛玩動物看護師のための救急講座2026（全5回） 受付中 <https://www.peppy.jp/seminar/901>\n"
+   "CARD[onsite] 2026年11月18日 (水) OCEP年次大会2026　獣医歯科看護の未来 受付中 <https://www.peppy.jp/seminar/902>\n"
+   "CARD[web] 2026年12月20日 (日) 偽の講習イベント 受付中 <https://evil.example/seminar/999>"
+  )
+  got=extract_free("PEPPY",page,"",text,TODAY,{})
+  self.assertEqual(len(got),2)
+  self.assertEqual(got[0]["start_date"],"2026-11-11")
+  self.assertEqual(got[0]["end_date"],"2027-03-17")
+  self.assertEqual(got[0]["format"],"ライブ配信")
+  self.assertEqual(got[1]["start_date"],"2026-11-18")
+  self.assertEqual(got[1]["format"],"現地")
+  self.assertTrue(all(e["url"].startswith("https://www.peppy.jp/seminar/") for e in got))
+
+ def test_peppy_invalid_dates_and_non_detail_links(self):
+  page="https://www.peppy.jp/seminar"
+  text=(
+   "CARD[web] 2026年13月44日 架空の日時をもつ看護講習 <https://www.peppy.jp/seminar/910>\n"
+   "CARD[web] 2026年11月19日 リンク先不明の看護セミナー <https://www.peppy.jp/seminar>\n"
+  )
+  self.assertEqual(extract_free("PEPPY",page,"",text,TODAY,{}),[])
+
  def test_feed_publication_date_is_not_event_date(self):
   text="=====\n記事タイトル: 腫瘍のライブセミナー\n記事URL: <https://vets-tech.jp/a>\n公開日: 2026-11-02\n開催日は未定\n"
   r=extract_free("VETS TECH","https://vets-tech.jp/feed/","",text,TODAY,{})
