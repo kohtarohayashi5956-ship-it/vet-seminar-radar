@@ -49,6 +49,10 @@ python validate_public.py             # 公開HTMLの基本安全・形式検証
 
 `--only jaha,gakusai` による巡回先制限、`--months 2`、`--debug` も利用可能です。**`--debug` はページ本文を `cache/` に記録します。公開・配布しないでください。**
 
+## VETS ACADEMYのアクセス制限（2026-11-07）
+
+GitHub Actionsの実巡回で公式一覧 `https://academy.eduone.jp/seminar` は robots.txt で不許可と判定され、0件でした。講習カードの専用抽出コードとオフラインテストは保持しますが、定期巡回は無効化しています。制限の回避を行わず、正式な許可または利用可能な公式RSS・API等が確認できるまで再有効化しません。
+
 ## PEPPYのアクセス制限（2026-11-07）
 
 PEPPYの公式セミナー一覧は GitHub Actions の共通 Fetcher により robots.txt で取得不可と判定されました。収集コードとテストは残しますが、定期巡回は無効化しています。アクセス制限の回避は行いません。公式の許可、API、RSS等の別経路が確認されるまでは再有効化しません。
