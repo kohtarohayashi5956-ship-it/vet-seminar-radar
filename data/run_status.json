@@ -1,23 +1,23 @@
 {
-  "checked_at_jst": "2026-11-07T21:04:29+09:00",
+  "checked_at_jst": "2026-11-07T21:14:46+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
     "total": 82,
     "field_presence": {
       "start_date": 81,
-      "start_time": 19,
-      "price": 14,
-      "deadline": 14,
+      "start_time": 21,
+      "price": 16,
+      "deadline": 16,
       "topics": 66,
       "audience": 41,
       "url": 82
     },
     "field_presence_pct": {
       "start_date": 98.8,
-      "start_time": 23.2,
-      "price": 17.1,
-      "deadline": 17.1,
+      "start_time": 25.6,
+      "price": 19.5,
+      "deadline": 19.5,
       "topics": 80.5,
       "audience": 50.0,
       "url": 100.0
@@ -75,23 +75,6 @@
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
-    },
-    {
-      "id": "academy",
-      "name": "VETS ACADEMY",
-      "pages": 0,
-      "extracted": 0,
-      "added": 0,
-      "updated": 0,
-      "replaced_stale": 0,
-      "details_scanned": 0,
-      "details_accepted": 0,
-      "deadlines_found": 0,
-      "prices_found": 0,
-      "times_found": 0,
-      "detail_fetch_failed": 0,
-      "status": "error",
-      "note": "取得しませんでした（robots.txt）: robots.txt で許可されていません: https://academy.eduone.jp/seminar"
     },
     {
       "id": "jbvp",
@@ -186,11 +169,11 @@
       "added": 0,
       "updated": 4,
       "replaced_stale": 0,
-      "details_scanned": 0,
-      "details_accepted": 0,
-      "deadlines_found": 0,
-      "prices_found": 0,
-      "times_found": 0,
+      "details_scanned": 3,
+      "details_accepted": 2,
+      "deadlines_found": 2,
+      "prices_found": 2,
+      "times_found": 2,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -265,7 +248,6 @@
     }
   ],
   "warnings": [
-    "SEMINAR_RADAR_CONTACT が未設定です。",
-    "VETS ACADEMY: 取得しませんでした（robots.txt）: robots.txt で許可されていません: https://academy.eduone.jp/seminar"
+    "SEMINAR_RADAR_CONTACT が未設定です。"
   ]
 }

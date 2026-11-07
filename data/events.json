@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-07T21:04:29+09:00",
+ "updated": "2026-11-07T21:14:46+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -2723,8 +2723,8 @@
    "title": "2026年度 中国・四国地区講習会 どうすりゃええんじゃろう? 血管作動薬",
    "start_date": "2026-11-23",
    "end_date": null,
-   "start_time": null,
-   "end_time": null,
+   "start_time": "10:00",
+   "end_time": "16:30",
    "format": "現地",
    "venue": "岡山国際交流センター",
    "prefecture": "岡山県",
@@ -2732,10 +2732,10 @@
     "獣医師"
    ],
    "topics": [],
-   "price": null,
+   "price": "本会会員・学生 無料／後援獣医師会会員 3,000円／上記会員以外の方 5,000円",
    "is_free": null,
    "status": null,
-   "deadline": null,
+   "deadline": "2026-11-16",
    "organizer": "日本獣医麻酔外科学会",
    "speaker": "三木 悠矢",
    "url": "https://www.jsvas.net/lectures/chushikoku_261123.php",
@@ -2756,8 +2756,8 @@
    "title": "2026年度 東京地区講習会 臨床現場をアップデート:ACVAA 2025麻酔・鎮静モニタリングガイドライン",
    "start_date": "2026-11-15",
    "end_date": null,
-   "start_time": null,
-   "end_time": null,
+   "start_time": "13:00",
+   "end_time": "17:00",
    "format": "現地",
    "venue": "東京大学弥生講堂一条ホール",
    "prefecture": "東京都",
@@ -2767,10 +2767,10 @@
    "topics": [
     "麻酔・救急"
    ],
-   "price": null,
+   "price": "無料／10,000 円",
    "is_free": null,
    "status": null,
-   "deadline": null,
+   "deadline": "2026-11-12",
    "organizer": "日本獣医麻酔外科学会",
    "speaker": "井芹 俊恵・大杉 真由・神野 信夫",
    "url": "https://www.jsvas.net/lectures/tokyo_261115.php",
