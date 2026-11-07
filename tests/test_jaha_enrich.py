@@ -95,6 +95,13 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertEqual(out["price"], "一般10,000円")
         self.assertNotIn("is_free", out)
 
+    def test_jaha_explicit_inline_paid_fee(self):
+        text = ("2026年11月7日 14:00〜17:00 開催\n"
+                "受講料：会員5,000円、一般8,000円\n")
+        result = parse_jaha_detail(text, event())
+        self.assertEqual(result["price"], "会員5,000円、一般8,000円")
+        self.assertNotIn("is_free", result)
+
     def test_jaha_existing_fee_preserved(self):
         item = event()
         item["price"] = "既存の料金区分"
