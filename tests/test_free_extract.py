@@ -53,7 +53,7 @@ class FreeTests(unittest.TestCase):
   items=extract_free("学際企画",page,"",text,datetime.date(2026,11,7),{})
   self.assertEqual([x["url"] for x in items],[page,page])
 
-def test_peppy_linked_card_dates_and_source_isolation(self):
+ def test_peppy_linked_card_dates_and_source_isolation(self):
   page="https://www.peppy.jp/seminar"
   text=(
    "CARD[web] 2026年11月11日 (水)～2027年3月17日 (水) 愛玩動物看護師のための救急講座2026（全5回） 受付中 <https://www.peppy.jp/seminar/901>\n"
