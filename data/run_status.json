@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-07T22:07:19+09:00",
+  "checked_at_jst": "2026-11-07T22:13:58+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
@@ -353,9 +353,9 @@
       "details_accepted": 4,
       "deadlines_found": 4,
       "prices_found": 0,
-      "fee_label_pages": 5,
+      "fee_label_pages": 4,
       "fee_amount_pages": 6,
-      "fee_parsed_pages": 1,
+      "fee_parsed_pages": 2,
       "times_found": 4,
       "venues_found": 0,
       "detail_fetch_failed": 0,
