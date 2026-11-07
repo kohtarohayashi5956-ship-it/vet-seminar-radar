@@ -42,6 +42,34 @@ class CertificationFinderTests(unittest.TestCase):
         self.assertIn("e.certification_url",body)
         self.assertIn("e.certification_program",body)
 
+    def test_certification_panel_after_main_and_collapsed_by_default(self):
+        self.assertLess(PAGE.index('<div class="layout">'), PAGE.index('id="certDisclosure"'))
+        self.assertIn('<details class="cert-disclosure" id="certDisclosure">', PAGE)
+        self.assertIn('id="certShortcut"', PAGE)
+        self.assertIn('id="certSearch"', PAGE)
+        self.assertIn('$(\"certSearch\").addEventListener("input", render)', PAGE)
+        self.assertIn('$(\"certDisclosure\").open = true', PAGE)
+        self.assertIn('function certCourseItems(e)', PAGE)
+
+    def test_course_search_does_not_split_titles_at_middle_dot(self):
+        if shutil.which("node") is None:
+            self.skipTest("Node is unavailable")
+        js="\n".join([
+            'const assert = require("node:assert/strict");',
+            function_source("certCourseItems"),
+            function_source("certSearchMatch"),
+            function_source("certArea"),
+            function_source("norm"),
+            'const e = {source_id:"jsvc",title:"第125回日本獣医循環器学会定例大会",certification_note:"認定医講習会",certification_program:"講座22 感染性心内膜炎・講座23 犬のフィラリア症・講座34 心臓腫瘍・心膜疾患／アドバンス：基礎4 心血管疾患治療の先端技術・臨床20 循環器疾患のCT検査・臨床21 猫の心臓外科・臨床22 腫瘍循環器病学"};',
+            'assert.equal(certCourseItems(e).length,7);',
+            'assert.ok(certCourseItems(e).includes("講座34 心臓腫瘍・心膜疾患"));',
+            'assert.equal(certSearchMatch(e,"講座34"),true);',
+            'assert.equal(certSearchMatch(e,"臨床21"),true);',
+            'assert.equal(certSearchMatch(e,"皮膚科"),false);',
+        ])
+        p=subprocess.run(["node","-e",js],capture_output=True,text=True)
+        self.assertEqual(p.returncode,0,p.stderr)
+
     def test_js_syntax(self):
         if shutil.which("node") is None:
             self.skipTest("Node is unavailable")

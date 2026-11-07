@@ -177,6 +177,20 @@
     font-size:12px; }
   .quality-strip strong { color:var(--ink); font-weight:700; }
 
+
+  /* Specialized search stays below the main seminar calendar. */
+  .cert-disclosure { margin: 0 20px 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+  .cert-disclosure > summary { list-style-position: inside; cursor: pointer; padding: 12px 16px; font-size: 14px; font-weight: 700; }
+  .cert-disclosure > summary:hover, .cert-disclosure > summary:focus-visible { background: var(--accent-soft); }
+  .cert-disclosure .cert-panel { border-top: 1px solid var(--line); border-bottom: none; padding: 12px 16px; }
+  .cert-summary-hint { margin-left: 8px; font-weight: 400; color: var(--muted); font-size: 11px; }
+  .cert-disclosure[open] .cert-summary-hint { display:none; }
+  .cert-panel-hint { margin:0; font-size: 12px; color:var(--muted); }
+  .cert-controls input[type="search"] { border:1px solid var(--line); border-radius:var(--radius); padding:5px 8px; background:var(--panel); color:var(--ink); width:190px; max-width: min(50vw,190px); }
+  .cert-shortcut { background: none; border:0; color:var(--accent); font-size: 12px; font-weight: 650; cursor:pointer; text-decoration:underline; padding:4px 2px; }
+  .cert-courses { list-style:none; display:flex; flex-wrap:wrap; gap:5px 8px; margin:5px 0; padding:0; }
+  .cert-courses li { font-size:12px; border:1px solid var(--line); border-radius:var(--radius); padding:3px 7px; background:var(--bg); }
+  @media (max-width:600px) { .cert-disclosure { margin:0 12px 18px; } .cert-head { align-items:flex-start; } }
   /* ---- 認定医情報：月別カレンダーとは独立した一覧 ---- */
   .cert-panel { padding:12px 16px; border-bottom:1px solid var(--line); background:var(--panel); }
   .cert-head { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px 16px; }
@@ -246,34 +260,10 @@
   <label class="chk"><input type="checkbox" id="fHidePast" checked>終了を隠す</label>
   <label class="chk"><input type="checkbox" id="fGeneral">一般向けも表示</label>
   <input type="search" id="fQ" placeholder="キーワード" aria-label="キーワード検索">
+  <button type="button" class="cert-shortcut" id="certShortcut" aria-label="認定医関連の情報へ移動">認定医関連 ↓</button>
 </section>
 
-<section class="cert-panel" aria-label="認定医・学会発表に関連する講習情報">
-  <div class="cert-head">
-    <h2>認定医関連を探す <span id="certCount" class="cert-count"></span></h2>
-    <div class="cert-controls">
-      <label for="certField">分野
-        <select id="certField" aria-label="認定医関連の分野">
-          <option value="all">すべて</option>
-          <option value="循環器">循環器</option>
-          <option value="皮膚科">皮膚科</option>
-          <option value="腎・泌尿器">腎・泌尿器</option>
-          <option value="その他">その他</option>
-        </select>
-      </label>
-      <label for="certKind">情報
-        <select id="certKind" aria-label="認定医関連の情報種類">
-          <option value="all">すべて</option>
-          <option value="course">認定医講習科目</option>
-          <option value="points">更新評価点</option>
-          <option value="activity">学会参加・発表</option>
-        </select>
-      </label>
-    </div>
-  </div>
-  <div id="certList" class="cert-list" aria-live="polite"></div>
-  <p class="cert-note">ここに表示する内容は認定医取得・更新の確約ではありません。参加資格、単位・評価点の認定条件、締切時刻は必ず各学会の公式情報で確認してください。</p>
-</section>
+
 
 <section class="deadline-panel" aria-label="申込締切が近い講座">
   <div class="deadline-head">
@@ -320,6 +310,38 @@
     </div>
   </aside>
 </div>
+<details class="cert-disclosure" id="certDisclosure">
+  <summary>認定医関連・学会発表の情報を探す <span id="certCount" class="cert-count"></span><span class="cert-summary-hint">クリックして開く</span></summary>
+  <section class="cert-panel" aria-label="認定医・学会発表に関連する講習情報">
+  <div class="cert-head">
+    <p class="cert-panel-hint">分野・種類・講習科目から絞り込めます</p>
+    <div class="cert-controls">
+      <label for="certField">分野
+        <select id="certField" aria-label="認定医関連の分野">
+          <option value="all">すべて</option>
+          <option value="循環器">循環器</option>
+          <option value="皮膚科">皮膚科</option>
+          <option value="腎・泌尿器">腎・泌尿器</option>
+          <option value="その他">その他</option>
+        </select>
+      </label>
+      <label for="certKind">情報
+        <select id="certKind" aria-label="認定医関連の情報種類">
+          <option value="all">すべて</option>
+          <option value="course">認定医講習科目</option>
+          <option value="points">更新評価点</option>
+          <option value="activity">学会参加・発表</option>
+        </select>
+      </label>
+      <label for="certSearch">講習科目
+        <input type="search" id="certSearch" aria-label="認定医講習の科目名・講座番号を検索" placeholder="講座22、心臓腫瘍など">
+      </label>
+    </div>
+  </div>
+  <div id="certList" class="cert-list" aria-live="polite"></div>
+  <p class="cert-note">ここに表示する内容は認定医取得・更新の確約ではありません。参加資格、単位・評価点の認定条件、締切時刻は必ず各学会の公式情報で確認してください。</p>
+</section>
+</details>
 <button id="fab">告知文を作る（<span id="fabCount">0</span>）</button>
 <p class="disclaimer">一覧は主催者の公開ページからルール方式で自動抽出した情報です（明示的にAIを有効化した場合のみAI補助）。日時・料金・受付状況は取得時点の情報で、読み取り違いを含む可能性があります。告知する前に、必ず原典のページで確認してください。</p>
 
@@ -438,7 +460,7 @@
     if ($("fHidePast").checked && e.start_date && endOf(e) < todayStr) return false;
     var q = norm($("fQ").value).trim();
     if (q) {
-      var hay = norm([e.title, e.venue, e.organizer, e.price, (e.topics || []).join(" ")].join(" "));
+      var hay = norm([e.title, e.venue, e.organizer, e.price, e.certification_program, e.certification_note, (e.topics || []).join(" ")].join(" "));
       if (hay.indexOf(q) < 0) return false;
     }
     return true;
@@ -462,6 +484,20 @@
     if (kind !== "all" && certKind(e) !== kind) return false;
     return true;
   }
+  function certCourseItems(e) {
+    var text = (e.certification_program || "").replace("／アドバンス：", "・");
+    if (!text) return [];
+    // Split at known course-number prefixes, not within names such as
+    // 「心臓腫瘍・心膜疾患」.
+    return text.split(/・(?=(?:講座\d+|基礎\d+|臨床\d+)\s)/)
+      .map(function (x) { return x.trim(); }).filter(Boolean);
+  }
+  function certSearchMatch(e, q) {
+    if (!q) return true;
+    var summary = norm([e.title, e.certification_note, e.source, certArea(e)].join(" "));
+    if (summary.indexOf(q) >= 0) return true;
+    return certCourseItems(e).some(function (x) { return norm(x).indexOf(q) >= 0; });
+  }
   function certKindLabel(kind) {
     return { course: "認定医講習科目", points: "更新評価点", activity: "学会参加・発表" }[kind] || "認定医関連";
   }
@@ -474,9 +510,10 @@
   }
   function renderCertificationPanel() {
     var area = $("certField").value, kind = $("certKind").value;
+    var q = norm($("certSearch").value).trim();
     var entries = EVENTS.filter(function (e) {
       return e.start_date && endOf(e) >= todayStr &&
-             certMatches(e, area, kind) && passes(e);
+             certMatches(e, area, kind) && certSearchMatch(e, q) && passes(e);
     }).sort(function (a, b) {
       if (a.start_date !== b.start_date) return a.start_date < b.start_date ? -1 : 1;
       return (a.title || "").localeCompare(b.title || "", "ja");
@@ -503,7 +540,16 @@
       heading.appendChild(main);
       item.appendChild(heading);
       if (e.certification_note) item.appendChild(el("div", "cert-sub", e.certification_note));
-      if (e.certification_program) item.appendChild(el("div", "cert-sub", "講習科目：" + e.certification_program));
+      var courseItems = certCourseItems(e);
+      var headerMatch = !q || norm([e.title, e.certification_note, e.source, certArea(e)].join(" ")).indexOf(q) >= 0;
+      if (q && !headerMatch) {
+        courseItems = courseItems.filter(function (x) { return norm(x).indexOf(q) >= 0; });
+      }
+      if (courseItems.length) {
+        var courses = el("ul", "cert-courses");
+        courseItems.forEach(function (course) { courses.appendChild(el("li", null, course)); });
+        item.appendChild(courses);
+      }
       var reg = el("div", "cert-registration");
       reg.appendChild(el("span", null, certRegistrationStatus(e.deadline, "参加申込締切")));
       if (e.abstract_deadline) reg.appendChild(el("span", null, certRegistrationStatus(e.abstract_deadline, "演題募集締切")));
@@ -906,6 +952,12 @@
     $("deadlineWindow").addEventListener("change", render);
     $("certField").addEventListener("change", render);
     $("certKind").addEventListener("change", render);
+    $("certSearch").addEventListener("input", render);
+    $("certShortcut").addEventListener("click", function () {
+      $("certDisclosure").open = true;
+      $("certDisclosure").scrollIntoView({ behavior: "smooth", block: "start" });
+      $("certSearch").focus({ preventScroll: true });
+    });
 
     $("prev").addEventListener("click", function () { cur.m--; if (cur.m < 1) { cur.m = 12; cur.y--; } render(); });
     $("next").addEventListener("click", function () { cur.m++; if (cur.m > 12) { cur.m = 1; cur.y++; } render(); });
