@@ -109,6 +109,7 @@ def main(argv):
     from gakusai_enrich import enrich_gakusai
     from jaha_enrich import enrich_jaha
     from society_enrich import enrich_jsvc
+    from jsvas_enrich import enrich_jsvas
 
     client = None
     key = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -181,6 +182,11 @@ def main(argv):
             log("  詳細補完: " + str(stats.get("details_scanned", 0)) +
                 "ページ / 開催時刻 " + str(stats.get("times_found", 0)) +
                 "件 / 料金 " + str(stats.get("prices_found", 0)) + "件")
+        elif src["id"] == "jsvas" and not note and fresh:
+            fresh = enrich_jsvas(fresh, fetcher, today, stats)
+            log("  JSVAS講習会詳細: " + str(stats.get("details_scanned", 0)) +
+                "ページ / 料金 " + str(stats.get("prices_found", 0)) +
+                "件 / 申込締切 " + str(stats.get("deadlines_found", 0)) + "件")
         elif src["id"] == "jsvc" and not note and fresh:
             fresh = enrich_jsvc(fresh, fetcher, today, stats)
             log("  認定医講習科目補完: " + str(stats.get("certification_programs_found", 0)) + "件")
