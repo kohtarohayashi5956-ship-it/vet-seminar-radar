@@ -82,6 +82,37 @@ class GakusaiHandsonTests(unittest.TestCase):
         self.assertIsNone(rows[4]["price"])
         self.assertEqual(stats["handson_fees_found"],4)
 
+    def test_split_html_table_cells_are_matched_inside_same_course(self):
+        html = TEXT.replace(
+            "会員獣医師 | 48,000円（税込52,800円）＋実習材料費 15,000円（税込16,500円）",
+            "会員獣医師\n48,000円（税込52,800円）＋実習材料費 15,000円（税込16,500円）"
+        ).replace(
+            "一般獣医師 | 75,000円（税込82,500円）＋実習材料費 15,000円（税込16,500円）",
+            "一般獣医師\n75,000円（税込82,500円）＋実習材料費 15,000円（税込16,500円）"
+        )
+        row=event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」","2027-01-17")
+        enrich_handson([row],Fetcher(html),TODAY,{})
+        self.assertIn("会員 48,000円",row["price"])
+        self.assertIn("一般 75,000円",row["price"])
+
+    def test_split_cells_do_not_copy_next_course_or_membership_price(self):
+        html = (
+            "2027年 学際小動物セミナー\n"
+            "MS154 心エコーの基本を見直す\n"
+            "受講料\n"
+            "会員獣医師\n"
+            "ご入会はこちら\n"
+            "一般獣医師\n75,000円（税込82,500円）\n"
+            "2月7日(日)東京会場申込\n"
+            "MS155 消化管縫合を極める!!\n"
+            "受講料\n会員獣医師\n48,000円\n"
+            "一般獣医師\n75,000円\n"
+            "3月14日(日)大阪会場申込\n"
+        )
+        row=event("新実誠矢「心エコーの基本を見直す」","2027-02-07")
+        enrich_handson([row],Fetcher(html),TODAY,{})
+        self.assertIsNone(row["price"])
+
     def test_no_cross_date_and_no_generic_tariff(self):
         rows=[
             event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」","2027-02-21"),
