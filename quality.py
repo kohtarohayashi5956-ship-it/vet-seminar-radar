@@ -24,3 +24,20 @@ def summarize_quality(events):
         },
         "note": "Field presence only; dates, prices and details are not independently verified.",
     }
+
+
+def summarize_quality_by_source(events):
+    """Per-source field completeness for prioritizing real source repairs.
+
+    Derived only from the already deduplicated published events. An event is
+    attributed to its retained primary source, never double-counted.
+    These figures show filled fields, not independently verified correctness.
+    """
+    groups = {}
+    for event in events:
+        source = event.get("source_id") or "unknown"
+        groups.setdefault(source, []).append(event)
+    return {
+        source: summarize_quality(rows)
+        for source, rows in sorted(groups.items())
+    }
