@@ -188,7 +188,8 @@ def main(argv):
             log("  詳細補完: " + str(stats.get("details_scanned", 0)) +
                 "ページ / 開催時刻 " + str(stats.get("times_found", 0)) +
                 "件 / 料金 " + str(stats.get("prices_found", 0)) +
-                "件 / 実習料金 " + str(stats.get("handson_fees_found", 0)) + "件")
+                "件 / 実習料金 " + str(stats.get("handson_fees_found", 0)) +
+                "件 / 申込リンク " + str(stats.get("handson_applications_found", 0)) + "件")
         elif src["id"] == "jbvp" and not note and fresh:
             fresh = enrich_jbvp(fresh, fetcher, today, stats)
             log("  JBVP地区大会会場補完: " + str(stats.get("details_scanned", 0)) +
@@ -219,6 +220,7 @@ def main(argv):
                        "deadlines_found": stats.get("deadlines_found", 0),
                        "prices_found": stats.get("prices_found", 0),
                        "handson_fees_found": stats.get("handson_fees_found", 0),
+                       "handson_applications_found": stats.get("handson_applications_found", 0),
                        "handson_course_cards": stats.get("handson_course_cards", 0),
                        "handson_fetch_failed": stats.get("handson_fetch_failed", 0),
                        "fee_label_pages": stats.get("fee_label_pages", 0),
