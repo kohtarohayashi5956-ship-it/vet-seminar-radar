@@ -58,6 +58,28 @@ class TestGakusaiEnrichment(unittest.TestCase):
         txt=("開催日時・会場\n東京会場 2027年3月7日 10:00～16:00\n"
              "駐健保会館\nウェブ受講料\n一般獣医師 99,000円")
         self.assertNotIn("price",parse_gakusai(txt,ev()))
+    def test_multiple_dates_on_same_schedule_line_are_ambiguous(self):
+        page = PAGE.replace(
+            "東京会場 2027年3月7日（日）10：00～16：00",
+            "東京会場 2027年3月7日（日）・3月14日（日）10：00～16：00")
+        self.assertEqual(parse_gakusai(page, ev()), {})
+
+    def test_existing_price_and_time_are_preserved(self):
+        existing = ev(time="10:00")
+        existing["end_time"] = "15:30"
+        existing["price"] = "事前確認済み 8,000円"
+        parsed = parse_gakusai(PAGE, existing)
+        self.assertNotIn("price", parsed)
+        self.assertNotIn("start_time", parsed)
+        self.assertNotIn("end_time", parsed)
+        self.assertEqual(parsed.get("prefecture"), "東京都")
+
+    def test_end_time_can_be_filled_without_overwriting_start(self):
+        existing = ev(time="10:00")
+        parsed = parse_gakusai(PAGE, existing)
+        self.assertNotIn("start_time", parsed)
+        self.assertEqual(parsed["end_time"], "16:00")
+
     def test_only_detail_link_and_single_fetch(self):
         e1,e2=ev(),ev()
         invalid=ev(url="https://www.gakusai.co.jp/doubutu/seminar-comingup/")
