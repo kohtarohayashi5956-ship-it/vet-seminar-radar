@@ -254,6 +254,24 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
                                    for v in (page or "").splitlines() if v.strip()])[0])
         for page in fetched.values()
     )
+    # Official detail paths + boolean flags only. No copied page body.
+    fee_checks = []
+    for url, page in fetched.items():
+        lines = ([unicodedata.normalize("NFKC", value.strip())
+                  for value in page.splitlines() if value.strip()] if page else [])
+        parsed_price = _explicit_course_fee(lines)[0] if lines else None
+        same_page = [(day, e) for day, course_url, e in candidates if course_url == url]
+        eligible_dates = sorted({
+            day for day, event in same_page
+            if page and parse_jaha_detail(page, event)
+        })
+        fee_checks.append({
+            "path": urlsplit(url).path,
+            "fee_label": any(FEE_HEADING.match(value) for value in lines),
+            "yen_amount": any(FEE_AMOUNT.search(value) for value in lines),
+            "fee_section": bool(parsed_price),
+            "corroborated_dates": eligible_dates,
+        })
     accepted = 0
     times_found = 0
     prices_found = 0
@@ -280,5 +298,6 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
     stats["fee_label_pages"] = detail_pages_with_fee_label
     stats["fee_amount_pages"] = detail_pages_with_amount
     stats["fee_parsed_pages"] = detail_pages_with_parsed_fee
+    stats["fee_detail_checks"] = fee_checks
     stats["detail_fetch_failed"] = sum(v is None for v in fetched.values())
     return events
