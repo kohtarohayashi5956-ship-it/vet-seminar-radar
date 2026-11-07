@@ -172,7 +172,8 @@ def main(argv):
         if src["id"] == "jaha" and not note and fresh:
             fresh = enrich_jaha(fresh, fetcher, today, stats)
             log("  JAHA個別ページ: " + str(stats.get("details_scanned", 0)) +
-                "ページ / 締切確認 " + str(stats.get("deadlines_found", 0)) + "件")
+                "ページ / 締切確認 " + str(stats.get("deadlines_found", 0)) +
+                "件 / 料金 " + str(stats.get("prices_found", 0)) + "件")
         if src["id"] == "lifetail" and not note and fresh:
             fresh = enrich_lifetail(fresh, fetcher, today, stats)
             log("  詳細補完: " + str(stats.get("details_scanned", 0)) +

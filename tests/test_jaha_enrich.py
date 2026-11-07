@@ -31,6 +31,47 @@ class Fake:
         return "<main><p>"+self.html.replace("\n","</p><p>")+"</p></main>"
 
 class TestJahaDeadlines(unittest.TestCase):
+    def test_jaha_explicit_tiered_fees_on_date_matched_course(self):
+        out = parse_jaha_detail(PAGE, event())
+        self.assertEqual(
+            out["price"],
+            "通常受講:一般料金19,800円、JAHA会員16,500円"
+        )
+        self.assertNotIn("is_free", out)
+        self.assertEqual(out["deadline"], "2026-11-04")
+
+    def test_jaha_fee_requires_matching_course_date(self):
+        self.assertEqual(parse_jaha_detail(PAGE, event("2026-11-08")), {})
+
+    def test_jaha_fee_not_from_cancellation_or_unlabelled_money(self):
+        text = ("2026年11月7日 14:00〜17:00 開催\n"
+                "キャンセル手数料:1,000円\n"
+                "一般 50,000円\n")
+        out = parse_jaha_detail(text, event())
+        self.assertNotIn("price", out)
+
+    def test_jaha_mixed_free_and_paid_is_not_free(self):
+        text = ("2026年11月7日 14:00〜17:00 開催\n"
+                "受講料\n会員無料\n一般10,000円\n"
+                "お申し込み\n")
+        out = parse_jaha_detail(text, event())
+        self.assertEqual(out["price"], "一般10,000円")
+        self.assertNotIn("is_free", out)
+
+    def test_jaha_existing_fee_preserved(self):
+        item = event()
+        item["price"] = "既存の料金区分"
+        out = parse_jaha_detail(PAGE, item)
+        self.assertNotIn("price", out)
+
+    def test_jaha_explicit_free_without_paid_tier(self):
+        text = ("2026年11月7日 14:00〜17:00 開催\n"
+                "参加費:無料\n"
+                "申込期限:2026年11月6日\n")
+        out = parse_jaha_detail(text, event())
+        self.assertEqual(out["price"], "無料")
+        self.assertTrue(out["is_free"])
+
     def test_registration_range_start_and_explicit_end(self):
         self.assertEqual(parse_jaha_detail(PAGE,event()),{"deadline":"2026-11-04"})
 

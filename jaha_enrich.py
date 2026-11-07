@@ -78,6 +78,45 @@ def _registration_deadline(lines, start_date):
     return None
 
 
+FEE_HEADING = re.compile(r"^(?:受講料|参加費|受講料金)\s*[：:]?")
+FEE_AMOUNT = re.compile(r"\d[\d,，]*\s*円")
+FEE_STOP = re.compile(
+    r"^(?:申込|お申込み|お申し込み|申込み|受付|キャンセル|"
+    r"日時|日程|開催日|講師|会場|対象|定員|注意事項|"
+    r"お問合せ|お問い合わせ|主催|共催|支払|お支払|"
+    r"プログラム|講義内容|備考|参加方法)"
+)
+
+
+def _explicit_course_fee(lines):
+    """Accept only values under a short explicitly labelled fee section."""
+    for index, line in enumerate(lines):
+        if not FEE_HEADING.match(line):
+            continue
+        values = []
+        rest = FEE_HEADING.sub("", line).strip(" ：:")
+        if rest:
+            values.append(rest)
+        for next_line in lines[index + 1:index + 5]:
+            if FEE_STOP.match(next_line) or FEE_HEADING.match(next_line):
+                break
+            values.append(next_line)
+        eligible = [
+            value for value in values
+            if (FEE_AMOUNT.search(value) or re.fullmatch(r"無料|無料[（(][^）)]{1,35}[）)]", value))
+            and len(value) <= 150
+        ]
+        if not eligible:
+            continue
+        price = "／".join(eligible[:3])[:300]
+        explicitly_free = bool(
+            len(eligible) == 1
+            and re.fullmatch(r"無料|無料[（(][^）)]{1,35}[）)]", eligible[0])
+        )
+        return price, True if explicitly_free else None
+    return None, None
+
+
 def parse_jaha_detail(text, event):
     start_date = event.get("start_date")
     if not start_date:
@@ -96,8 +135,14 @@ def parse_jaha_detail(text, event):
         return {}
     out = {}
     deadline = _registration_deadline(lines, start_date)
-    if deadline:
+    if deadline and not event.get("deadline"):
         out["deadline"] = deadline
+    if not event.get("price"):
+        price, is_free = _explicit_course_fee(lines)
+        if price:
+            out["price"] = price
+            if is_free and event.get("is_free") is None:
+                out["is_free"] = True
     # A timestamp is only trusted when the same schedule line explicitly
     # contains exactly one fully specified date and one time range.
     # In particular, do not associate a timetable for another session.
@@ -136,20 +181,26 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
             fetched[url] = None
     accepted = 0
     times_found = 0
+    prices_found = 0
     for _, url, e in candidates:
         if not fetched.get(url):
             continue
         detail = parse_jaha_detail(fetched[url], e)
         if detail:
-            before = (e.get("deadline"), e.get("start_time"), e.get("end_time"))
+            before = (e.get("deadline"), e.get("start_time"), e.get("end_time"),
+                      e.get("price"))
             missing_start = not e.get("start_time")
+            missing_price = not e.get("price")
             e.update(detail)
-            after = (e.get("deadline"), e.get("start_time"), e.get("end_time"))
-            accepted += before != after
+            updated = (e.get("deadline"), e.get("start_time"), e.get("end_time"),
+                       e.get("price"))
+            accepted += before != updated
             times_found += bool(missing_start and e.get("start_time"))
+            prices_found += bool(missing_price and e.get("price"))
     stats["details_scanned"] = len(fetched)
     stats["details_accepted"] = accepted
     stats["deadlines_found"] = sum(bool(e.get("deadline")) for _, _, e in candidates)
     stats["times_found"] = times_found
+    stats["prices_found"] = prices_found
     stats["detail_fetch_failed"] = sum(v is None for v in fetched.values())
     return events
