@@ -899,6 +899,119 @@ def _jcvim(text,page,today,stats):
     return out
 
 
+# --------------------------------------------------------------------------
+# JVNA and the Annual Meeting of Veterinary Clinical Medicine.
+# Scope parsing to official events and their own labeled registration blocks.
+def _jvna_congress(text, page, today, stats):
+    """Only the dated JVNA nursing congress, not its abstract / file deadlines."""
+    lines=[unicodedata.normalize("NFKC",x.strip()) for x in text.splitlines() if x.strip()]
+    out=[]
+    if not page.rstrip("/").endswith("/16thkangotaikai"):
+        return out
+    title="第16回 動物看護大会"
+    if not any(re.search(r"第16回\s*動物看護大会",line) for line in lines):
+        return out
+    # A meeting date needs the explicit event-date label, never 2026 dates in
+    # the later presentation-submission timetable.
+    date_idx=next((i for i,line in enumerate(lines) if re.match(r"^開催日時\s*[：:]?",line)),None)
+    if date_idx is None:
+        return out
+    schedule=" ".join(lines[date_idx:date_idx+3])
+    dates=_dates(schedule)
+    if not dates or dates[0] < today.isoformat():
+        return out
+    date=dates[0]
+    ev=_event(title,date,page,page,schedule,"日本愛玩動物看護師会")
+    ev["audience"]=["動物看護師","学生"]
+    ev["topics"]=["学会・大会"]
+    ev["format"]="現地"
+    ev["prefecture"]="大阪府"
+    # Do not derive time by reading abstract deadlines; this is specifically
+    # the date row's HH時 text.
+    time_pair=re.search(r"(?<!\d)(\d{1,2})\s*時\s*[～〜~\-]\s*(\d{1,2})\s*時",schedule)
+    if time_pair:
+        ev["start_time"]=f"{int(time_pair.group(1)):02d}:00"
+        ev["end_time"]=f"{int(time_pair.group(2)):02d}:00"
+    # Venue can be wrapped over the next one or two rows.
+    venue_i=next((i for i in range(date_idx+1,min(len(lines),date_idx+18))
+                  if re.match(r"^会場\s*[：:]?$",lines[i])),None)
+    if venue_i is not None:
+        scope=" ".join(lines[venue_i+1:venue_i+5])
+        if "大阪ペピイ動物看護専門学校" in scope:
+            ev["venue"]="大阪ペピイ動物看護専門学校"
+    # Bounded: the attendance deadline precedes '動物看護研究演題募集'.
+    end_idx=next((i for i,line in enumerate(lines)
+                  if i>date_idx and "動物看護研究演題募集" in line),len(lines))
+    for i in range(date_idx+1,end_idx):
+        line=lines[i]
+        if not re.match(r"^申込期限\s*[：:]?",line):
+            continue
+        candidates=_dates(" ".join(lines[i:i+3]))
+        if candidates and candidates[0]<=date:
+            ev["deadline"]=candidates[0]
+        break
+    # Fees only from explicit membership pricing on the meeting's own page.
+    before=" ".join(lines[date_idx:end_idx])
+    m1=re.search(r"JVNA正会員\s*([\d,]+円)",before)
+    m2=re.search(r"非会員\s*([\d,]+円)",before)
+    if m1 and m2:
+        ev["price"]="JVNA正会員 "+m1.group(1)+"（実習なし）／非会員 "+m2.group(1)+"（実習なし）"
+        ev["is_free"]=None
+    out.append(ev)
+    stats["jvna_congresses"]=len(out)
+    return out
+
+
+def _dourinken_meeting(text,page,today,stats):
+    """Exact annual meeting in the official next-year section (Reiwa calendar).
+
+    The page also retains the previous annual meeting, its abstract deadlines
+    and certification examinations. Only next year's event dates count.
+    """
+    lines=[unicodedata.normalize("NFKC",x.strip()) for x in text.splitlines() if x.strip()]
+    out=[]
+    if not page.startswith("https://dourinken.com/taikai/guide"):
+        return out
+    idx=next((i for i,line in enumerate(lines) if "来年の御案内" in line),None)
+    if idx is None:
+        return out
+    section=lines[idx+1:idx+12]
+    if not any("第48回動物臨床医学会年次大会" in l for l in section):
+        return out
+    scheduled=next((l for l in section if re.match(r"^日\s*時[：:]",l)),None)
+    if not scheduled:
+        return out
+    m=re.search(r"令和\s*(\d{1,2})年\s*(\d{1,2})月\s*(\d{1,2})日",scheduled)
+    if not m:
+        return out
+    reiwa,month,day=map(int,m.groups())
+    if not 1<=reiwa<=40:
+        return out
+    year=2018+reiwa
+    date=_date(year,month,day)
+    if not date or date < today.isoformat():
+        return out
+    ev=_event("第48回動物臨床医学会年次大会",date,page,page,scheduled,
+              "動物臨床医学会")
+    ev["audience"]=["獣医師","動物看護師","学生"]
+    ev["topics"]=["学会・大会"]
+    ev["format"]="現地"
+    ev["prefecture"]="大阪府"
+    m2=re.search(r"[,、・~～〜]\s*(\d{1,2})日",scheduled[m.end():])
+    if m2:
+        end=_date(year,month,int(m2.group(1)))
+        if end and date<end and (datetime.date.fromisoformat(end)-datetime.date.fromisoformat(date)).days<=4:
+            ev["end_date"]=end
+    venue=next((l for l in section if re.match(r"^会\s*場[：:]",l)),None)
+    if venue:
+        v=venue.split(":",1)[-1].split("：",1)[-1].strip()
+        if len(v)<=100 and "大阪府立国際会議場" in v:
+            ev["venue"]="大阪府立国際会議場（グランキューブ大阪）"
+    out.append(ev)
+    stats["dourinken_meetings"]=len(out)
+    return out
+
+
 def extract_free(source_name,page_url,hint,text,today,stats):
     source=source_name.lower().replace("&","")
     if "jaha" in source or "日本動物病院協会" in source:
@@ -911,6 +1024,8 @@ def extract_free(source_name,page_url,hint,text,today,stats):
     elif source in ("日本獣医循環器学会","jsvc"):raw=_society(text,page_url,today,stats,"jsvc")
     elif source in ("日本獣医麻酔外科学会","jsvas"):raw=_jsvas(text,page_url,today,stats)
     elif source in ("jcvim","日本獣医内科学アカデミー"):raw=_jcvim(text,page_url,today,stats)
+    elif source in ("日本愛玩動物看護師会","jvna"):raw=_jvna_congress(text,page_url,today,stats)
+    elif source in ("動物臨床医学会","dourinken"):raw=_dourinken_meeting(text,page_url,today,stats)
     elif "jbvp" in source:raw=_jbvp(text,page_url,today,stats)
     elif "学際" in source:raw=_gakusai(text,page_url,today)
     elif "vets tech" in source or "vetstech" in source:raw=_feed(text,page_url,today)

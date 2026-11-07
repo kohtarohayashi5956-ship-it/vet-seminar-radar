@@ -21,12 +21,12 @@
 | B セミナー会社・実習施設 | WAHA / WAHA Lab. | Phase2 | [参照](http://wahalll.com/archives/seminar) | 未実装 |
 | B セミナー会社・実習施設 | Improve International Japan | Phase2 | [参照](https://www.improveinternational.jp/venues/) | 未実装 |
 | B セミナー会社・実習施設 | ベットピア(Vetpeer) | 保留(手動) | [参照](https://vetpeer.info/) | 未実装 |
-| C 看護師系団体 | 日本愛玩動物看護師会 | Phase2 | [参照](https://www.jvna.or.jp/) | 未実装 |
+| C 看護師系団体 | 日本愛玩動物看護師会 | Phase1 | [参照](https://www.jvna.or.jp/) | 動物看護大会の公式ページを巡回（2026-11-07追加） |
 | C 看護師系団体 | 動物看護師統一認定機構 | Phase2 | [参照](https://www.ccrvn.jp/) | 未実装 |
 | C 看護師系団体 | 日本動物看護学会 | Phase2 | [参照](https://www.jsvn.gr.jp/) | 未実装 |
 | C 看護師系団体 | 日本動物看護職協会 | 保留 | — | 未実装 |
 | C 看護師系団体 | JBVP(VNCA+・地区大会) | Phase2 | [参照](https://www.jbvp.org/web_ls/) | 未実装 |
-| C 看護師系団体 | 動物臨床医学研究所 | Phase2 | [参照](https://dourinken.com/) | 未実装 |
+| C 看護師系団体 | 動物臨床医学研究所 | Phase1 | [参照](https://dourinken.com/) | 動物臨床医学会年次大会の公式ページを巡回（2026-11-07追加） |
 | D 獣医系学会・研究会 | 日本獣医麻酔外科学会 | Phase1 | [参照](https://www.jsvas.net/) | 実装・GitHub Actions検証対象（2026-11-07） |
 | D 獣医系学会・研究会 | 日本獣医循環器学会 | Phase2 | [参照](https://www.jsvc.jp/) | 未実装 |
 | D 獣医系学会・研究会 | 日本獣医腎泌尿器学会 | Phase2 | [参照](https://javnu.jp/) | 未実装 |

@@ -126,6 +126,21 @@ SOURCES = [
         "enabled": True,
     },
     {
+        "id": "jvna",
+        "name": "日本愛玩動物看護師会",
+        "kind": "html_page",
+        # Official programme. Avoid conflating abstract and attendee deadlines.
+        "urls": ["https://www.jvna.or.jp/16thkangotaikai/"],
+        "enabled": True,
+    },
+    {
+        "id": "dourinken",
+        "name": "動物臨床医学会",
+        "kind": "html_page",
+        "urls": ["https://dourinken.com/taikai/guide/"],
+        "enabled": True,
+    },
+    {
         "id": "vetstech",
         "name": "VETS TECH",
         "kind": "wp_feed",
