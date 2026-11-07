@@ -173,6 +173,9 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertEqual([x["deadline"] for x in rows],
                          ["2026-11-04","2026-11-04"])
         self.assertEqual(stats["details_scanned"],1)
+        self.assertEqual(stats["fee_label_pages"], 1)
+        self.assertEqual(stats["fee_amount_pages"], 1)
+        self.assertEqual(stats["fee_parsed_pages"], 1)
 
     def test_robots_failure_preserves_existing_data(self):
         class Blocked:
