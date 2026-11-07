@@ -2,7 +2,7 @@
 
 These are field-presence metrics, not confirmation of factual accuracy.
 """
-FIELDS = ("start_date", "start_time", "price", "deadline", "topics", "audience", "url")
+FIELDS = ("start_date", "start_time", "venue", "price", "deadline", "topics", "audience", "url")
 
 
 def summarize_quality(events):
