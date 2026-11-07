@@ -39,6 +39,8 @@ class TestJahaDeadlines(unittest.TestCase):
         )
         self.assertNotIn("is_free", out)
         self.assertEqual(out["deadline"], "2026-11-04")
+        self.assertEqual(out["start_time"], "14:00")
+        self.assertEqual(out["end_time"], "17:00")
 
     def test_jaha_fee_requires_matching_course_date(self):
         self.assertEqual(parse_jaha_detail(PAGE, event("2026-11-08")), {})
@@ -76,7 +78,46 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertEqual(parse_jaha_detail(PAGE,event()), {
             "deadline": "2026-11-04",
             "price": "通常受講:一般料金19,800円、JAHA会員16,500円",
+            "start_time": "14:00",
+            "end_time": "17:00",
         })
+
+    def test_multi_session_course_second_date_gets_own_time(self):
+        result = parse_jaha_detail(PAGE, event("2026-11-14"))
+        self.assertEqual(result["start_time"], "14:00")
+        self.assertEqual(result["end_time"], "17:00")
+        self.assertEqual(result["price"], "通常受講:一般料金19,800円、JAHA会員16,500円")
+
+    def test_multi_session_time_not_taken_from_registration(self):
+        page = (
+            "2026年11月7日、11月14日に配信\n"
+            "受付期間：2026年11月14日 14:00〜17:00\n"
+        )
+        self.assertEqual(parse_jaha_detail(page, event("2026-11-14")), {})
+
+    def test_multi_session_time_requires_explicit_year_anchor(self):
+        page = (
+            "11月7日、11月14日に配信\n"
+            "パート2 11月14日 14:00〜17:00\n"
+        )
+        self.assertEqual(parse_jaha_detail(page, event("2026-11-14")), {})
+
+    def test_multi_session_no_cross_year_inference(self):
+        page = (
+            "2026年12月28日、1月4日に配信\n"
+            "パート2 1月4日 14:00〜17:00\n"
+        )
+        self.assertEqual(parse_jaha_detail(page, event("2027-01-04")), {})
+
+    def test_multi_session_reject_conflicting_times(self):
+        page = (
+            "2026年11月7日、11月14日に配信\n"
+            "パート2 11月14日 14:00〜17:00\n"
+            "パート2 11月14日 16:00〜19:00\n"
+        )
+        out = parse_jaha_detail(page, event("2026-11-14"))
+        self.assertNotIn("start_time", out)
+        self.assertNotIn("end_time", out)
 
     def test_explicit_single_date_schedule_times(self):
         text = ("2026年11月7日 14:00〜17:00 開催\n"

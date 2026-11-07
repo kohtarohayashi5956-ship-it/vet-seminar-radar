@@ -117,6 +117,52 @@ def _explicit_course_fee(lines):
     return None, None
 
 
+def _short_date_session_time(lines, start_date):
+    """Match a uniquely dated session time to a year-anchored course schedule.
+
+    Only supports same-year, short month/day session lines (e.g. パート2
+    11月14日 14:00-17:00) when the SAME page explicitly prints a dated
+    multi-session announcement including that short date. Other years,
+    registration rows, and non-session timetables are never inferred.
+    """
+    try:
+        target = datetime.date.fromisoformat(start_date)
+    except (TypeError, ValueError):
+        return None
+    anchored = False
+    for line in lines:
+        if EXCLUDE.search(line) or REGISTRATION.match(line):
+            continue
+        full = _dates(line)
+        if not full or not re.search(r"配信|開催|講義|日程|日時", line):
+            continue
+        if any(datetime.date.fromisoformat(day).year != target.year for day in full):
+            continue
+        if not any(abs((datetime.date.fromisoformat(day) - target).days) <= 45 for day in full):
+            continue
+        short = {(int(m), int(d)) for m, d in SHORT.findall(line)}
+        if (target.month, target.day) in short and len(short) >= 2:
+            anchored = True
+            break
+    if not anchored:
+        return None
+    candidates = set()
+    for line in lines:
+        if REGISTRATION.match(line) or EXCLUDE.search(line):
+            continue
+        if not re.search(r"^(?:パート\s*\d+|第\s*\d+\s*回|講義|開催日時|日程|日時)", line):
+            continue
+        short = SHORT.findall(line)
+        if len(short) != 1 or tuple(map(int, short[0])) != (target.month, target.day):
+            continue
+        if len(_dates(line)) > 1:
+            continue
+        t1, t2 = _times(line)
+        if t1 and t2:
+            candidates.add((t1, t2))
+    return next(iter(candidates)) if len(candidates) == 1 else None
+
+
 def parse_jaha_detail(text, event):
     start_date = event.get("start_date")
     if not start_date:
@@ -131,7 +177,7 @@ def parse_jaha_detail(text, event):
         and not EXCLUDE.search(line)
         and start_date in _dates(line)
     ]
-    if not schedule_matches:
+    if not schedule_matches and not _short_date_session_time(lines, start_date):
         return {}
     out = {}
     deadline = _registration_deadline(lines, start_date)
@@ -153,13 +199,19 @@ def parse_jaha_detail(text, event):
         t1, t2 = _times(line)
         if t1 and t2:
             matches.append((t1, t2))
-    if len(matches) == 1:
-        t1, t2 = matches[0]
+    session_time = _short_date_session_time(lines, start_date)
+    # If both fully dated and short-dated schedules exist, require agreement.
+    distinct = set(matches)
+    if session_time:
+        distinct.add(session_time)
+    if len(distinct) == 1:
+        t1, t2 = next(iter(distinct))
         if not event.get("start_time") or event["start_time"] == t1:
-            if not event.get("start_time"):
-                out["start_time"] = t1
-            if not event.get("end_time"):
-                out["end_time"] = t2
+            if not event.get("end_time") or event["end_time"] == t2:
+                if not event.get("start_time"):
+                    out["start_time"] = t1
+                if not event.get("end_time"):
+                    out["end_time"] = t2
     return out
 
 
