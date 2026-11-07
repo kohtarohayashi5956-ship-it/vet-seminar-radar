@@ -13,6 +13,7 @@
 - JSONの蓄積、同じ講座の重複排除、古い講座の削除
 - 月別・分野・職種・地域・料金別の一覧、複数選択、Lark用の告知文の編集・コピー
 - 収集先別の巡回件数と失敗理由の記録（`data/run_status.json`）
+- 開催日・時刻・料金・締切・分野・対象職種・公式URLの記載率を `data/run_status.json` の `data_quality` に保存（正確性の検証率ではありません）
 - GitHub Actionsによる週2回の巡回（月・木 06:00 JST）とGitHub Pages更新
 - `python -m unittest discover -s tests` によるオフライン自動テスト（日時誤認の回帰テストを追加）
 

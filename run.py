@@ -23,6 +23,7 @@ import config
 import demo
 import merge
 import render
+from quality import summarize_quality
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -215,6 +216,7 @@ def main(argv):
         "checked_at_jst": datetime.datetime.now(ZoneInfo("Asia/Tokyo")).isoformat(timespec="seconds"),
         "mode": "free_with_optional_ai" if client is not None else "free_rules",
         "total_events": len(events),
+        "data_quality": summarize_quality(events),
         "source_results": health,
         "warnings": warnings,
     }
