@@ -40,6 +40,38 @@ class JBVPDetailTests(unittest.TestCase):
         self.assertEqual(got, {"venue":"ウインクあいち(愛知県産業労働センター)",
                                "prefecture":"愛知県"})
 
+    def test_date_bound_meeting_times(self):
+        page = PAGE.replace("2027年2月28日（日）", "2027年2月28日（日）10:00〜17:00")
+        got = parse_jbvp_region(page, event())
+        self.assertEqual(got["start_time"], "10:00")
+        self.assertEqual(got["end_time"], "17:00")
+
+    def test_time_on_unrelated_line_is_not_borrowed(self):
+        page = PAGE.replace("会場\\n", "別イベント 10:00〜17:00\\n会場\\n")
+        got = parse_jbvp_region(page, event())
+        self.assertNotIn("start_time", got)
+
+    def test_existing_times_remain_unchanged(self):
+        page = PAGE.replace("2027年2月28日（日）", "2027年2月28日（日）10:00〜17:00")
+        got = parse_jbvp_region(page, event(start_time="10:00", end_time="18:00"))
+        self.assertNotIn("start_time", got)
+        self.assertNotIn("end_time", got)
+
+    def test_conflicting_time_not_used(self):
+        page = PAGE.replace("2027年2月28日（日）", "2027年2月28日（日）10:00〜17:00")
+        got = parse_jbvp_region(page, event(start_time="09:00"))
+        self.assertNotIn("start_time", got)
+        self.assertNotIn("end_time", got)
+
+    def test_fetch_for_time_even_if_venue_known(self):
+        page = PAGE.replace("2027年2月28日（日）", "2027年2月28日（日）10:00〜17:00")
+        e = event(venue="既存公式会場", prefecture="愛知県")
+        f = DummyFetcher(page)
+        enrich_jbvp([e], f, TODAY, {})
+        self.assertEqual(f.calls, [URL])
+        self.assertEqual(e["start_time"], "10:00")
+        self.assertEqual(e["venue"], "既存公式会場")
+
     def test_unrelated_meeting_date_is_not_accepted(self):
         self.assertEqual(parse_jbvp_region(PAGE,event(start_date="2027-03-01")),{})
 
