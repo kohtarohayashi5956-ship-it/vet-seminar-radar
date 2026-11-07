@@ -272,7 +272,20 @@ def _gakusai(text,page,today):
         title=re.sub(r"^(?:No\.\s*\d+|MS\s*\d+)\s*","",seg[0])
         title=re.sub(r"<https?://[^>]+>|[»>]\s*詳細はこちら.*","",title).strip()
         if len(title)<6:continue
-        detail=next((l[1] for s in seg[:4] if (l:=_line_link(s)) and "詳細はこちら" in l[0]),None)
+        # Detail links may appear inline on the No./MS heading or on a
+        # separate line. Only URLs actually shown in THIS card are eligible.
+        # An unlinked "詳細はこちら" is not evidence of a published detail page.
+        detail = None
+        for candidate in seg:
+            m = re.search(r"(?:»|›|>)\\s*詳細はこちら\\s*<(https?://[^>\\s]+)>", candidate)
+            if not m:
+                continue
+            u = urlparse(m.group(1))
+            if (u.scheme == "https"
+                    and u.hostname in ("www.gakusai.co.jp", "gakusai.co.jp")
+                    and re.fullmatch(r"/vet/vet-seminar/\\d+/?", u.path)):
+                detail = m.group(1)
+                break
         date_line=next((s for s in seg[1:8] if MONTH_DAY.search(s) and not s.startswith("No.")),"")
         if not date_line:continue
         for section in re.split(r"[｜|]",date_line):
