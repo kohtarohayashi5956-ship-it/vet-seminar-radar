@@ -78,7 +78,11 @@ def _registration_deadline(lines, start_date):
     return None
 
 
-FEE_HEADING = re.compile(r"^(?:受講料|参加費|受講料金)\s*[：:]?")
+# Only actual section headings or inline fee labels, never a TOC link such
+# as "受講料・お申込 <#section>".
+FEE_HEADING = re.compile(
+    r"^(?:受講料|参加費|受講料金)(?:\s*[（(]税込[）)])?\s*(?:[：:].*)?$"
+)
 FEE_AMOUNT = re.compile(r"\d[\d,，]*\s*円")
 FEE_STOP = re.compile(
     r"^(?:申込|お申込み|お申し込み|申込み|受付|キャンセル|"
@@ -97,8 +101,12 @@ def _explicit_course_fee(lines):
         rest = FEE_HEADING.sub("", line).strip(" ：:")
         if rest:
             values.append(rest)
-        for next_line in lines[index + 1:index + 5]:
-            if FEE_STOP.match(next_line) or FEE_HEADING.match(next_line):
+        # Real JAHA price tables can have multiple separate header/cell
+        # lines between the section heading and the first amount.
+        for next_line in lines[index + 1:index + 17]:
+            if (FEE_STOP.match(next_line)
+                    or FEE_HEADING.match(next_line)
+                    or re.search(r"<https?://", next_line)):
                 break
             values.append(next_line)
         eligible = [
