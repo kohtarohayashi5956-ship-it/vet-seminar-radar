@@ -77,6 +77,75 @@ class TestJahaDeadlines(unittest.TestCase):
         out = parse_jaha_detail(page, event())
         self.assertNotIn("price", out)
 
+    def test_seniorcare_2026_numbered_course_matches_date_and_fees(self):
+        page = (
+            "2026年度 講座内容（全5回）\n"
+            "第1回 | 老化に伴う行動の変化 | 2026年11月12日 14:00-16:30\n"
+            "第2回 | 高齢動物のがんに関する知識\n"
+            "12月9日（水）14:00-17:00\n"
+            "第3回 | 整形疾患 | 2027年1月21日\n"
+            "受講料(税込)\n"
+            "JAHA会員\n会員外一般\n"
+            "全5回一括\n19,800円\n27,500円\n"
+            "単回申込\n4,950円\n7,150円\n"
+            "お申込\n"
+        )
+        item = event("2026-12-09",
+                     "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "【オンライン】動物病院スタッフのためのシニアケア講座・第２回"
+        out = parse_jaha_detail(page, item)
+        self.assertIn("19,800円", out["price"])
+        self.assertNotIn("is_free", out)
+        item["start_date"] = "2026-12-10"
+        self.assertEqual(parse_jaha_detail(page, item), {})
+
+    def test_puppy_2026_2027_numbered_course_rollover(self):
+        page = (
+            "2026年度開催スケジュール\n"
+            "第2回 | 11月1～7日 | 子犬の選び方\n"
+            "第3回 | 12月1～7日 | 困った行動\n"
+            "第4回 | 1月1～7日 | パピークラス\n"
+            "受講料(税込)\n"
+            "通常料金 | JAHA会員料金 | 学生料金\n"
+            "一括申込 | 59,400円 | 52,800円 | 29,700円\n"
+            "単回申込 | 8,800円\n"
+            "お申込み\n"
+        )
+        item = event("2026-12-01",
+                     "https://www.jaha.or.jp/training/seminar/puppy/basic/")
+        item["title"] = "こいぬこねこの教育アドバイザー養成講座ベーシックコース第3回"
+        self.assertIn("59,400円", parse_jaha_detail(page, item)["price"])
+        item["start_date"], item["title"] = "2027-01-01", (
+            "こいぬこねこの教育アドバイザー養成講座ベーシックコース第4回")
+        self.assertIn("59,400円", parse_jaha_detail(page, item)["price"])
+        item["start_date"] = "2026-01-01"
+        self.assertEqual(parse_jaha_detail(page, item), {})
+
+    def test_fee_skips_navigation_links_inside_valid_fee_section(self):
+        page = ("2026年11月7日開催\n"
+                "受講料\n"
+                "（2回通し料金・税込）\n"
+                "お知らせ <https://www.jaha.or.jp/info/>\n"
+                "通常受講：一般料金19,800円、JAHA会員16,500円\n"
+                "単発受講：会員18,700円／一般22,000円\n"
+                "お申し込み\n"
+                "キャンセル手数料1,000円\n")
+        out = parse_jaha_detail(page, event())
+        self.assertIn("19,800円", out["price"])
+        self.assertIn("22,000円", out["price"])
+        self.assertNotIn("1,000円", out["price"])
+
+    def test_numbered_course_requires_matching_round_and_year(self):
+        page = ("2026年度開催スケジュール\n"
+                "第3回 | 12月1～7日 | 子犬\n"
+                "受講料\n一括料金 50,000円\n")
+        item = event("2026-12-01")
+        item["title"] = "ベーシックコース第4回"
+        self.assertEqual(parse_jaha_detail(page, item), {})
+        item["title"] = "ベーシックコース第3回"
+        item["start_date"] = "2027-12-01"
+        self.assertEqual(parse_jaha_detail(page, item), {})
+
     def test_jaha_fee_requires_matching_course_date(self):
         self.assertEqual(parse_jaha_detail(PAGE, event("2026-11-08")), {})
 
