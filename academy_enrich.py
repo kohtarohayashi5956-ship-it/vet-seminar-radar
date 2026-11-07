@@ -68,12 +68,16 @@ def _course_schedule(lines, event):
         dates = _date(snippet)
         if len(dates) == 1 and dates[0] == start:
             found.append(snippet)
-    if len(found) != 1:
+    if not found:
         return None
-    match = RANGE.search(found[0])
-    if not match:
+    # Pages may display the same date in both a short header and a detailed
+    # course overview. Agreeing ranges are safe; contradictory ones are not.
+    ranges = {match.groups() for line in found if (match := RANGE.search(line))}
+    if len(ranges) > 1:
+        return None
+    if not ranges:
         return {}
-    sh, sm, eh, em = match.groups()
+    sh, sm, eh, em = next(iter(ranges))
     begin, finish = f"{int(sh):02d}:{sm}", f"{int(eh):02d}:{em}"
     if event.get("start_time") and event["start_time"] != begin:
         return None
