@@ -61,7 +61,7 @@ class TestConferenceDetails(unittest.TestCase):
         events = extract_free("JBVP", "https://www.jbvp.org/vn/", "", text, NOW, {})
         self.assertEqual(len(events), 3)
         venues = {e["start_date"]: e["venue"] for e in events}
-        self.assertEqual(venues["2027-02-28"], "ウインクあいち(愛知県産業労働センター)")
+        self.assertEqual(venues["2027-02-28"], "ウインクあいち（愛知県産業労働センター）")
         self.assertEqual(venues["2027-03-07"], "TKPガーデンシティ京都タワーホテル")
         self.assertEqual(venues["2027-03-21"], "福岡国際会議場")
 
