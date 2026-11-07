@@ -48,6 +48,18 @@ class NewSources(unittest.TestCase):
         self.assertEqual(ev["venue"],"コングレスクエア グラングリーン大阪")
         self.assertIsNone(ev["deadline"])  # archived video != in-person deadline
 
+    def test_video_streaming_start_must_not_replace_congress_end(self):
+        # Official pages also print the same opening date for video streaming.
+        text=("2026年度 第113回\\n日本獣医麻酔外科学会学術集会\\n"
+              "形式\\nハイブリッド開催\\n"
+              "開催期間\\n2026年12月18日（金）〜20日（日）\\n"
+              "動画配信期間\\n2026年12月18日より順次公開〜2027年2月28日まで\\n"
+              "会場\\nコングレスクエア グラングリーン大阪\\n")
+        got=extract_free("日本獣医麻酔外科学会",CONFERENCE,"",text,TODAY,{})
+        self.assertEqual(len(got),1)
+        self.assertEqual(got[0]["start_date"],"2026-12-18")
+        self.assertEqual(got[0]["end_date"],"2026-12-20")
+
     def test_jsvas_title_cannot_be_taken_from_old_navigation(self):
         text=("第113回 学術集会\n開催期間\n2026年12月18日～20日\n"
               "会場\nコングレスクエア グラングリーン大阪\n"

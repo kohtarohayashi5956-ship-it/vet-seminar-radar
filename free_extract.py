@@ -819,14 +819,28 @@ def _jsvas(text, page, today, stats):
             edition = re.search(r"20\d{2}年度第(\d{2,3})回",body)
         ix = next((i for i,line in enumerate(lines) if line == "開催期間"),None)
         if edition and ix is not None:
-            datestr = " ".join(lines[ix+1:ix+4])
+            # "動画配信期間" often repeats the first congress date on the
+            # next line. Never use that as the congress's end date.
+            schedule_lines = lines[ix+1:ix+4]
+            dated_line = next((i for i, ln in enumerate(schedule_lines) if _dates(ln)), None)
+            datestr = schedule_lines[dated_line] if dated_line is not None else ""
+            if dated_line is not None and datestr.endswith(("〜", "～", "-", "–")):
+                if dated_line+1 < len(schedule_lines):
+                    datestr += " " + schedule_lines[dated_line+1]
             dates = _dates(datestr)
             if dates and dates[0] >= today.isoformat():
                 date = dates[0]
                 title = f"第{edition.group(1)}回 日本獣医麻酔外科学会学術集会"
                 # Confirm title is genuinely present, not just a nav item.
                 if norm(title) in norm(body):
-                    end = dates[1] if len(dates)>1 else _range_end(datestr,date)
+                    end = _range_end(datestr, date)
+                    if not end:
+                        # Fully specified second dates on the SAME labeled
+                        # schedule line are permissible only for a short meeting.
+                        following = [d for d in dates[1:] if d > date and
+                                     (datetime.date.fromisoformat(d) -
+                                      datetime.date.fromisoformat(date)).days <= 7]
+                        end = following[0] if following else None
                     scope = "\n".join(lines[ix:min(len(lines),ix+20)])
                     ev = _event(title,date,page,page,scope,"日本獣医麻酔外科学会",end=end)
                     ev["format"] = "ハイブリッド" if "ハイブリッド開催" in body else "現地"
