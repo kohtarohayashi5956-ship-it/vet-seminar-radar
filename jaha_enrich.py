@@ -193,7 +193,7 @@ def _date_from_numbered_course(lines, event):
         return False
     round_num = round_match.group(1)
     year_heading = next((int(m.group(1)) for line in lines
-                         if (m := re.search(r"(20\d{2})年度(?:開催スケジュール|講座内容)", line))), None)
+                         if (m := re.search(r"(20\d{2})年度\s*(?:開催スケジュール|講座内容)", line))), None)
     if year_heading is None:
         return False
     if not (target.year == year_heading or target.year == year_heading + 1):
