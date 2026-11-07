@@ -11,7 +11,7 @@ import re
 import unicodedata
 from urllib.parse import urlsplit
 from extract import html_to_text
-from free_extract import _dates
+from free_extract import _dates, _times
 
 MAX_DETAILS = 10
 REGISTRATION = re.compile(
@@ -94,8 +94,28 @@ def parse_jaha_detail(text, event):
     ]
     if not schedule_matches:
         return {}
+    out = {}
     deadline = _registration_deadline(lines, start_date)
-    return {"deadline": deadline} if deadline else {}
+    if deadline:
+        out["deadline"] = deadline
+    # A timestamp is only trusted when the same schedule line explicitly
+    # contains exactly one fully specified date and one time range.
+    # In particular, do not associate a timetable for another session.
+    matches = []
+    for line in schedule_matches:
+        if _dates(line) != [start_date] or len(SHORT.findall(line)) != 1:
+            continue
+        t1, t2 = _times(line)
+        if t1 and t2:
+            matches.append((t1, t2))
+    if len(matches) == 1:
+        t1, t2 = matches[0]
+        if not event.get("start_time") or event["start_time"] == t1:
+            if not event.get("start_time"):
+                out["start_time"] = t1
+            if not event.get("end_time"):
+                out["end_time"] = t2
+    return out
 
 
 def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
@@ -115,15 +135,21 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
         except Exception:
             fetched[url] = None
     accepted = 0
+    times_found = 0
     for _, url, e in candidates:
         if not fetched.get(url):
             continue
         detail = parse_jaha_detail(fetched[url], e)
-        if detail.get("deadline") and detail["deadline"] != e.get("deadline"):
+        if detail:
+            before = (e.get("deadline"), e.get("start_time"), e.get("end_time"))
+            missing_start = not e.get("start_time")
             e.update(detail)
-            accepted += 1
+            after = (e.get("deadline"), e.get("start_time"), e.get("end_time"))
+            accepted += before != after
+            times_found += bool(missing_start and e.get("start_time"))
     stats["details_scanned"] = len(fetched)
     stats["details_accepted"] = accepted
-    stats["deadlines_found"] = accepted
+    stats["deadlines_found"] = sum(bool(e.get("deadline")) for _, _, e in candidates)
+    stats["times_found"] = times_found
     stats["detail_fetch_failed"] = sum(v is None for v in fetched.values())
     return events
