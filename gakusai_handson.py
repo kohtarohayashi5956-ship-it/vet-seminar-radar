@@ -16,7 +16,7 @@ from free_extract import _dates
 
 URL = "https://www.gakusai.co.jp/doubutu/handson-comingup/"
 COURSE = re.compile(r"(?:^|\s)MS\s*(1\d{2})\b")
-FEE = re.compile(r"^(?:会員獣医師|一般獣医師)\s*(?:\||：|:)?\s*(.+)$")
+FEE = re.compile(r"^(?:会員獣医師|一般獣医師)\s*(?:\||：|:)?\s*(.*)$")
 MONEY = re.compile(r"\d[\d,]*\s*円")
 CITY = {"東京": "東京", "大阪": "大阪", "宮崎": "宮崎", "福岡": "福岡"}
 MONTHDAY = re.compile(r"(?<!\d)(1[0-2]|0?[1-9])月(3[01]|[12]\d|0?[1-9])日")
