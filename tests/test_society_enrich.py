@@ -3,7 +3,7 @@
 import datetime
 import unittest
 from free_extract import extract_free
-from society_enrich import enrich_jsvc, parse_jsvc_certification_program, JSVC_COURSES_URL
+from society_enrich import enrich_jsvc, parse_jsvc_certification_program, parse_jsvc_meeting_venue, JSVC_COURSES_URL
 from merge import update_store, dedupe_cross_source
 
 NOW=datetime.date(2026,11,7)
@@ -81,11 +81,35 @@ class CertificationProgramTests(unittest.TestCase):
         enrich_jsvc(rows,f,NOW,stat)
         self.assertEqual(f.calls,[JSVC_COURSES_URL])
         self.assertEqual(stat["certification_programs_found"],1)
+        self.assertEqual(stat["venues_found"],1)
+        self.assertEqual(rows[0]["venue"],"パピヨン24ガスホール(福岡)")
         store={}
         update_store(store,rows,{"id":"jsvc","name":"日本獣医循環器学会"},None,NOW)
         value=next(iter(store.values()))
         self.assertIn("講座22",value["certification_program"])
         self.assertIn("アドバンス",dedupe_cross_source(list(store.values()))[0]["certification_program"])
+    def test_venue_from_confirmed_meeting_only(self):
+        self.assertEqual(
+            parse_jsvc_meeting_venue(SCHEDULE,e()),
+            {"venue":"パピヨン24ガスホール(福岡)","prefecture":"福岡県"}
+        )
+        self.assertEqual(parse_jsvc_meeting_venue(SCHEDULE,e("2027-12-19")),{})
+
+    def test_does_not_borrow_prior_meeting_venue(self):
+        text=SCHEDULE.replace("会場：パピヨン24ガスホール（福岡）", "")
+        text=text.replace("第124回 定例大会",
+                          "第124回 定例大会\\n会場：前大会の会場")
+        self.assertEqual(parse_jsvc_meeting_venue(text,e()),{})
+
+    def test_ambiguous_venue_is_ignored_and_existing_preserved(self):
+        text=SCHEDULE.replace("会場：パピヨン24ガスホール（福岡）",
+                              "会場：パピヨン24ガスホール（福岡）\\n会場：別会場")
+        self.assertEqual(parse_jsvc_meeting_venue(text,e()),{})
+        existing=e()
+        existing["venue"]="既存の正式会場"
+        got=parse_jsvc_meeting_venue(SCHEDULE,existing)
+        self.assertNotIn("venue",got)
+
     def test_blocked_page_preserves_meeting(self):
         class Denied:
             def get(self,url):raise RuntimeError("robots")
