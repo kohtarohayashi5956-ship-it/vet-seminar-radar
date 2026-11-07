@@ -113,6 +113,34 @@ class GakusaiHandsonTests(unittest.TestCase):
         enrich_handson([row],Fetcher(html),TODAY,{})
         self.assertIsNone(row["price"])
 
+    def test_same_course_same_day_official_application_url(self):
+        rows=[
+            event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」","2027-01-17"),
+            event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」","2027-03-21"),
+        ]
+        enrich_handson(rows,Fetcher(),TODAY,{})
+        self.assertEqual(rows[0]["detail_url"], "https://seminar.gakusai.co.jp/bar")
+        self.assertEqual(rows[1]["detail_url"], "https://seminar.gakusai.co.jp/foo")
+
+    def test_application_url_rejects_foreign_domain_and_userinfo(self):
+        page = TEXT.replace("https://seminar.gakusai.co.jp/bar",
+                            "https://seminar.gakusai.co.jp.evil.example/bar")
+        row=event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」","2027-01-17")
+        enrich_handson([row],Fetcher(page),TODAY,{})
+        self.assertNotIn("detail_url", row)
+        page = TEXT.replace("https://seminar.gakusai.co.jp/bar",
+                            "https://bad.example@seminar.gakusai.co.jp/bar")
+        row=event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」","2027-01-17")
+        enrich_handson([row],Fetcher(page),TODAY,{})
+        self.assertNotIn("detail_url",row)
+
+    def test_existing_official_detail_url_preserved(self):
+        row=event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」","2027-01-17")
+        row["detail_url"]="https://www.gakusai.co.jp/vet/vet-seminar/12345/"
+        enrich_handson([row],Fetcher(),TODAY,{})
+        self.assertEqual(row["detail_url"],
+                         "https://www.gakusai.co.jp/vet/vet-seminar/12345/")
+
     def test_no_cross_date_and_no_generic_tariff(self):
         rows=[
             event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」","2027-02-21"),
