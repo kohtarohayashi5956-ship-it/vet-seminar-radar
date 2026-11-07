@@ -18,7 +18,7 @@ on:
       - 'quality.py'
       - 'extract.py'
       - 'render.py'
-      - '*_enrich.py'
+      - '*.py'
       - 'template.html'
       - 'data/manual_events.csv'
       - '.github/workflows/seminar-radar.yml'
