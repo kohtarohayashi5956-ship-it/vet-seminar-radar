@@ -152,6 +152,56 @@ def _explicit_course_fee(lines):
     return None, None
 
 
+DOG_FEE = re.compile(
+    r"^(通常受講|単発受講)[：:]\s*(.+)$"
+)
+DOG_FEE_VALUE = re.compile(
+    r"(一般料金|JAHA会員|学生料金)\s*(\d[\d,]*\s*円)"
+)
+
+
+def _dog_lecture_fee(lines, event):
+    """Keep two-day vs one-off registration prices on JAHA dog lectures.
+
+    The real official pages sometimes separate fee headings and rows with
+    links, so generic fee-section scanning may fail. Require BOTH labelled
+    rows beneath a proper 受講料 heading and an event-specific URL.
+    """
+    u = _url(event)
+    if not u or urlsplit(u).path not in (
+        "/owners/dog-training/kougi2_ol/",
+        "/owners/dog-training/kougi3ol/",
+    ):
+        return None
+    for i, line in enumerate(lines):
+        if line != "受講料":
+            continue
+        rows = {}
+        for candidate in lines[i + 1:i + 45]:
+            if candidate.startswith(("お申し込み", "受付期間", "キャンセル")):
+                break
+            matched = DOG_FEE.match(candidate)
+            if not matched:
+                continue
+            amounts = {name: amount.replace(" ", "") for name, amount
+                       in DOG_FEE_VALUE.findall(matched.group(2))}
+            if {"一般料金", "JAHA会員"} <= set(amounts):
+                rows[matched.group(1)] = amounts
+        if not {"通常受講", "単発受講"} <= set(rows):
+            continue
+        normal, one_off = rows["通常受講"], rows["単発受講"]
+        items = [
+            "2回通し：一般 " + normal["一般料金"],
+            "JAHA会員 " + normal["JAHA会員"],
+        ]
+        if normal.get("学生料金"):
+            items.append("学生 " + normal["学生料金"])
+        items.extend(("単発：一般 " + one_off["一般料金"],
+                      "JAHA会員 " + one_off["JAHA会員"]))
+        return "／".join(items)
+    return None
+
+
 def _short_date_session_time(lines, start_date):
     """Match a uniquely dated session time to a year-anchored course schedule.
 
@@ -299,7 +349,10 @@ def parse_jaha_detail(text, event):
     if deadline and not event.get("deadline"):
         out["deadline"] = deadline
     if not event.get("price"):
-        price, is_free = _explicit_course_fee(lines)
+        price = _dog_lecture_fee(lines, event)
+        is_free = None
+        if not price:
+            price, is_free = _explicit_course_fee(lines)
         if price:
             out["price"] = price
             if is_free and event.get("is_free") is None:
