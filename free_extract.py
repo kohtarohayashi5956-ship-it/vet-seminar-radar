@@ -626,6 +626,36 @@ def _jsvd_abstract_deadline(lines, index, event_pat, event_date):
     return None
 
 
+
+def _jbvp_listing_venue(lines, start):
+    """Only read the venue from the same explicitly dated JBVP listing card."""
+    dated = False
+    for i, line in enumerate(lines):
+        normalized = unicodedata.normalize("NFKC", line).strip()
+        if re.match(r"^(?:日程|日時|開催日)\s*[：:|]?", normalized):
+            schedule = re.sub(r"^(?:日程|日時|開催日)\s*[：:|]?", "", normalized).strip()
+            if not schedule and i + 1 < len(lines):
+                schedule = lines[i + 1].strip()
+            if start in _dates(schedule):
+                dated = True
+        if not dated:
+            continue
+        venue_label = re.match(r"^会場\s*[：:|]?\s*(.*)$", normalized)
+        if not venue_label:
+            continue
+        value = venue_label.group(1).strip()
+        if not value and i + 1 < len(lines):
+            value = lines[i + 1].strip()
+        if not (3 <= len(value) <= 90):
+            return None
+        if (re.search(r"https?://|<|>|〒|TEL|FAX|E-mail|お問い合わせ", value, re.I)
+                or _dates(value)
+                or value.startswith(("日程", "日時", "会場", "登録", "申込", "主催"))):
+            return None
+        return value
+    return None
+
+
 def _jbvp(text, page, today, stats):
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     out, seen = [], set()
@@ -657,6 +687,9 @@ def _jbvp(text, page, today, stats):
         seen.add(k)
         e = _event(line, start, page, page, block, "JBVP", end=_range_end(block, start))
         e["topics"] = ["学会・大会"]
+        venue = _jbvp_listing_venue(fragment, start)
+        if venue:
+            e["venue"] = venue
         e["detail_url"] = _jbvp_detail_url(line, start)
         if "オンライン" in line or "オンライン配信" in block:
             e["format"] = "オンデマンド"
