@@ -23,7 +23,7 @@ import config
 import demo
 import merge
 import render
-from quality import summarize_quality
+from quality import summarize_quality, summarize_quality_by_source
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -230,6 +230,7 @@ def main(argv):
         "mode": "free_with_optional_ai" if client is not None else "free_rules",
         "total_events": len(events),
         "data_quality": summarize_quality(events),
+        "quality_by_source": summarize_quality_by_source(events),
         "source_results": health,
         "warnings": warnings,
     }
