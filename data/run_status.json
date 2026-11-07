@@ -1,12 +1,12 @@
 {
-  "checked_at_jst": "2026-11-07T22:29:27+09:00",
+  "checked_at_jst": "2026-11-07T22:33:29+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
     "total": 82,
     "field_presence": {
       "start_date": 81,
-      "start_time": 25,
+      "start_time": 26,
       "venue": 25,
       "price": 19,
       "deadline": 20,
@@ -16,7 +16,7 @@
     },
     "field_presence_pct": {
       "start_date": 98.8,
-      "start_time": 30.5,
+      "start_time": 31.7,
       "venue": 30.5,
       "price": 23.2,
       "deadline": 24.4,
@@ -79,7 +79,7 @@
       "total": 19,
       "field_presence": {
         "start_date": 19,
-        "start_time": 4,
+        "start_time": 5,
         "venue": 0,
         "price": 3,
         "deadline": 6,
@@ -89,7 +89,7 @@
       },
       "field_presence_pct": {
         "start_date": 100.0,
-        "start_time": 21.1,
+        "start_time": 26.3,
         "venue": 0.0,
         "price": 15.8,
         "deadline": 31.6,
@@ -411,7 +411,7 @@
           "corroborated_dates": []
         }
       ],
-      "times_found": 4,
+      "times_found": 5,
       "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",

@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-07T22:29:27+09:00",
+ "updated": "2026-11-07T22:33:29+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -1843,8 +1843,8 @@
    "title": "【オンライン】動物病院スタッフのためのシニアケア講座・第２回",
    "start_date": "2026-12-09",
    "end_date": null,
-   "start_time": null,
-   "end_time": null,
+   "start_time": "14:00",
+   "end_time": "17:00",
    "format": "ライブ配信",
    "venue": null,
    "prefecture": null,
