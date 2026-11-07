@@ -107,6 +107,7 @@ def main(argv):
     from sources import pages_for
     from detail_enrich import enrich_lifetail
     from gakusai_enrich import enrich_gakusai
+    from gakusai_handson import enrich_handson
     from jaha_enrich import enrich_jaha
     from society_enrich import enrich_jsvc
     from jsvas_enrich import enrich_jsvas
@@ -183,9 +184,11 @@ def main(argv):
                 "件 / 料金 " + str(stats.get("prices_found", 0)) + "件")
         elif src["id"] == "gakusai" and not note and fresh:
             fresh = enrich_gakusai(fresh, fetcher, today, stats)
+            fresh = enrich_handson(fresh, fetcher, today, stats)
             log("  詳細補完: " + str(stats.get("details_scanned", 0)) +
                 "ページ / 開催時刻 " + str(stats.get("times_found", 0)) +
-                "件 / 料金 " + str(stats.get("prices_found", 0)) + "件")
+                "件 / 料金 " + str(stats.get("prices_found", 0)) +
+                "件 / 実習料金 " + str(stats.get("handson_fees_found", 0)) + "件")
         elif src["id"] == "jbvp" and not note and fresh:
             fresh = enrich_jbvp(fresh, fetcher, today, stats)
             log("  JBVP地区大会会場補完: " + str(stats.get("details_scanned", 0)) +
@@ -215,6 +218,9 @@ def main(argv):
                        "details_accepted": stats.get("details_accepted", 0),
                        "deadlines_found": stats.get("deadlines_found", 0),
                        "prices_found": stats.get("prices_found", 0),
+                       "handson_fees_found": stats.get("handson_fees_found", 0),
+                       "handson_course_cards": stats.get("handson_course_cards", 0),
+                       "handson_fetch_failed": stats.get("handson_fetch_failed", 0),
                        "fee_label_pages": stats.get("fee_label_pages", 0),
                        "fee_amount_pages": stats.get("fee_amount_pages", 0),
                        "fee_parsed_pages": stats.get("fee_parsed_pages", 0),
