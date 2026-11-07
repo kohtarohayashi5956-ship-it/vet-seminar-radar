@@ -6,13 +6,15 @@ from quality import FIELDS, summarize_quality
 class QualityTests(unittest.TestCase):
     def test_coverage_counts_after_deduplication(self):
         events = [
-            {"start_date": "2026-12-01", "topics": ["内科"], "price": None, "url": "https://example.org/a"},
+            {"start_date": "2026-12-01", "venue": "東京国際フォーラム", "topics": ["内科"], "price": None, "url": "https://example.org/a"},
             {"start_date": None, "topics": [], "price": "無料", "url": "https://example.org/b"},
         ]
         result = summarize_quality(events)
         self.assertEqual(result["total"], 2)
         self.assertEqual(result["field_presence"]["start_date"], 1)
         self.assertEqual(result["field_presence"]["topics"], 1)
+        self.assertEqual(result["field_presence"]["venue"], 1)
+        self.assertEqual(result["field_presence_pct"]["venue"], 50.0)
         self.assertEqual(result["field_presence"]["price"], 1)
         self.assertEqual(result["field_presence"]["url"], 2)
         self.assertEqual(result["field_presence_pct"]["start_date"], 50.0)
