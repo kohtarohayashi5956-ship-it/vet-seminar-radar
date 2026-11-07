@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-07T20:49:43+09:00",
+  "checked_at_jst": "2026-11-07T21:04:29+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
@@ -77,8 +77,8 @@
       "note": ""
     },
     {
-      "id": "peppy",
-      "name": "PEPPY",
+      "id": "academy",
+      "name": "VETS ACADEMY",
       "pages": 0,
       "extracted": 0,
       "added": 0,
@@ -91,7 +91,7 @@
       "times_found": 0,
       "detail_fetch_failed": 0,
       "status": "error",
-      "note": "取得しませんでした（robots.txt）: robots.txt で許可されていません: https://www.peppy.jp/seminar"
+      "note": "取得しませんでした（robots.txt）: robots.txt で許可されていません: https://academy.eduone.jp/seminar"
     },
     {
       "id": "jbvp",
@@ -266,6 +266,6 @@
   ],
   "warnings": [
     "SEMINAR_RADAR_CONTACT が未設定です。",
-    "PEPPY: 取得しませんでした（robots.txt）: robots.txt で許可されていません: https://www.peppy.jp/seminar"
+    "VETS ACADEMY: 取得しませんでした（robots.txt）: robots.txt で許可されていません: https://academy.eduone.jp/seminar"
   ]
 }
