@@ -110,6 +110,7 @@ def main(argv):
     from jaha_enrich import enrich_jaha
     from society_enrich import enrich_jsvc
     from jsvas_enrich import enrich_jsvas
+    from jbvp_enrich import enrich_jbvp
 
     client = None
     key = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -182,6 +183,10 @@ def main(argv):
             log("  詳細補完: " + str(stats.get("details_scanned", 0)) +
                 "ページ / 開催時刻 " + str(stats.get("times_found", 0)) +
                 "件 / 料金 " + str(stats.get("prices_found", 0)) + "件")
+        elif src["id"] == "jbvp" and not note and fresh:
+            fresh = enrich_jbvp(fresh, fetcher, today, stats)
+            log("  JBVP地区大会会場補完: " + str(stats.get("details_scanned", 0)) +
+                "ページ / 会場 " + str(stats.get("venues_found", 0)) + "件")
         elif src["id"] == "jsvas" and not note and fresh:
             fresh = enrich_jsvas(fresh, fetcher, today, stats)
             log("  JSVAS講習会詳細: " + str(stats.get("details_scanned", 0)) +
