@@ -77,7 +77,7 @@ SOURCES = [
         "name": "VETS ACADEMY",
         "kind": "vets_academy_list",
         "start_url": "https://academy.eduone.jp/seminar",
-        "enabled": True,
+        "enabled": False,
     },
     {
         "id": "jbvp",
