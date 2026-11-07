@@ -173,7 +173,9 @@ def main(argv):
             fresh = enrich_jaha(fresh, fetcher, today, stats)
             log("  JAHA個別ページ: " + str(stats.get("details_scanned", 0)) +
                 "ページ / 締切確認 " + str(stats.get("deadlines_found", 0)) +
-                "件 / 料金 " + str(stats.get("prices_found", 0)) + "件")
+                "件 / 料金 " + str(stats.get("prices_found", 0)) +
+                "件 / 詳細料金表示 " + str(stats.get("fee_label_pages", 0)) +
+                "件 / 料金解析 " + str(stats.get("fee_parsed_pages", 0)) + "件")
         if src["id"] == "lifetail" and not note and fresh:
             fresh = enrich_lifetail(fresh, fetcher, today, stats)
             log("  詳細補完: " + str(stats.get("details_scanned", 0)) +
@@ -213,6 +215,9 @@ def main(argv):
                        "details_accepted": stats.get("details_accepted", 0),
                        "deadlines_found": stats.get("deadlines_found", 0),
                        "prices_found": stats.get("prices_found", 0),
+                       "fee_label_pages": stats.get("fee_label_pages", 0),
+                       "fee_amount_pages": stats.get("fee_amount_pages", 0),
+                       "fee_parsed_pages": stats.get("fee_parsed_pages", 0),
                        "times_found": stats.get("times_found", 0),
                        "venues_found": stats.get("venues_found", 0),
                        "detail_fetch_failed": stats.get("detail_fetch_failed", 0),
