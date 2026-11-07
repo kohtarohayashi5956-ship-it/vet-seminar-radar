@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-07T16:12:53+09:00",
+  "checked_at_jst": "2026-11-07T16:19:29+09:00",
   "mode": "free_rules",
   "total_events": 80,
   "source_results": [
@@ -144,8 +144,8 @@
       "name": "日本獣医麻酔外科学会",
       "pages": 2,
       "extracted": 4,
-      "added": 4,
-      "updated": 0,
+      "added": 0,
+      "updated": 4,
       "replaced_stale": 0,
       "details_scanned": 0,
       "details_accepted": 0,
@@ -161,8 +161,8 @@
       "name": "JCVIM",
       "pages": 1,
       "extracted": 1,
-      "added": 1,
-      "updated": 0,
+      "added": 0,
+      "updated": 1,
       "replaced_stale": 0,
       "details_scanned": 0,
       "details_accepted": 0,
