@@ -231,6 +231,20 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
             fetched[url] = html_to_text(fetcher.get(url), url)
         except Exception:
             fetched[url] = None
+    # Aggregate diagnostics only: no page contents or personal data in logs.
+    detail_pages_with_fee_label = sum(
+        any(FEE_HEADING.match(v.strip()) for v in (page or "").splitlines())
+        for page in fetched.values()
+    )
+    detail_pages_with_amount = sum(
+        any(FEE_AMOUNT.search(v) for v in (page or "").splitlines())
+        for page in fetched.values()
+    )
+    detail_pages_with_parsed_fee = sum(
+        bool(_explicit_course_fee([unicodedata.normalize("NFKC", v.strip())
+                                   for v in (page or "").splitlines() if v.strip()])[0])
+        for page in fetched.values()
+    )
     accepted = 0
     times_found = 0
     prices_found = 0
@@ -254,5 +268,8 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
     stats["deadlines_found"] = sum(bool(e.get("deadline")) for _, _, e in candidates)
     stats["times_found"] = times_found
     stats["prices_found"] = prices_found
+    stats["fee_label_pages"] = detail_pages_with_fee_label
+    stats["fee_amount_pages"] = detail_pages_with_amount
+    stats["fee_parsed_pages"] = detail_pages_with_parsed_fee
     stats["detail_fetch_failed"] = sum(v is None for v in fetched.values())
     return events
