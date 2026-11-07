@@ -67,6 +67,42 @@ def parse_jsvc_certification_program(page_text, event):
     return "・".join(ordinary) + ("／アドバンス：" + "・".join(advanced) if advanced else "")
 
 
+
+def parse_jsvc_meeting_venue(page_text, event):
+    """Venue only from the date-confirmed 125th meeting course section."""
+    if parse_jsvc_certification_program(page_text, event) is None:
+        return {}
+    lines = [unicodedata.normalize("NFKC", x.strip())
+             for x in page_text.splitlines() if x.strip()]
+    start = next((i for i, x in enumerate(lines)
+                  if re.fullmatch(r"第125回\\s*定例大会", x)), None)
+    if start is None:
+        return {}
+    scope = []
+    for line in lines[start + 1:]:
+        if re.match(r"^第\\d+回\\s*定例大会$", line) or line.startswith(
+                ("日本獣医循環器学会事務局", "お問い合わせ")):
+            break
+        scope.append(line)
+    venues = []
+    for i, line in enumerate(scope):
+        match = re.fullmatch(r"会\\s*場\\s*[：:]\\s*(.*)", line)
+        if not match:
+            continue
+        value = match.group(1).strip() or (scope[i + 1] if i + 1 < len(scope) else "")
+        if (4 <= len(value) <= 90 and not re.search(
+                r"https?://|@|〒|TEL|FAX|20\\d{2}年", value, re.I)):
+            venues.append(value)
+    if len(venues) != 1:
+        return {}
+    result = {}
+    if not event.get("venue"):
+        result["venue"] = venues[0]
+    if not event.get("prefecture") and ("福岡" in venues[0]):
+        result["prefecture"] = "福岡県"
+    return result
+
+
 def enrich_jsvc(events, fetcher, today, stats):
     candidates = [
         e for e in events if e.get("start_date") == "2026-12-19"
@@ -83,11 +119,17 @@ def enrich_jsvc(events, fetcher, today, stats):
         return events
     stats["certification_details_scanned"] = 1
     updated = 0
+    venues_found = 0
     for ev in candidates:
         program = parse_jsvc_certification_program(text, ev)
         if program:
             ev["certification_program"] = program
             ev["certification_url"] = JSVC_COURSES_URL
             updated += 1
+            venue = parse_jsvc_meeting_venue(text, ev)
+            if venue:
+                venues_found += bool(venue.get("venue"))
+                ev.update(venue)
     stats["certification_programs_found"] = updated
+    stats["venues_found"] = venues_found
     return events
