@@ -75,23 +75,23 @@ def parse_jsvc_meeting_venue(page_text, event):
     lines = [unicodedata.normalize("NFKC", x.strip())
              for x in page_text.splitlines() if x.strip()]
     start = next((i for i, x in enumerate(lines)
-                  if re.fullmatch(r"第125回\\s*定例大会", x)), None)
+                  if re.fullmatch(r"第125回\s*定例大会", x)), None)
     if start is None:
         return {}
     scope = []
     for line in lines[start + 1:]:
-        if re.match(r"^第\\d+回\\s*定例大会$", line) or line.startswith(
+        if re.match(r"^第\d+回\s*定例大会$", line) or line.startswith(
                 ("日本獣医循環器学会事務局", "お問い合わせ")):
             break
         scope.append(line)
     venues = []
     for i, line in enumerate(scope):
-        match = re.fullmatch(r"会\\s*場\\s*[：:]\\s*(.*)", line)
+        match = re.fullmatch(r"会\s*場\s*[：:]\s*(.*)", line)
         if not match:
             continue
         value = match.group(1).strip() or (scope[i + 1] if i + 1 < len(scope) else "")
         if (4 <= len(value) <= 90 and not re.search(
-                r"https?://|@|〒|TEL|FAX|20\\d{2}年", value, re.I)):
+                r"https?://|@|〒|TEL|FAX|20\d{2}年", value, re.I)):
             venues.append(value)
     if len(venues) != 1:
         return {}
