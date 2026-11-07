@@ -54,7 +54,7 @@ def _courses(text):
                 continue
             tier = ("会員" if line.startswith("会員獣医師") else "一般")
             rest = m.group(1)
-            rest = re.split(r"<https?://", rest, maxsplit=1)[0]
+            rest = re.split(r"<https?://|ご入会はこちら", rest, maxsplit=1)[0]
             if MONEY.search(rest):
                 fees[tier] = rest.strip(" |")
         if set(fees) != {"会員", "一般"}:
