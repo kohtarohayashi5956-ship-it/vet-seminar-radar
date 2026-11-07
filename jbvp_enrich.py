@@ -10,7 +10,7 @@ import unicodedata
 from urllib.parse import urlsplit
 
 from extract import html_to_text
-from free_extract import _dates
+from free_extract import _dates, _times
 
 MAX_DETAILS = 5
 REGIONS = {
@@ -58,6 +58,7 @@ def parse_jbvp_region(text, event):
         return {}
     scope = lines[meeting + 1:meeting + 18]
     date_ok = False
+    schedule_times = []
     venue = None
     for idx, line in enumerate(scope):
         if SCHEDULE_LABEL.match(line):
@@ -67,6 +68,10 @@ def parse_jbvp_region(text, event):
             dates = _dates(remainder)
             if dates == [event["start_date"]]:
                 date_ok = True
+                # Only a single date-bound schedule line may supply times.
+                start_time, end_time = _times(remainder)
+                if start_time and end_time:
+                    schedule_times.append((start_time, end_time))
         if VENUE_LABEL.match(line):
             remainder = VENUE_LABEL.sub("", line).strip(" ：:")
             if not remainder and idx + 1 < len(scope):
@@ -84,6 +89,13 @@ def parse_jbvp_region(text, event):
         result["venue"] = venue
     if not event.get("prefecture"):
         result["prefecture"] = prefecture
+    if len(schedule_times) == 1:
+        start_time, end_time = schedule_times[0]
+        if not event.get("start_time") or event["start_time"] == start_time:
+            if not event.get("start_time"):
+                result["start_time"] = start_time
+            if not event.get("end_time"):
+                result["end_time"] = end_time
     return result
 
 
@@ -96,7 +108,8 @@ def enrich_jbvp(events, fetcher, today, stats, limit=MAX_DETAILS):
             continue
         if event["start_date"] < today.isoformat():
             continue
-        if event.get("venue") and event.get("prefecture"):
+        if (event.get("venue") and event.get("prefecture")
+                and event.get("start_time") and event.get("end_time")):
             continue
         candidates.append((event["start_date"], url_and_region[0], event))
     candidates.sort(key=lambda x: x[0])
@@ -110,6 +123,7 @@ def enrich_jbvp(events, fetcher, today, stats, limit=MAX_DETAILS):
             fetched[url] = None
     accepted = 0
     venues_found = 0
+    times_found = 0
     for _, url, event in candidates:
         if not fetched.get(url):
             continue
@@ -119,7 +133,8 @@ def enrich_jbvp(events, fetcher, today, stats, limit=MAX_DETAILS):
         event.update(values)
         accepted += 1
         venues_found += bool(values.get("venue"))
+        times_found += bool(values.get("start_time"))
     stats.update(details_scanned=len(fetched), details_accepted=accepted,
-                 venues_found=venues_found,
+                 venues_found=venues_found, times_found=times_found,
                  detail_fetch_failed=sum(value is None for value in fetched.values()))
     return events
