@@ -762,6 +762,129 @@ def _society(text, page, today, stats, society):
 
 
 
+# --------------------------------------------------------------------------
+# New official sources: meeting- and course-specific, no date inference.
+# Source-specific details are read only from the associated card or programme
+# section. This avoids borrowing application dates from old meetings.
+def _jsvas(text, page, today, stats):
+    """JSVAS regional lectures (linked cards) and current meeting programme."""
+    lines = [unicodedata.normalize("NFKC", x.strip()) for x in text.splitlines() if x.strip()]
+    found = []
+    if "/lectures/index.php" in page:
+        for line in lines:
+            # Each HTML card is a single linked block after html_to_text.
+            link = re.search(r"<(https://(?:www\.)?jsvas\.net/lectures/[a-zA-Z0-9_-]+\.php)>", line)
+            if not link:
+                continue
+            card = line[:link.start()].strip()
+            if "日時" not in card or not ("地区講習会" in card or "症例検討会" in card):
+                continue
+            date_section = card.split("日時", 1)[1].split("会場", 1)[0]
+            dates = _dates(date_section)
+            if not dates or dates[0] < today.isoformat():
+                continue
+            # Preserve the official lecture title and any seminar subtitle,
+            # but never copy an adjacent speaker, date, or venue into it.
+            head = re.split(r"講師|演者|日時|会場",card, maxsplit=1)[0].strip()
+            title_match = re.search(r"20\d{2}年度|第\d+回",head)
+            if not title_match:
+                continue
+            title = head[title_match.start():].strip()
+            if not (8 <= len(title) <= 180):
+                continue
+            start = dates[0]
+            url = link.group(1)
+            ev = _event(title,start,url,page,card,"日本獣医麻酔外科学会")
+            ev["audience"] = ["獣医師"]
+            # Keep known venue only where this event's card explicitly says it.
+            if "会場" in card:
+                venue = card.rsplit("会場",1)[1].strip()
+                if venue and len(venue) < 100:
+                    ev["venue"] = venue
+            ev["topics"] = _topics(title)
+            if "岡山国際交流センター" in card:
+                ev["prefecture"] = "岡山県"
+            elif "ライトキューブ宇都宮" in card:
+                ev["prefecture"] = "栃木県"
+            if "講師" in card and "日時" in card:
+                speakers = card.split("講師",1)[1].split("日時",1)[0]
+                ev["speaker"] = _speakers_in_title(speakers)
+            found.append(ev)
+    elif re.search(r"/conference/20\d{2}-\d+\.php$",page):
+        body = "\n".join(lines)
+        # The event number and name must be explicitly printed in the same
+        # programme. Do not use global site navigation's archive links.
+        edition = re.search(r"20\d{2}年度\s+第(\d{2,3})回",body)
+        if not edition:
+            edition = re.search(r"20\d{2}年度第(\d{2,3})回",body)
+        ix = next((i for i,line in enumerate(lines) if line == "開催期間"),None)
+        if edition and ix is not None:
+            datestr = " ".join(lines[ix+1:ix+4])
+            dates = _dates(datestr)
+            if dates and dates[0] >= today.isoformat():
+                date = dates[0]
+                title = f"第{edition.group(1)}回 日本獣医麻酔外科学会学術集会"
+                # Confirm title is genuinely present, not just a nav item.
+                if norm(title) in norm(body):
+                    end = dates[1] if len(dates)>1 else _range_end(datestr,date)
+                    scope = "\n".join(lines[ix:min(len(lines),ix+20)])
+                    ev = _event(title,date,page,page,scope,"日本獣医麻酔外科学会",end=end)
+                    ev["format"] = "ハイブリッド" if "ハイブリッド開催" in body else "現地"
+                    ev["audience"] = ["獣医師"]
+                    ev["topics"] = ["学会・大会"]
+                    vi = next((j for j in range(ix+1,min(len(lines),ix+15))
+                               if lines[j]=="会場"),None)
+                    if vi is not None and vi+1 < len(lines):
+                        v=lines[vi+1].split(" <")[0].strip()
+                        if len(v)<=100:
+                            ev["venue"]=v
+                            if "大阪" in v: ev["prefecture"]="大阪府"
+                    # Registration periods can extend AFTER the in-person
+                    # meeting for recorded lectures; no invented final deadline.
+                    found.append(ev)
+    stats["jsvas_cards"]=len(found)
+    return found
+
+
+def _jcvim(text,page,today,stats):
+    """One dated JCVIM congress announcement; ignore earlier years' news."""
+    lines=[unicodedata.normalize("NFKC",x.strip()) for x in text.splitlines() if x.strip()]
+    out=[]
+    for i,line in enumerate(lines):
+        m=re.match(r"^(第\d+回日本獣医内科学アカデミー学術大会)(?:\s*[（(]JCVIM(\d{4})[)）])?のご案内$",line)
+        if not m:
+            continue
+        year = int(m.group(2)) if m.group(2) else None
+        if year is None:
+            continue
+        block = lines[i+1:min(len(lines),i+8)]
+        when = next((x for x in block if x.startswith("会期")),None)
+        if not when:
+            continue
+        dates = _dates(when)
+        if not dates or not dates[0].startswith(str(year)) or dates[0] < today.isoformat():
+            continue
+        date=dates[0]
+        end=dates[-1] if len(dates)>1 else _range_end(when,date)
+        ev = _event(m.group(1),date,page,page,when,"日本獣医内科学アカデミー",end=end)
+        ev["topics"]=["学会・大会"]
+        ev["audience"]=["獣医師","動物看護師"]
+        ev["format"]="現地"
+        venue = next((x.split("：",1)[-1].split(":",1)[-1].strip()
+                      for x in block if re.match(r"^会場[：:]",x)),None)
+        if venue:
+            ev["venue"]=venue
+            if "横浜" in venue: ev["prefecture"]="神奈川県"
+        # This meeting-specific official conference microsite was verified
+        # against the exact event number and date, not a sponsor's advert.
+        if year == 2027 and date == "2027-02-19" and "第23回" in m.group(1):
+            ev["detail_url"]="https://smartconf.jp/content/jcvim2027/outline"
+        out.append(ev)
+        break
+    stats["jcvim_meetings"]=len(out)
+    return out
+
+
 def extract_free(source_name,page_url,hint,text,today,stats):
     source=source_name.lower().replace("&","")
     if "jaha" in source or "日本動物病院協会" in source:
@@ -772,6 +895,8 @@ def extract_free(source_name,page_url,hint,text,today,stats):
     elif source in ("日本獣医皮膚科学会","jsvd"):raw=_society(text,page_url,today,stats,"jsvd")
     elif source in ("日本獣医がん学会","jvcs"):raw=_society(text,page_url,today,stats,"jvcs")
     elif source in ("日本獣医循環器学会","jsvc"):raw=_society(text,page_url,today,stats,"jsvc")
+    elif source in ("日本獣医麻酔外科学会","jsvas"):raw=_jsvas(text,page_url,today,stats)
+    elif source in ("jcvim","日本獣医内科学アカデミー"):raw=_jcvim(text,page_url,today,stats)
     elif "jbvp" in source:raw=_jbvp(text,page_url,today,stats)
     elif "学際" in source:raw=_gakusai(text,page_url,today)
     elif "vets tech" in source or "vetstech" in source:raw=_feed(text,page_url,today)

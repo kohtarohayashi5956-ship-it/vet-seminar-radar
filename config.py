@@ -108,6 +108,24 @@ SOURCES = [
         "enabled": True,
     },
     {
+        "id": "jsvas",
+        "name": "日本獣医麻酔外科学会",
+        "kind": "html_page",
+        # Public official lecture listing and conference detail, no bulk mirrors.
+        "urls": [
+            "https://www.jsvas.net/lectures/index.php",
+            "https://www.jsvas.net/conference/2026-113.php",
+        ],
+        "enabled": True,
+    },
+    {
+        "id": "jcvim",
+        "name": "JCVIM",
+        "kind": "html_page",
+        "urls": ["https://www.jcvim.org/index.html"],
+        "enabled": True,
+    },
+    {
         "id": "vetstech",
         "name": "VETS TECH",
         "kind": "wp_feed",

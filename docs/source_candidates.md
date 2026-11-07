@@ -27,13 +27,13 @@
 | C 看護師系団体 | 日本動物看護職協会 | 保留 | — | 未実装 |
 | C 看護師系団体 | JBVP(VNCA+・地区大会) | Phase2 | [参照](https://www.jbvp.org/web_ls/) | 未実装 |
 | C 看護師系団体 | 動物臨床医学研究所 | Phase2 | [参照](https://dourinken.com/) | 未実装 |
-| D 獣医系学会・研究会 | 日本獣医麻酔外科学会 | Phase2 | [参照](https://www.jsvas.net/) | 未実装 |
+| D 獣医系学会・研究会 | 日本獣医麻酔外科学会 | Phase1 | [参照](https://www.jsvas.net/) | 実装・GitHub Actions検証対象（2026-11-07） |
 | D 獣医系学会・研究会 | 日本獣医循環器学会 | Phase2 | [参照](https://www.jsvc.jp/) | 未実装 |
 | D 獣医系学会・研究会 | 日本獣医腎泌尿器学会 | Phase2 | [参照](https://javnu.jp/) | 未実装 |
 | D 獣医系学会・研究会 | 比較眼科学会 | Phase2 | [参照](https://jscvo-conf.com/) | 未実装 |
 | D 獣医系学会・研究会 | 日本獣医眼科カンファランス(JVOC) | Phase2 | [参照](http://www.jvoc.jp/) | 未実装 |
 | D 獣医系学会・研究会 | 日本獣医エキゾチック動物学会 | Phase2 | [参照](https://jseam.me/) | 未実装 |
-| D 獣医系学会・研究会 | 日本獣医内科学アカデミー(JCVIM) | 保留 | [参照](https://www.jcvim.org/) | 未実装 |
+| D 獣医系学会・研究会 | 日本獣医内科学アカデミー(JCVIM) | Phase1 | [参照](https://www.jcvim.org/) | 実装・GitHub Actions検証対象（2026-11-07） |
 | D 獣医系学会・研究会 | 日本獣医がん学会 | 保留 | [参照](https://www.jvcs.jp/society/index.html) | 未実装 |
 | D 獣医系学会・研究会 | 日本獣医画像診断学会 | 保留 | [参照](https://jsvdi.com/) | 未実装 |
 | D 獣医系学会・研究会 | 日本小動物獣医師会(JSAVA) | 保留 | [参照](https://www.jsava.org/) | 未実装 |
