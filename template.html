@@ -177,6 +177,25 @@
     font-size:12px; }
   .quality-strip strong { color:var(--ink); font-weight:700; }
 
+  /* ---- 認定医情報：月別カレンダーとは独立した一覧 ---- */
+  .cert-panel { padding:12px 16px; border-bottom:1px solid var(--line); background:var(--panel); }
+  .cert-head { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px 16px; }
+  .cert-head h2 { margin:0; font-size:15px; font-weight:750; }
+  .cert-count { color:var(--muted); font-size:12px; font-weight:400; }
+  .cert-controls { display:flex; flex-wrap:wrap; gap:8px 14px; }
+  .cert-controls label { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
+  .cert-controls select { border:1px solid var(--line); border-radius:var(--radius); padding:5px 8px; background:var(--panel); color:var(--ink); max-width:180px; }
+  .cert-list { display:grid; gap:7px; margin-top:9px; }
+  .cert-item { border:1px solid var(--line); border-radius:var(--radius); padding:9px 12px; min-width:0; }
+  .cert-meta { display:flex; flex-wrap:wrap; gap:6px 12px; font-size:11px; color:var(--muted); margin-bottom:3px; }
+  .cert-date { font-weight:750; color:var(--accent); }
+  .cert-title { font-size:13px; font-weight:700; line-height:1.55; }
+  .cert-sub { font-size:12px; color:var(--ink); line-height:1.55; margin-top:4px; overflow-wrap:anywhere; }
+  .cert-registration { display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:5px; font-size:12px; }
+  .cert-registration span { color:var(--muted); }
+  .cert-links { display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:5px; font-size:12px; }
+  .cert-note, .cert-empty { font-size:11px; color:var(--muted); margin:7px 0 0; }
+  .cert-note { line-height:1.5; }
   /* Upcoming deadlines, independent of the viewed calendar month. */
   .deadline-panel { padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
   .deadline-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
@@ -227,6 +246,33 @@
   <label class="chk"><input type="checkbox" id="fHidePast" checked>終了を隠す</label>
   <label class="chk"><input type="checkbox" id="fGeneral">一般向けも表示</label>
   <input type="search" id="fQ" placeholder="キーワード" aria-label="キーワード検索">
+</section>
+
+<section class="cert-panel" aria-label="認定医・学会発表に関連する講習情報">
+  <div class="cert-head">
+    <h2>認定医関連を探す <span id="certCount" class="cert-count"></span></h2>
+    <div class="cert-controls">
+      <label for="certField">分野
+        <select id="certField" aria-label="認定医関連の分野">
+          <option value="all">すべて</option>
+          <option value="循環器">循環器</option>
+          <option value="皮膚科">皮膚科</option>
+          <option value="腎・泌尿器">腎・泌尿器</option>
+          <option value="その他">その他</option>
+        </select>
+      </label>
+      <label for="certKind">情報
+        <select id="certKind" aria-label="認定医関連の情報種類">
+          <option value="all">すべて</option>
+          <option value="course">認定医講習科目</option>
+          <option value="points">更新評価点</option>
+          <option value="activity">学会参加・発表</option>
+        </select>
+      </label>
+    </div>
+  </div>
+  <div id="certList" class="cert-list" aria-live="polite"></div>
+  <p class="cert-note">ここに表示する内容は認定医取得・更新の確約ではありません。参加資格、単位・評価点の認定条件、締切時刻は必ず各学会の公式情報で確認してください。</p>
 </section>
 
 <section class="deadline-panel" aria-label="申込締切が近い講座">
@@ -399,6 +445,89 @@
   }
 
 
+  /* ---------- 認定医関連：分野・種別の横断検索 ---------- */
+  function certArea(e) {
+    var groups = { jsvc: "循環器", jsvd: "皮膚科", javnu: "腎・泌尿器" };
+    return groups[e.source_id] || "その他";
+  }
+  function certKind(e) {
+    // Do not interpret participation credits as a training course.
+    if (e.certification_program || /認定医講習会/.test(e.certification_note || "")) return "course";
+    if (/認定医更新評価点/.test(e.certification_note || "")) return "points";
+    return "activity";
+  }
+  function certMatches(e, area, kind) {
+    if (!e.certification_note && !e.certification_program) return false;
+    if (area !== "all" && certArea(e) !== area) return false;
+    if (kind !== "all" && certKind(e) !== kind) return false;
+    return true;
+  }
+  function certKindLabel(kind) {
+    return { course: "認定医講習科目", points: "更新評価点", activity: "学会参加・発表" }[kind] || "認定医関連";
+  }
+  function certRegistrationStatus(date, label) {
+    if (!date) return label + "：未取得（公式確認）";
+    var days = deadlineDays(date);
+    if (days < 0) return label + "：" + md(date) + "（期限経過・受付要確認）";
+    if (days === 0) return label + "：" + md(date) + "（本日締切）";
+    return label + "：" + md(date) + "（あと" + days + "日）";
+  }
+  function renderCertificationPanel() {
+    var area = $("certField").value, kind = $("certKind").value;
+    var entries = EVENTS.filter(function (e) {
+      return e.start_date && endOf(e) >= todayStr &&
+             certMatches(e, area, kind) && passes(e);
+    }).sort(function (a, b) {
+      if (a.start_date !== b.start_date) return a.start_date < b.start_date ? -1 : 1;
+      return (a.title || "").localeCompare(b.title || "", "ja");
+    });
+    var list = $("certList");
+    list.textContent = "";
+    $("certCount").textContent = "（" + entries.length + "件）";
+    if (!entries.length) {
+      list.appendChild(el("p", "cert-empty", "表示条件に一致する認定医関連イベントはありません。"));
+      return;
+    }
+    entries.slice(0, 10).forEach(function (e) {
+      var item = el("article", "cert-item");
+      var meta = el("div", "cert-meta");
+      meta.appendChild(el("span", "cert-date", md(e.start_date) + "（" + wd(e.start_date) + "）"));
+      meta.appendChild(el("span", null, certArea(e)));
+      meta.appendChild(el("span", null, certKindLabel(certKind(e))));
+      meta.appendChild(el("span", null, e.source || ""));
+      item.appendChild(meta);
+      var heading = el("div", "cert-title");
+      var main = el("a", null, displayTitle(e));
+      main.href = e.detail_url || e.url || "#";
+      main.target = "_blank"; main.rel = "noopener noreferrer";
+      heading.appendChild(main);
+      item.appendChild(heading);
+      if (e.certification_note) item.appendChild(el("div", "cert-sub", e.certification_note));
+      if (e.certification_program) item.appendChild(el("div", "cert-sub", "講習科目：" + e.certification_program));
+      var reg = el("div", "cert-registration");
+      reg.appendChild(el("span", null, certRegistrationStatus(e.deadline, "参加申込締切")));
+      if (e.abstract_deadline) reg.appendChild(el("span", null, certRegistrationStatus(e.abstract_deadline, "演題募集締切")));
+      if (e.price || e.is_free === true) reg.appendChild(el("span", null, "受講料：" + (e.price || "無料")));
+      item.appendChild(reg);
+      var links = el("div", "cert-links");
+      if (e.certification_url) {
+        var rules = el("a", null, "認定制度・講習の公式情報");
+        rules.href = e.certification_url; rules.target = "_blank"; rules.rel = "noopener noreferrer";
+        links.appendChild(rules);
+      }
+      if (e.detail_url && e.detail_url !== e.url) {
+        var official = el("a", null, "イベント個別案内");
+        official.href = e.detail_url; official.target = "_blank"; official.rel = "noopener noreferrer";
+        links.appendChild(official);
+      }
+      if (links.childNodes.length) item.appendChild(links);
+      list.appendChild(item);
+    });
+    if (entries.length > 10) {
+      list.appendChild(el("p", "cert-note", "ほか" + (entries.length - 10) + "件。絞り込み条件を変更してください。"));
+    }
+  }
+
   /* ---------- 申込締切を横断検索（閲覧月とは独立） ---------- */
   function deadlineDays(dateStr) {
     var a = dateStr.split("-").map(Number);
@@ -544,6 +673,7 @@
   }
 
   function render() {
+    renderCertificationPanel();
     renderDeadlinePanel();
     var mStart = monthKey(cur.y, cur.m) + "-01";
     var last = new Date(cur.y, cur.m, 0).getDate();
@@ -774,6 +904,8 @@
     ["fOnsite", "fLive", "fOnd", "fFree", "fHidePast", "fGeneral"].forEach(function (id) { $(id).addEventListener("change", render); });
     $("fQ").addEventListener("input", render);
     $("deadlineWindow").addEventListener("change", render);
+    $("certField").addEventListener("change", render);
+    $("certKind").addEventListener("change", render);
 
     $("prev").addEventListener("click", function () { cur.m--; if (cur.m < 1) { cur.m = 12; cur.y--; } render(); });
     $("next").addEventListener("click", function () { cur.m++; if (cur.m > 12) { cur.m = 1; cur.y++; } render(); });
