@@ -298,6 +298,70 @@ def eduone_lecture_pages(src, fetcher):
         yield link, record, "EDUWARD Press公式の講演会詳細。講演会概要の開催日時を優先。"
 
 
+
+# --------------------------------------------------------------------------
+def vets_academy_pages(src, fetcher):
+    """Extract each official VETS ACADEMY listing card without neighboring data.
+
+    On the listing, one card may contain several anchors to the same detail
+    URL (status, title, schedule, type, audience). Keep cards separated by
+    their exact numeric detail URL and do not visit restricted member pages.
+    """
+    import json
+
+    url = src["start_url"]
+    soup = BeautifulSoup(fetcher.get(url), "html.parser")
+    cards = {}
+    for a in soup.find_all("a", href=True):
+        link = urljoin(url, a["href"])
+        parsed = urlparse(link)
+        if (parsed.scheme != "https"
+                or parsed.hostname != "academy.eduone.jp"
+                or not re.fullmatch(r"/seminar/detail/\d+/?", parsed.path)):
+            continue
+        label = a.get_text(" ", strip=True)
+        if not label:
+            continue
+        card = cards.setdefault(link, [])
+        if label not in card:
+            card.append(label)
+
+    lines = []
+    for link, labels in cards.items():
+        date_pattern = r"20\d{2}/(?:0?[1-9]|1[0-2])/(?:[0-2]?\d|3[01])"
+        schedule = next((v for v in labels if re.search(date_pattern, v)), "")
+        title = next((v for v in labels if v not in (
+            "募集中", "募集終了", "LIVE", "オンデマンド", "会場型",
+            "獣医師", "動物看護", "トリマー", "無料")
+            and not re.search(date_pattern, v) and len(v) >= 5), "")
+        if not title:
+            # Some pages wrap the whole card in a single anchor. Extract
+            # only the text between the status and the listed date.
+            composite = next((v for v in labels if re.search(date_pattern, v)), "")
+            match = re.search(
+                r"(?:募集中|募集終了)\s*(.{5,180}?)\s*"
+                + date_pattern, composite
+            )
+            if match:
+                title = match.group(1).strip()
+        if not title or not schedule:
+            continue
+        context = " ".join(labels)
+        kind = ("オンデマンド" if "オンデマンド" in context
+                else "LIVE" if re.search(r"\bLIVE\b", context)
+                else "会場型" if "会場型" in context else "")
+        audiences = [v for v in ("獣医師", "動物看護", "トリマー")
+                     if v in context]
+        status = ("募集終了" if "募集終了" in context
+                  else "募集中" if "募集中" in context else "")
+        free = "無料" if "無料" in labels else ""
+        card_data = dict(url=link, title=title, schedule=schedule,
+                         kind=kind, audiences=audiences,
+                         status=status, free=free)
+        lines.append("ACADEMY_CARD " + json.dumps(card_data, ensure_ascii=False))
+    yield url, "\n".join(lines), "VETS ACADEMY公式・講習カードごとの開催日または配信期間。"
+
+
 def jbvp_meeting_pages(src, fetcher):
     """Only official meeting pages; schedule found per heading, never inferred."""
     for url in src["urls"]:
@@ -308,6 +372,8 @@ def jbvp_meeting_pages(src, fetcher):
 # --------------------------------------------------------------------------
 def pages_for(src, fetcher, months):
     kind = src["kind"]
+    if kind == "vets_academy_list":
+        return vets_academy_pages(src, fetcher)
     if kind == "peppy_list":
         return peppy_pages(src, fetcher)
     if kind == "eduone_lecture":
