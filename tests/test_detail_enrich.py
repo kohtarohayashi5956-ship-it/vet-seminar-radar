@@ -46,6 +46,30 @@ class EnrichmentTests(unittest.TestCase):
         self.assertIsNone(p["is_free"])
         self.assertIn("博多駅前", p["venue"])
 
+    def test_detail_adds_missing_schedule_times(self):
+        e = event()
+        e["start_time"] = None
+        e["end_time"] = None
+        p = parse_lifetail_detail(EXAMPLE, e)
+        self.assertEqual(p["start_time"], "10:00")
+        self.assertEqual(p["end_time"], "13:00")
+
+    def test_existing_schedule_time_is_not_overwritten(self):
+        e = event()
+        e["end_time"] = "13:00"
+        p = parse_lifetail_detail(EXAMPLE, e)
+        self.assertNotIn("start_time", p)
+        self.assertNotIn("end_time", p)
+
+    def test_multiple_schedule_dates_are_not_copied(self):
+        e = event()
+        e["start_time"] = None
+        txt = ("開催日時\\n2027年01月21日 10:00〜13:00 / "
+               "2027年01月28日 14:00〜17:00\\n受講料\\n無料")
+        p = parse_lifetail_detail(txt, e)
+        self.assertNotIn("start_time", p)
+        self.assertNotIn("end_time", p)
+
     def test_different_day_or_time_is_rejected(self):
         self.assertEqual(parse_lifetail_detail(EXAMPLE, event(start="2027-01-22")), {})
         self.assertEqual(parse_lifetail_detail(EXAMPLE, event(time="14:30")), {})

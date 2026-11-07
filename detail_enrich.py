@@ -109,6 +109,17 @@ def parse_lifetail_detail(detail_text, event):
     if not _course_date_matches(lines, event):
         return {}
     out = {}
+    # Use only the explicitly labelled schedule for times. A course-detail
+    # page with several different dates may describe multiple sessions; do
+    # not copy a time from another session into this event.
+    schedule = _section(lines, "開催日時", 3)
+    schedule_dates = _dates(" ".join(schedule))
+    if len(schedule_dates) == 1 and schedule_dates[0] == event.get("start_date"):
+        start_time, end_time = _times(" ".join(schedule))
+        if start_time and not event.get("start_time"):
+            out["start_time"] = start_time
+        if end_time and not event.get("end_time"):
+            out["end_time"] = end_time
     price, is_free = _life_price(lines)
     if price is not None:
         out["price"] = price
@@ -146,7 +157,8 @@ def enrich_lifetail(events, fetcher, today, stats, limit=MAX_LIFETAIL_DETAILS):
         start = event.get("start_date")
         if not url or not start or start < today.isoformat():
             continue
-        if event.get("deadline") and event.get("price") and event.get("venue"):
+        if (event.get("deadline") and event.get("price") and event.get("venue")
+                and event.get("start_time") and event.get("end_time")):
             continue
         candidates.append((start, url, event))
     candidates.sort(key=lambda t: t[0])
@@ -170,9 +182,11 @@ def enrich_lifetail(events, fetcher, today, stats, limit=MAX_LIFETAIL_DETAILS):
         details = parse_lifetail_detail(text, event)
         if not details:
             continue
-        old = (event.get("deadline"), event.get("price"), event.get("venue"))
+        old = (event.get("deadline"), event.get("price"), event.get("venue"),
+               event.get("start_time"), event.get("end_time"))
         event.update(details)
-        new = (event.get("deadline"), event.get("price"), event.get("venue"))
+        new = (event.get("deadline"), event.get("price"), event.get("venue"),
+               event.get("start_time"), event.get("end_time"))
         changed += old != new
         dated += bool(details.get("deadline"))
         priced += bool(details.get("price"))
