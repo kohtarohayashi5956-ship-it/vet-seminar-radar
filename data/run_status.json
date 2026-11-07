@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-07T22:13:58+09:00",
+  "checked_at_jst": "2026-11-07T22:18:57+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
@@ -356,6 +356,56 @@
       "fee_label_pages": 4,
       "fee_amount_pages": 6,
       "fee_parsed_pages": 2,
+      "fee_detail_checks": [
+        {
+          "path": "/owners/dog-training/kougi3ol/",
+          "fee_label": true,
+          "yen_amount": true,
+          "fee_section": false,
+          "corroborated_dates": [
+            "2026-11-07",
+            "2026-11-14"
+          ]
+        },
+        {
+          "path": "/training/seminar/vet/endocrine26/",
+          "fee_label": false,
+          "yen_amount": true,
+          "fee_section": false,
+          "corroborated_dates": []
+        },
+        {
+          "path": "/training/seminar/seniorcare_ol/",
+          "fee_label": true,
+          "yen_amount": true,
+          "fee_section": true,
+          "corroborated_dates": []
+        },
+        {
+          "path": "/training/seminar/puppy/basic/",
+          "fee_label": true,
+          "yen_amount": true,
+          "fee_section": true,
+          "corroborated_dates": []
+        },
+        {
+          "path": "/owners/dog-training/kougi2_ol/",
+          "fee_label": true,
+          "yen_amount": true,
+          "fee_section": false,
+          "corroborated_dates": [
+            "2026-12-05",
+            "2026-12-12"
+          ]
+        },
+        {
+          "path": "/training/seminar/vnseries/aigan26deep3/",
+          "fee_label": false,
+          "yen_amount": true,
+          "fee_section": false,
+          "corroborated_dates": []
+        }
+      ],
       "times_found": 4,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -377,6 +427,7 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -398,6 +449,7 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 2,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -419,6 +471,7 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -440,6 +493,7 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -461,6 +515,7 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -482,6 +537,7 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -503,6 +559,7 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -524,6 +581,7 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 2,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -545,6 +603,7 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -566,6 +625,7 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -587,6 +647,7 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
@@ -596,10 +657,10 @@
     {
       "id": "vetstech",
       "name": "VETS TECH",
-      "pages": 3,
-      "extracted": 5,
-      "added": 1,
-      "updated": 4,
+      "pages": 0,
+      "extracted": 0,
+      "added": 0,
+      "updated": 0,
       "replaced_stale": 0,
       "details_scanned": 0,
       "details_accepted": 0,
@@ -608,14 +669,16 @@
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
-      "status": "ok",
-      "note": ""
+      "status": "error",
+      "note": "エラー: RSSの構造が不正で、解析可能なitemがありません"
     }
   ],
   "warnings": [
-    "SEMINAR_RADAR_CONTACT が未設定です。"
+    "SEMINAR_RADAR_CONTACT が未設定です。",
+    "VETS TECH: エラー: RSSの構造が不正で、解析可能なitemがありません"
   ]
 }
