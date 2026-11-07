@@ -48,12 +48,23 @@ def _courses(text):
         title = segment[0][match.end():].strip(" |　")
         marker = segment.index("受講料")
         fees = {}
-        for line in segment[marker + 1:marker + 14]:
+        fee_rows = segment[marker + 1:marker + 22]
+        for k, line in enumerate(fee_rows):
             m = FEE.match(line)
             if not m:
                 continue
             tier = ("会員" if line.startswith("会員獣医師") else "一般")
             rest = m.group(1)
+            if not MONEY.search(rest):
+                # HTML tables commonly split <td>会員獣医師</td> and
+                # <td>48,000円＋実習材料費... into distinct text lines.
+                # Only the immediately following cell in this course card
+                # may complete that tier; never cross another tier/heading.
+                nxt = fee_rows[k + 1] if k + 1 < len(fee_rows) else ""
+                if not (MONEY.search(nxt) and not FEE.match(nxt)
+                        and not nxt.startswith(("申込", "ご入会", "※", "受講料"))):
+                    continue
+                rest = nxt
             rest = re.split(r"<https?://|ご入会はこちら", rest, maxsplit=1)[0]
             if MONEY.search(rest):
                 fees[tier] = rest.strip(" |")
