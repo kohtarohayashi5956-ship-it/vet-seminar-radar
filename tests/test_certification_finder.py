@@ -40,7 +40,8 @@ class CertificationFinderTests(unittest.TestCase):
         self.assertIn("endOf(e) >= todayStr",body)
         self.assertIn("e.abstract_deadline",body)
         self.assertIn("e.certification_url",body)
-        self.assertIn("e.certification_program",body)
+        self.assertIn("certCourseItems(e)",body)
+        self.assertIn("e.certification_program",function_source("certCourseItems"))
 
     def test_certification_panel_after_main_and_collapsed_by_default(self):
         self.assertLess(PAGE.index('<div class="layout">'), PAGE.index('id="certDisclosure"'))
