@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-07T22:18:57+09:00",
+  "checked_at_jst": "2026-11-07T22:29:27+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
@@ -8,8 +8,8 @@
       "start_date": 81,
       "start_time": 25,
       "venue": 25,
-      "price": 16,
-      "deadline": 18,
+      "price": 19,
+      "deadline": 20,
       "topics": 66,
       "audience": 41,
       "url": 82
@@ -18,8 +18,8 @@
       "start_date": 98.8,
       "start_time": 30.5,
       "venue": 30.5,
-      "price": 19.5,
-      "deadline": 22.0,
+      "price": 23.2,
+      "deadline": 24.4,
       "topics": 80.5,
       "audience": 50.0,
       "url": 100.0
@@ -81,8 +81,8 @@
         "start_date": 19,
         "start_time": 4,
         "venue": 0,
-        "price": 0,
-        "deadline": 4,
+        "price": 3,
+        "deadline": 6,
         "topics": 12,
         "audience": 19,
         "url": 19
@@ -91,8 +91,8 @@
         "start_date": 100.0,
         "start_time": 21.1,
         "venue": 0.0,
-        "price": 0.0,
-        "deadline": 21.1,
+        "price": 15.8,
+        "deadline": 31.6,
         "topics": 63.2,
         "audience": 100.0,
         "url": 100.0
@@ -350,9 +350,9 @@
       "updated": 19,
       "replaced_stale": 0,
       "details_scanned": 6,
-      "details_accepted": 4,
-      "deadlines_found": 4,
-      "prices_found": 0,
+      "details_accepted": 7,
+      "deadlines_found": 6,
+      "prices_found": 3,
       "fee_label_pages": 4,
       "fee_amount_pages": 6,
       "fee_parsed_pages": 2,
@@ -379,14 +379,19 @@
           "fee_label": true,
           "yen_amount": true,
           "fee_section": true,
-          "corroborated_dates": []
+          "corroborated_dates": [
+            "2026-12-09"
+          ]
         },
         {
           "path": "/training/seminar/puppy/basic/",
           "fee_label": true,
           "yen_amount": true,
           "fee_section": true,
-          "corroborated_dates": []
+          "corroborated_dates": [
+            "2026-12-01",
+            "2027-01-01"
+          ]
         },
         {
           "path": "/owners/dog-training/kougi2_ol/",
@@ -657,10 +662,10 @@
     {
       "id": "vetstech",
       "name": "VETS TECH",
-      "pages": 0,
-      "extracted": 0,
-      "added": 0,
-      "updated": 0,
+      "pages": 3,
+      "extracted": 5,
+      "added": 1,
+      "updated": 4,
       "replaced_stale": 0,
       "details_scanned": 0,
       "details_accepted": 0,
@@ -673,12 +678,11 @@
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
-      "status": "error",
-      "note": "エラー: RSSの構造が不正で、解析可能なitemがありません"
+      "status": "ok",
+      "note": ""
     }
   ],
   "warnings": [
-    "SEMINAR_RADAR_CONTACT が未設定です。",
-    "VETS TECH: エラー: RSSの構造が不正で、解析可能なitemがありません"
+    "SEMINAR_RADAR_CONTACT が未設定です。"
   ]
 }
