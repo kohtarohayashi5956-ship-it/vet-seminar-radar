@@ -33,7 +33,7 @@ def detail_url(event):
         parsed = urlsplit(url)
     except ValueError:
         return None
-    match = re.fullmatch(r"/regional/([a-z]+)/\.html", parsed.path)
+    match = re.fullmatch(r"/regional/([a-z]+)\.html", parsed.path)
     if (parsed.scheme != "https" or parsed.hostname not in ("www.jbvp.org", "jbvp.org")
             or parsed.username or parsed.password or not match):
         return None
