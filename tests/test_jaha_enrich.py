@@ -35,7 +35,7 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertEqual(parse_jaha_detail(PAGE,event()),{"deadline":"2026-11-04"})
 
     def test_explicit_single_date_schedule_times(self):
-        text = ("2026年11月7日 14:00〜17:00 開催\\n"
+        text = ("2026年11月7日 14:00〜17:00 開催\n"
                 "受付期間：2026年9月7日～11月4日")
         self.assertEqual(
             parse_jaha_detail(text, event()),
@@ -43,7 +43,7 @@ class TestJahaDeadlines(unittest.TestCase):
         )
 
     def test_multiple_schedule_dates_do_not_assign_times(self):
-        text = ("2026年11月7日 / 11月14日 14:00〜17:00\\n"
+        text = ("2026年11月7日 / 11月14日 14:00〜17:00\n"
                 "受付期間：2026年9月7日～11月4日")
         result = parse_jaha_detail(text, event())
         self.assertNotIn("start_time", result)
@@ -58,7 +58,7 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertNotIn("end_time", result)
 
     def test_registration_time_not_mistaken_for_course_time(self):
-        text = ("2026年11月7日開催\\n"
+        text = ("2026年11月7日開催\n"
                 "受付期間：2026年9月7日～11月4日 14:00〜17:00")
         result = parse_jaha_detail(text, event())
         self.assertNotIn("start_time", result)
