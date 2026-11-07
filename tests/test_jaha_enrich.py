@@ -218,6 +218,11 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertEqual(stats["fee_label_pages"], 1)
         self.assertEqual(stats["fee_amount_pages"], 1)
         self.assertEqual(stats["fee_parsed_pages"], 1)
+        self.assertEqual(stats["fee_detail_checks"][0]["path"],
+                         "/owners/dog-training/kougi3ol/")
+        self.assertTrue(stats["fee_detail_checks"][0]["fee_section"])
+        self.assertIn("2026-11-07",
+                      stats["fee_detail_checks"][0]["corroborated_dates"])
 
     def test_robots_failure_preserves_existing_data(self):
         class Blocked:

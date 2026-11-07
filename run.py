@@ -218,6 +218,7 @@ def main(argv):
                        "fee_label_pages": stats.get("fee_label_pages", 0),
                        "fee_amount_pages": stats.get("fee_amount_pages", 0),
                        "fee_parsed_pages": stats.get("fee_parsed_pages", 0),
+                       "fee_detail_checks": stats.get("fee_detail_checks", []),
                        "times_found": stats.get("times_found", 0),
                        "venues_found": stats.get("venues_found", 0),
                        "detail_fetch_failed": stats.get("detail_fetch_failed", 0),
