@@ -78,6 +78,34 @@ class TestConferenceDetails(unittest.TestCase):
         self.assertIsNone(events[0]["venue"])
         self.assertEqual(events[1]["venue"], "TKPガーデンシティ京都タワーホテル")
 
+    def test_jbvp_online_delivery_is_not_a_physical_venue(self):
+        text = (
+            "地区大会 2027（オンラインプログラム）\n"
+            "日程：2027年4月1日～2027年6月30日\n"
+            "会場：オンライン配信\n"
+        )
+        events = extract_free("JBVP", "https://www.jbvp.org/vn/", "", text, NOW, {})
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["format"], "オンデマンド")
+        self.assertIsNone(events[0]["venue"])
+        self.assertIsNone(events[0]["prefecture"])
+
+    def test_jbvp_online_does_not_copy_adjacent_onsite_venue(self):
+        text = (
+            "地区大会 2027（オンラインプログラム）\n"
+            "日程：2027年4月1日～2027年6月30日\n"
+            "会場：オンライン配信\n"
+            "第29回 年次大会2027\n"
+            "日程：2027年9月25日～26日\n"
+            "会場：ホテルニューオータニ\n"
+        )
+        events = extract_free("JBVP", "https://www.jbvp.org/forum/", "", text, NOW, {})
+        self.assertEqual(len(events), 2)
+        online = next(e for e in events if "オンライン" in e["title"])
+        onsite = next(e for e in events if "年次大会" in e["title"])
+        self.assertIsNone(online["venue"])
+        self.assertEqual(onsite["venue"], "ホテルニューオータニ")
+
     def test_jbvp_venue_rejected_without_date_label(self):
         text = (
             "第7回 名古屋地区大会\n"
