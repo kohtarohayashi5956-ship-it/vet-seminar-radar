@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Official Gakusai hands-on fee sections: course-level, not general tariffs."""
 import datetime
+import re
 import unittest
 from gakusai_handson import _courses, enrich_handson, URL
 
@@ -50,7 +51,11 @@ class Fetcher:
     def __init__(self,text=TEXT):self.text=text;self.calls=[]
     def get(self,url):
         self.calls.append(url)
-        return "<div>"+"".join("<p>"+line+"</p>" for line in self.text.splitlines())+"</div>"
+        def linked(line):
+            return re.sub(r"<(https://[^<>]+)>",
+                          lambda match: '<a href="' + match.group(1) + '">申込先</a>',
+                          line)
+        return "<div>"+"".join("<p>"+linked(line)+"</p>" for line in self.text.splitlines())+"</div>"
 
 class GakusaiHandsonTests(unittest.TestCase):
     def test_course_sections_are_isolated(self):
