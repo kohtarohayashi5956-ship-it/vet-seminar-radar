@@ -445,6 +445,68 @@ PEPPY_TARGETS = re.compile(
 PEPPY_WDAY = re.compile(r"^\s*[\(（][月火水木金土日][\)）]\s*")
 
 
+
+def _vets_academy(text, page, today, stats):
+    """Parse only dates and metadata carried by the same official card."""
+    import json
+    out = []
+    for line in text.splitlines():
+        if not line.startswith("ACADEMY_CARD "):
+            continue
+        try:
+            item = json.loads(line[len("ACADEMY_CARD "):])
+        except (ValueError, TypeError):
+            continue
+        if not isinstance(item, dict):
+            continue
+        url = item.get("url")
+        if not isinstance(url, str):
+            continue
+        parsed = urlparse(url)
+        if (parsed.scheme != "https" or parsed.hostname != "academy.eduone.jp"
+                or not re.fullmatch(r"/seminar/detail/\d+/?", parsed.path)):
+            continue
+        title = item.get("title")
+        schedule = item.get("schedule")
+        if not isinstance(title, str) or len(title.strip()) < 5 or not isinstance(schedule, str):
+            continue
+        dates = re.findall(r"(?<!\d)(20\d{2})/(\d{1,2})/(\d{1,2})(?!\d)", schedule)
+        if not dates or len(dates) > 2:
+            continue
+        start = _date(*dates[0])
+        end = _date(*dates[1]) if len(dates) == 2 else None
+        if not start or (len(dates) == 2 and (not end or end < start)):
+            continue
+        kind = item.get("kind")
+        if kind not in ("LIVE", "オンデマンド", "会場型"):
+            continue
+        event = _event(title, start, url, page, title, "VETS ACADEMY", end=end)
+        event["format"] = ("ライブ配信" if kind == "LIVE" else
+                           "オンデマンド" if kind == "オンデマンド" else "現地")
+        explicit = item.get("audiences")
+        if not isinstance(explicit, list):
+            explicit = []
+        event["audience"] = [
+            value for source, value in (("獣医師", "獣医師"),
+                                        ("動物看護", "動物看護師"),
+                                        ("トリマー", "トリマー"))
+            if source in explicit
+        ]
+        status = item.get("status")
+        event["status"] = status if status in ("募集中", "募集終了") else None
+        if item.get("free") == "無料":
+            event["price"], event["is_free"] = "無料", True
+        # Live sessions and on-demand publication dates have different
+        # semantics. Only a time printed on this card may be populated.
+        if kind != "オンデマンド":
+            times = re.findall(r"(?<!\d)([01]?\d|2[0-3]):([0-5]\d)", schedule)
+            if times:
+                event["start_time"] = f"{int(times[0][0]):02d}:{times[0][1]}"
+        out.append(event)
+    stats["academy_cards"] = len(out)
+    return out
+
+
 def _peppy(text, page, today, stats):
     out = []
     for line in text.splitlines():
@@ -1034,6 +1096,7 @@ def extract_free(source_name,page_url,hint,text,today,stats):
     source=source_name.lower().replace("&","")
     if "jaha" in source or "日本動物病院協会" in source:
         raw=_jaha_top(text,page_url,today,stats) if "/seminar-calendar/top/" in page_url else _jaha(text,page_url,today,stats)
+    elif "vets academy" in source:raw=_vets_academy(text,page_url,today,stats)
     elif "peppy" in source:raw=_peppy(text,page_url,today,stats)
     elif "eduward" in source or "eduone" in source:raw=_eduone(text,page_url,today,stats)
     elif source in ("javnu", "日本獣医腎泌尿器学会"):raw=_society(text,page_url,today,stats,"javnu")
