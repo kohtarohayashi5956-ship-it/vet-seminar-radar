@@ -96,8 +96,35 @@ class TestJahaDeadlines(unittest.TestCase):
         out = parse_jaha_detail(page, item)
         self.assertIn("19,800円", out["price"])
         self.assertNotIn("is_free", out)
+        self.assertEqual(out["start_time"], "14:00")
+        self.assertEqual(out["end_time"], "17:00")
         item["start_date"] = "2026-12-10"
         self.assertEqual(parse_jaha_detail(page, item), {})
+
+    def test_numbered_course_time_does_not_borrow_neighboring_round(self):
+        page = ("2026年度 講座内容（全5回）\n"
+                "第1回 | 老化に伴う行動の変化 | 2026年11月12日 14:00-16:30\n"
+                "第2回 | がんとケア\n"
+                "12月9日（水）\n"
+                "第3回 | 整形疾患 | 2027年1月21日 14:00-17:00\n")
+        item = event("2026-12-09",
+                     "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "シニアケア講座 第2回"
+        out = parse_jaha_detail(page, item)
+        self.assertNotIn("start_time", out)
+        self.assertNotIn("end_time", out)
+
+    def test_numbered_course_time_must_not_use_registration_clock(self):
+        page = ("2026年度 講座内容（全5回）\n"
+                "第2回 | がんとケア\n"
+                "12月9日（水）\n"
+                "申込締切:2026年12月9日 14:00-17:00\n")
+        item = event("2026-12-09",
+                     "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "シニアケア講座 第2回"
+        out = parse_jaha_detail(page, item)
+        self.assertNotIn("start_time", out)
+        self.assertNotIn("end_time", out)
 
     def test_puppy_2026_2027_numbered_course_rollover(self):
         page = (
