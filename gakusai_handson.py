@@ -9,7 +9,7 @@ import datetime
 import difflib
 import re
 import unicodedata
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 from extract import html_to_text
 from free_extract import _dates
@@ -105,7 +105,15 @@ def _courses(text):
                     if (parsed and parsed.hostname == "seminar.gakusai.co.jp"
                             and parsed.username is None and parsed.password is None
                             and parsed.path.startswith("/")):
-                        applications[(date, city)] = link.group(1)
+                        # Preserve required booking parameters; remove only
+                        # analytics tags that can be user/session-specific.
+                        query = [(k, v) for k, v in parse_qsl(
+                            parsed.query, keep_blank_values=True)
+                            if not (k.lower().startswith(("utm_", "_ga", "_gcl"))
+                                    or k.lower() in ("_gl", "fbclid", "gclid"))]
+                        applications[(date, city)] = urlunsplit((
+                            parsed.scheme, parsed.netloc, parsed.path,
+                            urlencode(query), ""))
         if not dates:
             continue
         blocks.append(dict(id=match.group(1), title=title,

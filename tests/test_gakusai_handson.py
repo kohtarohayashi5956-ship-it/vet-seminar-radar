@@ -127,6 +127,22 @@ class GakusaiHandsonTests(unittest.TestCase):
         self.assertEqual(rows[0]["detail_url"], "https://seminar.gakusai.co.jp/bar")
         self.assertEqual(rows[1]["detail_url"], "https://seminar.gakusai.co.jp/foo")
 
+    def test_booking_identity_remains_but_analytics_tokens_are_removed(self):
+        page = TEXT.replace(
+            "https://seminar.gakusai.co.jp/bar",
+            "https://seminar.gakusai.co.jp/reservations/add?"
+            "event_id=3152&usage_timestamp_from=2027%2F01%2F17+10%3A00"
+            "&_gl=analytics&_ga=tracker&utm_source=mail"
+        )
+        row=event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」","2027-01-17")
+        enrich_handson([row],Fetcher(page),TODAY,{})
+        link=row["detail_url"]
+        self.assertIn("event_id=3152",link)
+        self.assertIn("usage_timestamp_from=2027%2F01%2F17",link)
+        self.assertNotIn("_gl=",link)
+        self.assertNotIn("_ga=",link)
+        self.assertNotIn("utm_",link)
+
     def test_application_url_rejects_foreign_domain_and_userinfo(self):
         page = TEXT.replace("https://seminar.gakusai.co.jp/bar",
                             "https://seminar.gakusai.co.jp.evil.example/bar")
