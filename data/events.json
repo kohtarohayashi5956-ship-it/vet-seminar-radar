@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-07T16:19:29+09:00",
+ "updated": "2026-11-07T16:33:09+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -2890,6 +2890,79 @@
    "id": "a68d936bee6e",
    "source": "JCVIM",
    "source_id": "jcvim",
+   "last_seen": "2026-11-07",
+   "first_seen": "2026-11-07"
+  },
+  "02c5a6a17201": {
+   "title": "第16回 動物看護大会",
+   "start_date": "2026-12-06",
+   "end_date": null,
+   "start_time": "10:00",
+   "end_time": "17:00",
+   "format": "現地",
+   "venue": "大阪ペピイ動物看護専門学校",
+   "prefecture": "大阪府",
+   "audience": [
+    "動物看護師",
+    "学生"
+   ],
+   "topics": [
+    "学会・大会"
+   ],
+   "price": "JVNA正会員 5,500円（実習なし）／非会員 16,500円（実習なし）",
+   "is_free": null,
+   "status": null,
+   "deadline": "2026-11-29",
+   "organizer": "日本愛玩動物看護師会",
+   "speaker": null,
+   "url": "https://www.jvna.or.jp/16thkangotaikai/",
+   "detail_url": null,
+   "abstract_deadline": null,
+   "certification_note": null,
+   "certification_url": null,
+   "certification_program": null,
+   "url_is_page": false,
+   "verified": true,
+   "id": "02c5a6a17201",
+   "source": "日本愛玩動物看護師会",
+   "source_id": "jvna",
+   "last_seen": "2026-11-07",
+   "first_seen": "2026-11-07"
+  },
+  "27944f0516e2": {
+   "title": "第48回動物臨床医学会年次大会",
+   "start_date": "2027-10-30",
+   "end_date": "2027-10-31",
+   "start_time": null,
+   "end_time": null,
+   "format": "現地",
+   "venue": "大阪府立国際会議場（グランキューブ大阪）",
+   "prefecture": "大阪府",
+   "audience": [
+    "獣医師",
+    "動物看護師",
+    "学生"
+   ],
+   "topics": [
+    "学会・大会"
+   ],
+   "price": null,
+   "is_free": null,
+   "status": null,
+   "deadline": null,
+   "organizer": "動物臨床医学会",
+   "speaker": null,
+   "url": "https://dourinken.com/taikai/guide/",
+   "detail_url": null,
+   "abstract_deadline": null,
+   "certification_note": null,
+   "certification_url": null,
+   "certification_program": null,
+   "url_is_page": false,
+   "verified": true,
+   "id": "27944f0516e2",
+   "source": "動物臨床医学会",
+   "source_id": "dourinken",
    "last_seen": "2026-11-07",
    "first_seen": "2026-11-07"
   }
