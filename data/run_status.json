@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-07T21:32:07+09:00",
+  "checked_at_jst": "2026-11-07T21:43:12+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
@@ -7,7 +7,7 @@
     "field_presence": {
       "start_date": 81,
       "start_time": 21,
-      "venue": 26,
+      "venue": 25,
       "price": 16,
       "deadline": 16,
       "topics": 66,
@@ -17,7 +17,7 @@
     "field_presence_pct": {
       "start_date": 98.8,
       "start_time": 25.6,
-      "venue": 31.7,
+      "venue": 30.5,
       "price": 19.5,
       "deadline": 19.5,
       "topics": 80.5,
