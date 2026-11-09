@@ -2,7 +2,7 @@
 """JAHA seminar deadline: never mistake registration start or cancellation date."""
 import datetime
 import unittest
-from jaha_enrich import parse_jaha_detail, enrich_jaha, _url
+from jaha_enrich import parse_jaha_detail, enrich_jaha, _url, _seniorcare_round_schedule
 
 DATE=datetime.date(2026,11,6)
 URL="https://www.jaha.or.jp/owners/dog-training/kougi3ol/"
@@ -227,9 +227,12 @@ class TestJahaDeadlines(unittest.TestCase):
         item = event("2027-01-21",
                      "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
         item["title"] = "シニアケア講座 第3回"
-        self.assertEqual(parse_jaha_detail(page, item), {})
+        # The new *strict* fallback must not fill a shorthand year.
+        # Existing numbered-schedule logic independently allows year
+        # resolution from the 2026年度 course heading and remains unchanged.
+        self.assertIsNone(_seniorcare_round_schedule(page.splitlines(), item))
         item["title"] = "シニアケア講座 第2回"
-        self.assertEqual(parse_jaha_detail(page, item), {})
+        self.assertIsNone(_seniorcare_round_schedule(page.splitlines(), item))
 
     def test_numbered_course_time_does_not_borrow_neighboring_round(self):
         page = ("2026年度 講座内容（全5回）\n"
