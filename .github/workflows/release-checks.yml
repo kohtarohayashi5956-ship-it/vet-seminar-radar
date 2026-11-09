@@ -19,7 +19,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: vet-seminar-release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   release-checks:
@@ -105,3 +109,56 @@ jobs:
             echo
             echo "この検証はオフラインです。公式サイトでの事実照合とPC/スマホ実機操作の代わりにはなりません。"
           } >> "$GITHUB_STEP_SUMMARY"
+      # Save a SHA-labelled summary; do not modify rendered pages or source data.
+      - name: Save release-check outcome to repository
+        if: ${{ always() && github.event_name != 'pull_request' }}
+        env:
+          UNIT_RESULT: ${{ steps.unit_tests.outcome }}
+          RENDER_RESULT: ${{ steps.render.outcome }}
+          DATA_RESULT: ${{ steps.public_data.outcome }}
+          JS_RESULT: ${{ steps.javascript.outcome }}
+          UI_RESULT: ${{ steps.controls.outcome }}
+        run: |
+          python - <<'PY'
+          import datetime
+          import json
+          import os
+          from pathlib import Path
+          checks = {
+              "unit_tests": os.environ.get("UNIT_RESULT", "unknown"),
+              "render": os.environ.get("RENDER_RESULT", "unknown"),
+              "public_data": os.environ.get("DATA_RESULT", "unknown"),
+              "javascript": os.environ.get("JS_RESULT", "unknown"),
+              "controls": os.environ.get("UI_RESULT", "unknown"),
+          }
+          result = {
+              "source_sha": os.environ["GITHUB_SHA"],
+              "checked_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+              "run_url": "/".join((os.environ["GITHUB_SERVER_URL"], os.environ["GITHUB_REPOSITORY"], "actions/runs", os.environ["GITHUB_RUN_ID"])),
+              "result": "pass" if all(v == "success" for v in checks.values()) else "fail",
+              "checks": checks,
+              "note": "Offline checks only; not official source or device validation",
+          }
+          Path("/tmp/vet-seminar-release-check.json").write_text(
+              json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p data
+            cp /tmp/vet-seminar-release-check.json data/release_checks.json
+            git add data/release_checks.json
+            if git diff --cached --quiet; then
+              exit 0
+            fi
+            git commit -m "Record release checks for ${GITHUB_SHA:0:12}"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep "$((attempt * 2))"
+          done
+          echo "::error::Could not save release-check outcome"
+          exit 1
