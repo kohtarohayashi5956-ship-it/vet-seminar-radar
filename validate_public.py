@@ -44,7 +44,7 @@ def validate():
         if event.get("start_date") and event.get("deadline"):
             assert event["deadline"] <= event["start_date"], "deadline after event"
         if event.get("is_free") is True and event.get("price"):
-            assert not re.search(r"[0-9０-９][0-9０-９,，]*\\s*円", event["price"]), "paid fee marked free"
+            assert not re.search(r"[0-9０-９][0-9０-９,，]*\s*円", event["price"]), "paid fee marked free"
         assert not any(k in event for k in ("raw_html", "raw_text", "page_text", "evidence"))
     with open("data/events.json", encoding="utf-8") as f:
         db=json.load(f)
