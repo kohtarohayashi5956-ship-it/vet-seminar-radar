@@ -87,6 +87,12 @@ def parse_gakusai(text, event):
             if not event.get("price"):
                 out["price"] = "／".join(prices[:3])
                 out["is_free"] = None
+            # The course's own priced registration tiers explicitly
+            # identify veterinarians, regardless of whether price is filled.
+            if any("一般獣医師" in price for price in prices):
+                audience = event.get("audience") or []
+                if "獣医師" not in audience:
+                    out["audience"] = audience + ["獣医師"]
     # Do not equate cancellation deadlines with registration deadlines.
     return out
 
@@ -112,10 +118,12 @@ def enrich_gakusai(events, fetcher, today, stats):
         if not details:
             continue
         previous = (event.get("price"), event.get("start_time"), event.get("end_time"),
-                    event.get("venue"), event.get("prefecture"), event.get("format"))
+                    event.get("venue"), event.get("prefecture"), event.get("format"),
+                    event.get("audience"))
         event.update(details)
         current = (event.get("price"), event.get("start_time"), event.get("end_time"),
-                   event.get("venue"), event.get("prefecture"), event.get("format"))
+                   event.get("venue"), event.get("prefecture"), event.get("format"),
+                   event.get("audience"))
         accepted += previous != current
         prices += bool(details.get("price"))
         times += bool(details.get("start_time"))
