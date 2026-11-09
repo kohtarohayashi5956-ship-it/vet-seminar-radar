@@ -133,8 +133,8 @@ def _speakers_in_title(title):
     return "・".join(names[:3]) if names else None
 
 
-def _explicit_deadline(body):
-    """A deadline needs a labelled full-year date; never infer from other dates."""
+def _explicit_deadline(body, event_date=None):
+    """Use a labelled calendar date, or explicit 当日 tied to this event date."""
     lines = [line.strip() for line in body[:2500].splitlines() if line.strip()]
     for i, line in enumerate(lines):
         if not re.match(r"^(?:申込締切|お申込み締切|申し込み締切|受付締切|申込期限|応募締切)[：:\s]?",line):
@@ -149,6 +149,15 @@ def _explicit_deadline(body):
         dates = _dates(local)
         if dates:
             return dates[0]
+        # 当日 is meaningful only next to a labelled registration deadline,
+        # and only if this specific event already has a verified start date.
+        if re.match(r"^(?:申込締切|お申込み締切|申し込み締切|受付締切|申込期限|応募締切)[：:\s]*当日(?:\s|[0-9０-９]|$)", line):
+            if event_date and re.fullmatch(r"20\\d{2}-\\d{2}-\\d{2}", event_date):
+                try:
+                    datetime.date.fromisoformat(event_date)
+                except ValueError:
+                    continue
+                return event_date
     return None
 
 
@@ -411,7 +420,7 @@ def _feed(text,page,today):
         e=_event(title,when,u.group(1),page,content[:5500],"VETS TECH")
         e["status"] = _feed_status(title, content)
         e["price"], e["is_free"] = _feed_price(content)
-        e["deadline"] = _explicit_deadline(content)
+        e["deadline"] = _explicit_deadline(content, when)
         if re.search(r"[\[［【]録画[\]］】]|(?:^|　)録画", title):
             e["format"] = "オンデマンド"
         elif re.search(r"[\[［【]ライブ[\]］】]", title):
