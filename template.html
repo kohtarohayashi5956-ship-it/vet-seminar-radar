@@ -260,6 +260,7 @@
   <label class="chk"><input type="checkbox" id="fHidePast" checked>終了を隠す</label>
   <label class="chk"><input type="checkbox" id="fGeneral">一般向けも表示</label>
   <input type="search" id="fQ" placeholder="キーワード" aria-label="キーワード検索">
+  <button type="button" class="cert-shortcut" id="resetFilters" aria-label="検索条件をすべて解除">条件をクリア</button>
   <button type="button" class="cert-shortcut" id="certShortcut" aria-label="認定医関連の情報へ移動">認定医関連 ↓</button>
 </section>
 
@@ -950,6 +951,25 @@
     fillSelect("fOrg", "すべて", uniq(EVENTS.map(function (e) { return e.organizer || e.source; })));
     ["fOnsite", "fLive", "fOnd", "fFree", "fHidePast", "fGeneral"].forEach(function (id) { $(id).addEventListener("change", render); });
     $("fQ").addEventListener("input", render);
+    $("resetFilters").addEventListener("click", function () {
+      F.aud = "all";
+      F.region = "all";
+      [["fAud", "aud"], ["fRegion", "region"]].forEach(function (entry) {
+        Array.prototype.forEach.call($(entry[0]).children, function (button) {
+          button.setAttribute("aria-pressed", String(button.dataset.v === F[entry[1]]));
+        });
+      });
+      $("fOnsite").checked = true;
+      $("fLive").checked = true;
+      $("fOnd").checked = false;
+      $("fFree").checked = false;
+      $("fHidePast").checked = true;
+      $("fGeneral").checked = false;
+      $("fTopic").value = "";
+      $("fOrg").value = "";
+      $("fQ").value = "";
+      render();
+    });
     $("deadlineWindow").addEventListener("change", render);
     $("certField").addEventListener("change", render);
     $("certKind").addEventListener("change", render);
