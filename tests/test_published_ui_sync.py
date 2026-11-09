@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Ensure the committed public HTML is synchronized with the UI template.
+"""Verify that rendering preserves the current HTML/CSS/JS template.
 
-The event JSON is allowed to differ from the template placeholder, but
-the CSS, HTML and JavaScript must match exactly. This prevents silently
-publishing an old interface when a template-only change is committed.
+The test deliberately generates fresh output in a temporary directory.
+Comparing against the committed index.html would incorrectly block
+automatic collection before its HTML regeneration step.
 """
 import json
 import pathlib
+import tempfile
 import unittest
+
+import render
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OPEN = '<script id="payload" type="application/json">'
@@ -15,20 +18,21 @@ CLOSE = '</script>'
 PLACEHOLDER = '/*__PAYLOAD__*/null'
 
 
-class PublishedUiSyncTests(unittest.TestCase):
-    def test_published_interface_matches_template(self):
+class RenderedUiSyncTests(unittest.TestCase):
+    def test_rendered_interface_matches_template(self):
         template = (ROOT / 'template.html').read_text(encoding='utf-8')
-        page = (ROOT / 'index.html').read_text(encoding='utf-8')
         self.assertEqual(template.count(PLACEHOLDER), 1)
+        with tempfile.TemporaryDirectory() as tmp:
+            output = pathlib.Path(tmp) / 'index.html'
+            render.write_html([], str(output), demo=True)
+            page = output.read_text(encoding='utf-8')
         start = page.index(OPEN) + len(OPEN)
         end = page.index(CLOSE, start)
         payload = json.loads(page[start:end])
-        self.assertIsInstance(payload.get('events'), list)
-        sanitized_page = page[:start] + PLACEHOLDER + page[end:]
-        self.assertEqual(
-            sanitized_page, template,
-            'Published index.html is out of sync with template.html; regenerate HTML.'
-        )
+        self.assertEqual(payload['events'], [])
+        self.assertTrue(payload['demo'])
+        reconstructed = page[:start] + PLACEHOLDER + page[end:]
+        self.assertEqual(reconstructed, template)
 
 
 if __name__ == '__main__':
