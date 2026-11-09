@@ -690,6 +690,7 @@
     var price = e.price || (e.is_free ? "無料" : "");
     if (price) kvs.appendChild(kv("受講料", price));
     if (e.deadline) kvs.appendChild(kv("参加申込締切", md(e.deadline) + "（" + wd(e.deadline) + "）"));
+    if (e.early_registration_deadline) kvs.appendChild(kv("事前登録締切（直前登録は別）", md(e.early_registration_deadline) + "（" + wd(e.early_registration_deadline) + "）"));
     if (e.abstract_deadline) kvs.appendChild(kv("演題募集締切", md(e.abstract_deadline) + "（" + wd(e.abstract_deadline) + "）"));
     if (e.certification_note) {
       kvs.appendChild(kv("認定医関連", e.certification_note));

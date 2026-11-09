@@ -2,7 +2,7 @@
 """Only JSVAS course-specific official detail information is accepted."""
 import datetime
 import unittest
-from jsvas_enrich import parse_jsvas_detail, enrich_jsvas
+from jsvas_enrich import parse_jsvas_detail, parse_jsvas_conference, enrich_jsvas
 
 URL = "https://www.jsvas.net/lectures/chushikoku_261123.php"
 TODAY = datetime.date(2026, 11, 7)
@@ -90,6 +90,42 @@ class JSVASDetailTests(unittest.TestCase):
         self.assertEqual(stats["details_scanned"],1)
         self.assertEqual(stats["deadlines_found"],2)
         self.assertIsNone(rows[2]["deadline"])
+
+    def test_conference_advance_cutoff_not_final_deadline(self):
+        page = """2026年度 第113回
+日本獣医麻酔外科学会
+学術集会
+概要
+開催期間
+2026 年 12 月 18 日（金）〜 20 日（日）
+動画配信期間
+2026 年 12 月 18 日〜 2027 年 2 月 28 日
+参加登録期間
+事前登録：2026 年 10 月 16 日（金）〜 11 月 30 日（月）
+直前登録：2026 年 12 月 1 日（火）〜 2027 年 2 月 26 日（金）
+"""
+        e = event(title="第113回 日本獣医麻酔外科学会学術集会",
+                  start_date="2026-12-18", end_date="2026-12-20",
+                  url="https://www.jsvas.net/conference/2026-113.php")
+        self.assertEqual(parse_jsvas_conference(page, e),
+                         {"early_registration_deadline": "2026-11-30"})
+        rows = [e]
+        stats = {}
+        enrich_jsvas(rows, Fetcher(page), TODAY, stats)
+        self.assertEqual(rows[0]["early_registration_deadline"], "2026-11-30")
+        self.assertIsNone(rows[0]["deadline"])
+        self.assertEqual(stats["early_registration_deadlines_found"], 1)
+
+    def test_conference_rejects_wrong_meeting_and_unrelated_dates(self):
+        page = """第112回 日本獣医麻酔外科学会 学術集会
+開催期間
+2026年12月18日〜20日
+参加登録期間
+事前登録：2026年10月16日〜11月30日
+"""
+        e = event(title="第113回 日本獣医麻酔外科学会学術集会",
+                  start_date="2026-12-18", end_date="2026-12-20")
+        self.assertEqual(parse_jsvas_conference(page,e), {})
 
     def test_blocked_fetch_preserves_original(self):
         class Blocked:
