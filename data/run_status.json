@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-09T17:55:28+09:00",
+  "checked_at_jst": "2026-11-09T18:27:22+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
@@ -11,7 +11,7 @@
       "price": 31,
       "deadline": 22,
       "topics": 64,
-      "audience": 42,
+      "audience": 53,
       "url": 82
     },
     "field_presence_pct": {
@@ -21,7 +21,7 @@
       "price": 37.8,
       "deadline": 26.8,
       "topics": 78.0,
-      "audience": 51.2,
+      "audience": 64.6,
       "url": 100.0
     },
     "note": "Field presence only; dates, prices and details are not independently verified."
@@ -60,7 +60,7 @@
         "price": 11,
         "deadline": 0,
         "topics": 24,
-        "audience": 0,
+        "audience": 11,
         "url": 26
       },
       "field_presence_pct": {
@@ -70,7 +70,7 @@
         "price": 42.3,
         "deadline": 0.0,
         "topics": 92.3,
-        "audience": 0.0,
+        "audience": 42.3,
         "url": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."

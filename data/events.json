@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-09T17:55:28+09:00",
+ "updated": "2026-11-09T18:27:22+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -10,7 +10,9 @@
    "format": "現地",
    "venue": "駐健保会館",
    "prefecture": "東京都",
-   "audience": [],
+   "audience": [
+    "獣医師"
+   ],
    "topics": [
     "麻酔・救急",
     "猫"
@@ -44,7 +46,9 @@
    "format": "現地",
    "venue": "専売ビル",
    "prefecture": "東京都",
-   "audience": [],
+   "audience": [
+    "獣医師"
+   ],
    "topics": [],
    "price": "法人・個人会員 9,000円(税込9,900円)／一般獣医師 27,000円(税込29,700円)",
    "is_free": null,
@@ -242,7 +246,9 @@
    "format": "現地",
    "venue": null,
    "prefecture": "東京都",
-   "audience": [],
+   "audience": [
+    "獣医師"
+   ],
    "topics": [
     "画像診断"
    ],
@@ -275,7 +281,9 @@
    "format": "現地",
    "venue": null,
    "prefecture": "大阪府",
-   "audience": [],
+   "audience": [
+    "獣医師"
+   ],
    "topics": [
     "画像診断"
    ],
@@ -308,7 +316,9 @@
    "format": "現地",
    "venue": null,
    "prefecture": "東京都",
-   "audience": [],
+   "audience": [
+    "獣医師"
+   ],
    "topics": [
     "画像診断",
     "循環器"
@@ -342,7 +352,9 @@
    "format": "現地",
    "venue": null,
    "prefecture": "東京都",
-   "audience": [],
+   "audience": [
+    "獣医師"
+   ],
    "topics": [
     "外科",
     "消化器"
@@ -376,7 +388,9 @@
    "format": "現地",
    "venue": null,
    "prefecture": "大阪府",
-   "audience": [],
+   "audience": [
+    "獣医師"
+   ],
    "topics": [
     "外科",
     "消化器"
@@ -410,7 +424,9 @@
    "format": "現地",
    "venue": null,
    "prefecture": "東京都",
-   "audience": [],
+   "audience": [
+    "獣医師"
+   ],
    "topics": [
     "外科"
    ],
@@ -443,7 +459,9 @@
    "format": "現地",
    "venue": null,
    "prefecture": "大阪府",
-   "audience": [],
+   "audience": [
+    "獣医師"
+   ],
    "topics": [
     "外科"
    ],
@@ -476,7 +494,9 @@
    "format": "現地",
    "venue": null,
    "prefecture": "東京都",
-   "audience": [],
+   "audience": [
+    "獣医師"
+   ],
    "topics": [
     "外科",
     "消化器"
@@ -510,7 +530,9 @@
    "format": "現地",
    "venue": null,
    "prefecture": "大阪府",
-   "audience": [],
+   "audience": [
+    "獣医師"
+   ],
    "topics": [
     "外科",
     "消化器"
