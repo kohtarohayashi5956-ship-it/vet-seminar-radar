@@ -285,6 +285,40 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertEqual(out["price"], "無料")
         self.assertTrue(out["is_free"])
 
+    def test_split_registration_heading_and_dated_value(self):
+        page = ("2026年11月7日 14:00-17:00 開催\n"
+                "受付期間\n"
+                "2026年9月7日(月)～11月4日(水)17:00締切\n")
+        self.assertEqual(parse_jaha_detail(page, event())["deadline"], "2026-11-04")
+
+    def test_split_registration_deadline_full_year(self):
+        page = ("2026年11月7日 14:00-17:00 開催\n"
+                "お申込み締切\n"
+                "2026年11月5日(木)\n")
+        self.assertEqual(parse_jaha_detail(page, event())["deadline"], "2026-11-05")
+
+    def test_split_registration_does_not_scan_next_section(self):
+        page = ("2026年11月7日 14:00-17:00 開催\n"
+                "受付期間\n"
+                "お問い合わせ\n"
+                "2026年11月1日(日)\n")
+        self.assertNotIn("deadline", parse_jaha_detail(page, event()))
+
+    def test_split_registration_rejects_cancellation_row(self):
+        page = ("2026年11月7日 14:00-17:00 開催\n"
+                "受付期間\n"
+                "キャンセル期限 2026年11月1日(日)\n")
+        self.assertNotIn("deadline", parse_jaha_detail(page, event()))
+
+    def test_split_registration_no_inferred_year(self):
+        page = ("2026年11月7日 14:00-17:00 開催\n"
+                "受付期間\n"
+                "11月1日(日)\n")
+        self.assertNotIn("deadline", parse_jaha_detail(page, event()))
+
+    def test_jaha_detail_rejects_userinfo_hostname(self):
+        self.assertIsNone(_url(event(url="https://bad@example.com@www.jaha.or.jp/training/seminar/one/")))
+
     def test_registration_range_start_and_explicit_end(self):
         self.assertEqual(parse_jaha_detail(PAGE,event()), {
             "deadline": "2026-11-04",
