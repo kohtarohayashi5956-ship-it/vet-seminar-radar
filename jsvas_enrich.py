@@ -140,7 +140,7 @@ def _conference_url(event):
         return None
     if (p.scheme != "https" or p.hostname not in ("www.jsvas.net", "jsvas.net")
             or p.username or p.password
-            or not re.fullmatch(r"/conference/20\\d{2}-\\d+\\.php", p.path)):
+            or not re.fullmatch(r"/conference/20\d{2}-\d+\.php", p.path)):
         return None
     return p.scheme + "://" + p.netloc + p.path
 
