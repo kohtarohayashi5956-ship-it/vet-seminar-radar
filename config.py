@@ -62,7 +62,7 @@ SOURCES = [
         "name": "PEPPY",
         "kind": "peppy_list",
         "start_url": "https://www.peppy.jp/seminar",
-        "enabled": True,
+        "enabled": False,
     },
     {
         "id": "eduone",
@@ -70,14 +70,14 @@ SOURCES = [
         "kind": "eduone_lecture",
         "start_url": "https://eduone.jp/lecture/",
         "max_details": 12,
-        "enabled": True,
+        "enabled": False,
     },
     {
         "id": "academy",
         "name": "VETS ACADEMY",
         "kind": "vets_academy_list",
         "start_url": "https://academy.eduone.jp/seminar",
-        "enabled": True,
+        "enabled": False,
     },
     {
         "id": "jbvp",

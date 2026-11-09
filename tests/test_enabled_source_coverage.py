@@ -18,13 +18,13 @@ class Dummy:
 
 
 class SourceCoverageTests(unittest.TestCase):
-    def test_all_three_sources_enabled_and_specific(self):
+    def test_denied_sources_are_not_scheduled_but_adapters_remain(self):
         sources = {s["id"]: s for s in config.SOURCES}
         self.assertEqual(sources["peppy"]["kind"], "peppy_list")
         self.assertEqual(sources["academy"]["kind"], "vets_academy_list")
         self.assertEqual(sources["eduone"]["kind"], "eduone_lecture")
         for name in ("peppy", "academy", "eduone"):
-            self.assertTrue(sources[name]["enabled"])
+            self.assertFalse(sources[name]["enabled"])
 
     def test_eduward_listing_without_official_detail_does_not_invent(self):
         source = {"kind": "eduone_lecture", "start_url": "https://eduone.jp/lecture/",
