@@ -69,8 +69,7 @@ def _courses(text):
             rest = re.split(r"<https?://|ご入会はこちら", rest, maxsplit=1)[0]
             if MONEY.search(rest):
                 fees[tier] = rest.strip(" |")
-        if set(fees) != {"会員", "一般"}:
-            continue
+        # Retain exact-date booking links even when both fee tiers are pending.
         dates = []
         applications = {}
         application_lines = segment[marker + 1:]
@@ -128,7 +127,7 @@ def enrich_handson(events, fetcher, today, stats):
                   and e.get("start_date", "").startswith("2027-")
                   and e.get("url", "").startswith("https://www.gakusai.co.jp/doubutu/")
                   and e.get("format") not in ("オンデマンド", "ライブ配信")
-                  and not e.get("price")]
+                  and (not e.get("price") or not e.get("detail_url"))]
     if not candidates:
         stats["handson_pages"] = 0
         stats["handson_fees_found"] = 0
@@ -173,11 +172,12 @@ def enrich_handson(events, fetcher, today, stats):
         if not city and len({x[1] for x in matches}) != 1:
             continue
         values = course["fees"]
-        price = ("会員 " + values["会員"] + "／一般 " + values["一般"])
-        if len(price) > 340:
-            continue
-        event["price"] = price
-        event["is_free"] = None
+        if not event.get("price") and set(values) == {"会員", "一般"}:
+            price = ("会員 " + values["会員"] + "／一般 " + values["一般"])
+            if len(price) <= 340:
+                event["price"] = price
+                event["is_free"] = None
+                added += 1
         if not event.get("format"):
             event["format"] = "現地"
         selected_city = city or matches[0][1]
@@ -189,7 +189,6 @@ def enrich_handson(events, fetcher, today, stats):
             event["detail_url"] = application
             stats["handson_applications_found"] = (
                 stats.get("handson_applications_found", 0) + 1)
-        added += 1
     stats["handson_pages"] = 1
     stats["handson_course_cards"] = len(courses)
     stats["handson_fees_found"] = added

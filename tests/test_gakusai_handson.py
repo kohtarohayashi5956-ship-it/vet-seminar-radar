@@ -60,7 +60,7 @@ class Fetcher:
 class GakusaiHandsonTests(unittest.TestCase):
     def test_course_sections_are_isolated(self):
         parsed=_courses(TEXT)
-        self.assertEqual(len(parsed),4)
+        self.assertEqual(len(parsed),5)
         self.assertEqual(parsed[0]["id"],"153")
         self.assertEqual(parsed[0]["dates"],[("2027-03-21","東京"),("2027-01-17","大阪")])
 
@@ -86,6 +86,32 @@ class GakusaiHandsonTests(unittest.TestCase):
         self.assertNotIn("165,000円",rows[3]["price"])
         self.assertIsNone(rows[4]["price"])
         self.assertEqual(stats["handson_fees_found"],4)
+
+    def test_application_link_allowed_when_fee_not_published(self):
+        page = TEXT.replace(
+            "9月20日(月)東京会場申込",
+            "9月20日(月)東京会場申込 <https://seminar.gakusai.co.jp/pending-course>"
+        )
+        row = event("末松正弘先生「呼吸器内視鏡検査・呼吸器外科の実習」","2027-09-20")
+        stats = {}
+        enrich_handson([row], Fetcher(page), TODAY, stats)
+        self.assertIsNone(row["price"])
+        self.assertEqual(row["detail_url"],
+                         "https://seminar.gakusai.co.jp/pending-course")
+        self.assertEqual(stats["handson_fees_found"], 0)
+        self.assertEqual(stats["handson_applications_found"], 1)
+
+    def test_existing_price_does_not_block_date_matched_application(self):
+        row = event("末松正弘先生「呼吸器内視鏡検査・呼吸器外科の実習」","2027-09-20")
+        row["price"] = "料金については主催者に確認"
+        page = TEXT.replace(
+            "9月20日(月)東京会場申込",
+            "9月20日(月)東京会場申込 <https://seminar.gakusai.co.jp/pending-course>"
+        )
+        enrich_handson([row], Fetcher(page), TODAY, {})
+        self.assertEqual(row["price"], "料金については主催者に確認")
+        self.assertEqual(row["detail_url"],
+                         "https://seminar.gakusai.co.jp/pending-course")
 
     def test_split_html_table_cells_are_matched_inside_same_course(self):
         html = TEXT.replace(
