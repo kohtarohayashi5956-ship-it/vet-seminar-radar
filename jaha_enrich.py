@@ -284,8 +284,18 @@ def _date_from_numbered_course(lines, event):
     for i, line in enumerate(lines):
         if not re.match(rf"^第\s*{round_num}\s*回(?:\s|\||$)", line):
             continue
-        # Include short, split table-cell date; stop at another numbered round.
-        scope = " ".join(lines[i:min(len(lines), i+4)])
+        # Include a short adjacent date cell but stop BEFORE registration
+        # policy, cancellation and any other numbered course. A later
+        # registration note must not invalidate an already dated course row.
+        cells = []
+        for cell in lines[i:min(len(lines), i+4)]:
+            if cell != line and (re.match(r"^第\s*[1-9]\s*回(?:\s|\||$)", cell)
+                                 or REGISTRATION.match(cell)
+                                 or EXCLUDE.search(cell)
+                                 or re.search(r"申込.*受付|申込締切", cell)):
+                break
+            cells.append(cell)
+        scope = " ".join(cells)
         if re.search(r"受付|キャンセル|申込締切", scope):
             continue
         matched = re.search(
