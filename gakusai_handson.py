@@ -172,6 +172,12 @@ def enrich_handson(events, fetcher, today, stats):
         if not city and len({x[1] for x in matches}) != 1:
             continue
         values = course["fees"]
+        # Fee headings come directly from this same matched official course:
+        # 会員獣医師 / 一般獣医師. Do not classify unmatched annual cards.
+        if set(values) == {"会員", "一般"}:
+            audience = event.get("audience") or []
+            if "獣医師" not in audience:
+                event["audience"] = audience + ["獣医師"]
         if not event.get("price") and set(values) == {"会員", "一般"}:
             price = ("会員 " + values["会員"] + "／一般 " + values["一般"])
             if len(price) <= 340:
