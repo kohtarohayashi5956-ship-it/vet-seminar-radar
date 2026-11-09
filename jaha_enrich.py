@@ -451,7 +451,9 @@ def parse_jaha_seniorcare_table(html, event):
         if dates != [start]:
             continue
         matching = [value for value in values
-                    if _dates(value) == [start] and _times(value)[0] and _times(value)[1]]
+                    if not re.search(r"申込|受付|キャンセル|支払|振込|配信期間", value)
+                    and _dates(value) == [start]
+                    and _times(value)[0] and _times(value)[1]]
         if len(matching) != 1:
             continue
         schedule.add(_times(matching[0]))
