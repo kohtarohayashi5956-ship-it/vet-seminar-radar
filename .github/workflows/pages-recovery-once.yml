@@ -1,0 +1,45 @@
+name: Recover stuck GitHub Pages deployment (one-time)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pages-recovery-once.yml'
+
+permissions:
+  contents: read
+  pages: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect and cancel only the known stuck Pages deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          STUCK_SHA="4190220050536547bee35df0fd13bffbe79fc043"
+          API="https://api.github.com/repos/${REPOSITORY}/pages/deployments/${STUCK_SHA}"
+          echo "Checking previously blocked Pages deployment ${STUCK_SHA:0:8}"
+          STATUS=$(curl --fail --silent --show-error \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            "${API}" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("status", "unknown"))')
+          echo "Deployment state: ${STATUS}"
+          case "${STATUS}" in
+            succeed|success|cancelled|canceled|failed|error)
+              echo "Deployment is already terminal; no cancellation needed."
+              ;;
+            *)
+              echo "Cancelling only the nonterminal, known stuck deployment."
+              curl --fail --silent --show-error -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${GH_TOKEN}" \
+                "${API}/cancel"
+              echo "Cancellation request succeeded."
+              ;;
+          esac
