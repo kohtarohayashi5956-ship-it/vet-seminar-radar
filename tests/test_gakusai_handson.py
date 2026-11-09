@@ -3,7 +3,7 @@
 import datetime
 import re
 import unittest
-from gakusai_handson import _courses, enrich_handson, URL
+from gakusai_handson import _courses, enrich_handson, _booking_start_time, URL
 
 TODAY=datetime.date(2026,11,7)
 TEXT = """
@@ -181,6 +181,46 @@ class GakusaiHandsonTests(unittest.TestCase):
         self.assertNotIn("_gl=",link)
         self.assertNotIn("_ga=",link)
         self.assertNotIn("utm_",link)
+
+    def test_booking_start_timestamp_exactly_matches_event_date(self):
+        url = ("https://seminar.gakusai.co.jp/reservations/add?"
+               "event_id=3152&usage_timestamp_from=2027%2F01%2F17+10%3A00")
+        self.assertEqual(_booking_start_time(url, "2027-01-17"), "10:00")
+        self.assertIsNone(_booking_start_time(url, "2027-01-18"))
+        self.assertIsNone(_booking_start_time(url.replace("10%3A00", "25%3A00"), "2027-01-17"))
+        self.assertIsNone(_booking_start_time(url.replace("01%2F17", "02%2F30"), "2027-02-30"))
+        self.assertIsNone(_booking_start_time(url + "&usage_timestamp_from=2027%2F01%2F17+11%3A00", "2027-01-17"))
+        self.assertIsNone(_booking_start_time(url.replace("event_id=3152", "event_id=3152&event_id=3153"), "2027-01-17"))
+        self.assertIsNone(_booking_start_time(url.replace("seminar.gakusai.co.jp", "seminar.gakusai.co.jp.evil.test"), "2027-01-17"))
+        self.assertIsNone(_booking_start_time(url.replace("event_id=3152", "event_id=abc"), "2027-01-17"))
+
+    def test_verified_official_booking_time_fills_only_start(self):
+        page = TEXT.replace(
+            "https://seminar.gakusai.co.jp/bar",
+            "https://seminar.gakusai.co.jp/reservations/add?"
+            "event_id=3152&usage_timestamp_from=2027%2F01%2F17+10%3A00")
+        row = event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」", "2027-01-17")
+        stats = {}
+        enrich_handson([row], Fetcher(page), TODAY, stats)
+        self.assertEqual(row["start_time"], "10:00")
+        self.assertIsNone(row.get("end_time"))
+        self.assertEqual(stats["handson_start_times_found"], 1)
+
+    def test_booking_timestamp_never_overwrites_or_crosses_courses(self):
+        page = TEXT.replace(
+            "https://seminar.gakusai.co.jp/bar",
+            "https://seminar.gakusai.co.jp/reservations/add?"
+            "event_id=3152&usage_timestamp_from=2027%2F01%2F18+10%3A00")
+        row = event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」", "2027-01-17")
+        enrich_handson([row], Fetcher(page), TODAY, {})
+        self.assertIsNone(row.get("start_time"))
+        page = page.replace("2027%2F01%2F18", "2027%2F01%2F17")
+        row["start_time"] = "11:00"
+        enrich_handson([row], Fetcher(page), TODAY, {})
+        self.assertEqual(row["start_time"], "11:00")
+        bad = event("別の外科学講習", "2027-01-17")
+        enrich_handson([bad], Fetcher(page), TODAY, {})
+        self.assertIsNone(bad.get("start_time"))
 
     def test_application_url_rejects_foreign_domain_and_userinfo(self):
         page = TEXT.replace("https://seminar.gakusai.co.jp/bar",
