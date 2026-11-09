@@ -8,7 +8,9 @@ v1.0 は「公式の公開情報を週2回集め、探し、公式ページを�
 記載率は正確性を保証する指標ではない。
 
 ## リリース前の必須確認
-- [ ] main の最新コミットで GitHub Actions の全ユニットテストが成功
+> 自動オフライン検証は[実行記録](https://github.com/kohtarohayashi5956-ship-it/vet-seminar-radar/actions/runs/42634028950)で確認済み。結果は `data/release_checks.json` にも記録。GitHub Actionsの通常巡回成功とPC/スマホ実機動作は別途判定する。
+
+- [x] GitHub Actions Release Checks の全ユニットテストが成功（2026-11-09 23:22 JST、308件、コミット `4daa6dcbcafaa67add6f392dad00528b8c61d0b7`）
 - [ ] 収集→ validate_public.py →公開データの更新が成功
 - [ ] run_status.json の情報源ごとの失敗とゼロ件を確認（失敗した場合、理由が表示される）
 - [ ] 日付・時刻・料金・申込締切のサンプルを公式ページに照合（少なくともJAHA、学際企画、Life&Tail、VETS TECH）
