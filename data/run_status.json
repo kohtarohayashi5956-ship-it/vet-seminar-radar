@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-09T15:53:09+09:00",
+  "checked_at_jst": "2026-11-09T17:05:17+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
@@ -9,7 +9,7 @@
       "start_time": 25,
       "venue": 25,
       "price": 29,
-      "deadline": 19,
+      "deadline": 20,
       "topics": 64,
       "audience": 42,
       "url": 82
@@ -19,7 +19,7 @@
       "start_time": 30.5,
       "venue": 30.5,
       "price": 35.4,
-      "deadline": 23.2,
+      "deadline": 24.4,
       "topics": 78.0,
       "audience": 51.2,
       "url": 100.0
@@ -82,7 +82,7 @@
         "start_time": 4,
         "venue": 0,
         "price": 4,
-        "deadline": 5,
+        "deadline": 6,
         "topics": 12,
         "audience": 20,
         "url": 20
@@ -92,7 +92,7 @@
         "start_time": 20.0,
         "venue": 0.0,
         "price": 20.0,
-        "deadline": 25.0,
+        "deadline": 30.0,
         "topics": 60.0,
         "audience": 100.0,
         "url": 100.0
@@ -351,7 +351,7 @@
       "replaced_stale": 0,
       "details_scanned": 6,
       "details_accepted": 7,
-      "deadlines_found": 5,
+      "deadlines_found": 6,
       "prices_found": 4,
       "handson_fees_found": 0,
       "handson_applications_found": 0,
