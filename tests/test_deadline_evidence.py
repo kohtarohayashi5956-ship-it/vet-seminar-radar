@@ -2,7 +2,7 @@
 """Registration deadline evidence must be confined to its own field."""
 import unittest
 
-from free_extract import _explicit_deadline
+from free_extract import _explicit_deadline, _feed
 
 
 class DeadlineEvidenceTests(unittest.TestCase):
@@ -38,6 +38,25 @@ class DeadlineEvidenceTests(unittest.TestCase):
         self.assertIsNone(
             _explicit_deadline("開催日時：2026年11月11日\\n当日17:30開場", "2026-11-11"),
         )
+
+    def test_vets_tech_feed_article_same_day_deadline(self):
+        # End-to-end feed regression: publication date is not event date,
+        # but the explicitly stated event date anchors 当日.
+        feed = (
+            "=====\\n"
+            "記事タイトル: 【ライブ】腫瘍科医からみた慢性腸症治療のその先\\n"
+            "記事URL: <https://vets-tech.jp/2026/10/27/example/12345/>\\n"
+            "公開日: 2026-10-27\\n"
+            "日時：11月11日（水）21:00～22:30\\n"
+            "申込締切：当日17:30\\n"
+            "参加費：無料\\n"
+        )
+        import datetime
+        events = _feed(feed, "https://vets-tech.jp/feed/", datetime.date(2026, 11, 9))
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["start_date"], "2026-11-11")
+        self.assertEqual(events[0]["deadline"], "2026-11-11")
+        self.assertEqual(events[0]["price"], "無料")
 
     def test_other_dates_not_deadlines(self):
         self.assertIsNone(
