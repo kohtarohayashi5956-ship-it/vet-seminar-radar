@@ -597,6 +597,24 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
         # Table cells can be split into separate lines in flattened text.
         # Trust only the selected same-row date/time, never neighboring rows.
         table_time = parse_jaha_seniorcare_table(raw_html[url], e)
+        if table_time:
+            # The same-row official table corroborates this installment.
+            # Shared series fees and the explicitly stated per-session
+            # registration policy can then be applied to that one event.
+            lines = [unicodedata.normalize("NFKC", v.strip())
+                     for v in fetched[url].splitlines() if v.strip()]
+            if not e.get("price") and not detail.get("price"):
+                fee, free = _explicit_course_fee(lines)
+                if fee:
+                    detail["price"] = fee
+                    if free and e.get("is_free") is None:
+                        detail["is_free"] = True
+            if not e.get("deadline") and not detail.get("deadline"):
+                policy = "単回申込の受付は、各回セミナー実施日の前日までとなります"
+                if sum(policy in line for line in lines) == 1:
+                    detail["deadline"] = (
+                        datetime.date.fromisoformat(e["start_date"])
+                        - datetime.timedelta(days=1)).isoformat()
         for key, value in table_time.items():
             if key in detail and detail[key] != value:
                 detail.pop(key, None)
