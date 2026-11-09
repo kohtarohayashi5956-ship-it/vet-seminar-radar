@@ -66,6 +66,12 @@ def validate():
     with open("data/run_status.json", encoding="utf-8") as f:
         status=json.load(f)
     assert isinstance(status.get("source_results"), list)
+    # A failed crawl must not be published as a successful fresh refresh.
+    # Keep the previous public page when every enabled source failed/was empty.
+    if status["source_results"]:
+        assert any(item.get("status") == "ok" for item in status["source_results"]), (
+            "no source successfully collected seminars; retain last public digest"
+        )
     assert isinstance(status.get("total_events"), int)
     assert status["total_events"] == len(payload["events"]), "status count differs from published page"
     embedded_status = payload.get("run_status")
