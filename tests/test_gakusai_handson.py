@@ -86,6 +86,8 @@ class GakusaiHandsonTests(unittest.TestCase):
         self.assertNotIn("165,000円",rows[3]["price"])
         self.assertIsNone(rows[4]["price"])
         self.assertEqual(stats["handson_fees_found"],4)
+        self.assertTrue(all("獣医師" in row.get("audience", []) for row in rows[:4]))
+        self.assertNotIn("獣医師", rows[4].get("audience", []))
 
     def test_application_link_allowed_when_fee_not_published(self):
         page = TEXT.replace(
@@ -112,6 +114,17 @@ class GakusaiHandsonTests(unittest.TestCase):
         self.assertEqual(row["price"], "料金については主催者に確認")
         self.assertEqual(row["detail_url"],
                          "https://seminar.gakusai.co.jp/pending-course")
+
+    def test_existing_audience_preserved_and_no_duplicate(self):
+        row = event("小川名巧先生「2027 Dr.小川名の腹部超音波塾」","2027-01-17")
+        row["audience"] = ["動物看護師", "獣医師"]
+        enrich_handson([row], Fetcher(), TODAY, {})
+        self.assertEqual(row["audience"], ["動物看護師", "獣医師"])
+
+    def test_unmatched_course_does_not_infer_vet_audience(self):
+        row = event("無関係な講義","2027-01-17")
+        enrich_handson([row], Fetcher(), TODAY, {})
+        self.assertNotIn("獣医師", row.get("audience", []))
 
     def test_split_html_table_cells_are_matched_inside_same_course(self):
         html = TEXT.replace(
