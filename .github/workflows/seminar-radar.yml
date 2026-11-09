@@ -47,6 +47,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run unit tests
+        id: unit_tests
         run: python -m unittest discover -s tests -q
       # Extract cache is private GitHub Actions storage, NOT part of GitHub Pages or git history.
       - name: Restore previous extraction cache
@@ -57,6 +58,7 @@ jobs:
           restore-keys: |
             extract-v1-
       - name: Fetch seminar listings and render website
+        id: collect_data
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           # APIキーだけではAIは動かない。Variablesで1を明示した場合のみ使用。
@@ -64,8 +66,10 @@ jobs:
           SEMINAR_RADAR_CONTACT: ${{ secrets.SEMINAR_RADAR_CONTACT }}
         run: python run.py
       - name: Validate public outputs
+        id: validate_data
         run: python validate_public.py
       - name: Commit public digest and run status
+        id: publish_data
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
@@ -97,4 +101,56 @@ jobs:
             sleep "$((attempt * 2))"
           done
           echo "::error::Unable to push seminar digest after retries."
+          exit 1
+
+      - name: Persist collection workflow result
+        if: always()
+        env:
+          TESTS_RESULT: ${{ steps.unit_tests.outcome }}
+          COLLECT_RESULT: ${{ steps.collect_data.outcome }}
+          VALIDATE_RESULT: ${{ steps.validate_data.outcome }}
+          PUBLISH_RESULT: ${{ steps.publish_data.outcome }}
+        run: |
+          python - <<'PY'
+          import datetime
+          import json
+          import os
+          from pathlib import Path
+          outcomes = {
+              "unit_tests": os.environ.get("TESTS_RESULT", "unknown"),
+              "collect": os.environ.get("COLLECT_RESULT", "unknown"),
+              "validate": os.environ.get("VALIDATE_RESULT", "unknown"),
+              "publish_step": os.environ.get("PUBLISH_RESULT", "unknown"),
+          }
+          # "success" means the publish step finished, not that a new
+          # digest was pushed: concurrent code edits may discard stale data.
+          result = {
+              "source_sha": os.environ["GITHUB_SHA"],
+              "checked_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+              "run_url": "/".join((os.environ["GITHUB_SERVER_URL"], os.environ["GITHUB_REPOSITORY"], "actions/runs", os.environ["GITHUB_RUN_ID"])),
+              "result": "pass" if all(v == "success" for v in outcomes.values()) else "fail",
+              "checks": outcomes,
+              "note": "Check data/run_status.json checked_at_jst separately to confirm a new digest was published",
+          }
+          Path("/tmp/vet-seminar-collection-report.json").write_text(
+              json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/vet-seminar-collection-report.json data/collection_checks.json
+            git add data/collection_checks.json
+            if git diff --staged --quiet; then
+              exit 0
+            fi
+            git commit -m "Record collection checks for ${GITHUB_SHA:0:12}"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep "$((attempt * 2))"
+          done
+          echo "::error::Could not persist collection report"
           exit 1
