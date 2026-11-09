@@ -188,6 +188,49 @@ class TestJahaDeadlines(unittest.TestCase):
         item["title"] = "シニアケア講座 第2回"
         self.assertEqual(parse_jaha_detail(page, item)["deadline"], "2026-12-06")
 
+    def test_seniorcare_full_year_round_one_and_three_time_and_fee(self):
+        page = (
+            "2026年度 講座内容（全5回）\n"
+            "第1回 | 老化に伴う行動変化 | 2026年11月12日(木) 14:00-16:30\n"
+            "第2回 | 高齢動物のがん | 12月9日(水) 14:00-17:00\n"
+            "第3回 | 整形疾患 | 2027年1月21日(木) 14:00-17:00\n"
+            "受講料(税込)\n"
+            "JAHA会員 | 会員外一般\n"
+            "全5回一括 | 19,800円 | 27,500円\n"
+            "単回申込 | 4,950円 | 7,150円\n"
+        )
+        for day, num, time_end in (
+                ("2026-11-12", 1, "16:30"), ("2027-01-21", 3, "17:00")):
+            item = event(day, "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+            item["title"] = f"【オンライン】シニアケア講座 第{num}回"
+            got = parse_jaha_detail(page, item)
+            self.assertEqual(got["start_time"], "14:00")
+            self.assertEqual(got["end_time"], time_end)
+            self.assertIn("19,800円", got["price"])
+            self.assertIn("4,950円", got["price"])
+
+    def test_seniorcare_round_date_no_neighbor_or_registration_borrowing(self):
+        page = (
+            "2026年度 講座内容（全5回）\n"
+            "第1回 | 老化に伴う行動変化 | 2026年11月12日 14:00-16:30\n"
+            "第2回 | 高齢動物のがん | 2026年12月9日 14:00-17:00\n"
+            "申込締切：2027年1月21日 12:00\n"
+        )
+        item = event("2027-01-21",
+                     "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "シニアケア講座 第3回"
+        self.assertEqual(parse_jaha_detail(page, item), {})
+
+    def test_seniorcare_round_requires_printed_year_and_correct_round(self):
+        page = ("2026年度 講座内容（全5回）\n"
+                "第3回 | 整形疾患 | 1月21日 14:00-17:00\n")
+        item = event("2027-01-21",
+                     "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "シニアケア講座 第3回"
+        self.assertEqual(parse_jaha_detail(page, item), {})
+        item["title"] = "シニアケア講座 第2回"
+        self.assertEqual(parse_jaha_detail(page, item), {})
+
     def test_numbered_course_time_does_not_borrow_neighboring_round(self):
         page = ("2026年度 講座内容（全5回）\n"
                 "第1回 | 老化に伴う行動の変化 | 2026年11月12日 14:00-16:30\n"
