@@ -129,6 +129,34 @@ class GakusaiHandsonTests(unittest.TestCase):
         enrich_handson([row], Fetcher(), TODAY, {})
         self.assertNotIn("獣医師", row.get("audience", []))
 
+    def test_explicit_listing_venue_survives_unavailable_detail_page(self):
+        class Denied:
+            def get(self, url):
+                raise PermissionError("robots denied")
+        rows = [
+            event("鳥巣先生・金子先生・山本先生・岡寺先生「軟部外科実習2027 ウェットラボ in 宮崎大学」", "2027-10-10"),
+            event("永延清和 先生・吉田貢太 先生「麻酔管理実習2027 ウェットラボ in 宮崎大学」", "2027-10-10"),
+        ]
+        stats = {}
+        enrich_handson(rows, Denied(), TODAY, stats)
+        self.assertEqual([e["venue"] for e in rows], ["宮崎大学", "宮崎大学"])
+        self.assertEqual(stats["handson_venues_found"], 2)
+        self.assertEqual(stats["handson_fetch_failed"], 1)
+
+    def test_explicit_listing_venue_requires_exact_day_title_and_source(self):
+        for title, day in [
+            ("軟部外科実習2027 ウェットラボ in 宮崎大学", "2027-10-11"),
+            ("別のウェットラボ in 宮崎大学", "2027-10-10"),
+            ("軟部外科実習2027 宮崎開催", "2027-10-10"),
+        ]:
+            row = event(title, day)
+            enrich_handson([row], Fetcher(), TODAY, {})
+            self.assertIsNone(row["venue"])
+        other = event("軟部外科実習2027 ウェットラボ in 宮崎大学", "2027-10-10")
+        other["source_id"] = "other"
+        enrich_handson([other], Fetcher(), TODAY, {})
+        self.assertIsNone(other["venue"])
+
     def test_miyazaki_venue_not_inferred_from_city_alone(self):
         row = event("別の宮崎の実習", "2027-10-10")
         enrich_handson([row], Fetcher(), TODAY, {})
