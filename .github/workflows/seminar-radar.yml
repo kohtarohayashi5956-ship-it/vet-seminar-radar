@@ -70,15 +70,23 @@ jobs:
           if ! git diff --staged --quiet; then
             git commit -m "Update seminar digest $(date -u +%Y-%m-%d)"
           fi
-          # Each code push queues its own collection run. If main changed
-          # while this run crawled, its output is stale by definition.
-          # Never rebase stale generated JSON/HTML over a newer code version.
-          # A queued run on the latest main will publish the current digest.
+          # The independent release-check workflow pushes only its CI
+          # result JSON using GITHUB_TOKEN. That harmless commit must not
+          # discard a successful crawl (bot commits do not queue a new run).
+          # A *real* source or data change still invalidates this crawl.
           for attempt in 1 2 3; do
             git fetch origin main
-            if [ "$(git rev-parse origin/main)" != "$GITHUB_SHA" ]; then
-              echo "::notice::Main changed during crawl; discarding this stale digest. Latest queued run will publish fresh data."
+            changed="$(git diff --name-only "$GITHUB_SHA" origin/main)"
+            if [ -n "$changed" ] && [ "$changed" != "data/release_checks.json" ]; then
+              echo "::notice::Source or public data changed during crawl; discarding stale generated files."
               exit 0
+            fi
+            if [ "$(git rev-parse origin/main)" != "$(git rev-parse HEAD)" ]; then
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo "::error::Cannot safely publish digest after concurrent update."
+                exit 1
+              fi
             fi
             if git push origin HEAD:main; then
               exit 0
