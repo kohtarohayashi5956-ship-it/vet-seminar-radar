@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-09T12:18:10+09:00",
+  "checked_at_jst": "2026-11-09T12:24:44+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
@@ -461,7 +461,7 @@
       "prices_found": 2,
       "handson_fees_found": 9,
       "handson_applications_found": 9,
-      "handson_course_cards": 12,
+      "handson_course_cards": 13,
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
