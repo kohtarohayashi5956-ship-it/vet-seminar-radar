@@ -28,6 +28,9 @@ def validate():
     parser = Payload(); parser.feed(text)
     payload = json.loads("".join(parser.text))
     assert isinstance(payload.get("events"), list)
+    event_ids = [event.get("id") for event in payload["events"]]
+    assert all(isinstance(eid, str) and eid for eid in event_ids)
+    assert len(event_ids) == len(set(event_ids)), "duplicate public event IDs"
     for event in payload["events"]:
         assert isinstance(event.get("title"), str) and event["title"].strip()
         assert len(event["title"]) < 2000
@@ -38,6 +41,10 @@ def validate():
         for field in ("start_date", "end_date", "deadline"):
             d = event.get(field)
             assert d is None or re.fullmatch(r"\d{4}-\d{2}-\d{2}", d)
+        if event.get("start_date") and event.get("deadline"):
+            assert event["deadline"] <= event["start_date"], "deadline after event"
+        if event.get("is_free") is True and event.get("price"):
+            assert not re.search(r"[0-9０-９][0-9０-９,，]*\\s*円", event["price"]), "paid fee marked free"
         assert not any(k in event for k in ("raw_html", "raw_text", "page_text", "evidence"))
     with open("data/events.json", encoding="utf-8") as f:
         db=json.load(f)
@@ -45,6 +52,8 @@ def validate():
     with open("data/run_status.json", encoding="utf-8") as f:
         status=json.load(f)
     assert isinstance(status.get("source_results"), list)
+    assert isinstance(status.get("total_events"), int)
+    assert status["total_events"] == len(payload["events"]), "status count differs from published page"
     assert "sk-ant-" not in text
     print(f"public validation OK: {len(payload['events'])} events, {len(status['source_results'])} source results")
 
