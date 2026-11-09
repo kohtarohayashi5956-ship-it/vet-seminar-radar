@@ -6,7 +6,7 @@ from urllib.parse import urlsplit
 from extract import html_to_text
 from free_extract import _dates, _times
 
-LIMIT = 6
+LIMIT = 12
 TIERS = re.compile(r"(法人[・･]個人会員|一般獣医師|法人会員|個人会員)")
 AMOUNT = re.compile(r"\d[\d,]*\s*円(?:\s*\(税込\s*\d[\d,]*\s*円\))?")
 
