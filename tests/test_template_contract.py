@@ -68,6 +68,11 @@ class TemplateContractTests(unittest.TestCase):
         self.assertIn('elapsed > 8 * 86400000', self.html)
         self.assertIn('最終収集から', self.html)
 
+    def test_deadline_panel_shows_year_for_cross_year_courses(self):
+        self.assertIn('function fullDate(s)', self.html)
+        self.assertIn('fullDate(e.deadline)', self.html)
+        self.assertIn('fullDate(e.start_date)', self.html)
+
     def test_payload_marker_remains_for_safe_rendering(self):
         self.assertIn('/*__PAYLOAD__*/null', self.html)
 
