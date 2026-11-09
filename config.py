@@ -70,14 +70,14 @@ SOURCES = [
         "kind": "eduone_lecture",
         "start_url": "https://eduone.jp/lecture/",
         "max_details": 12,
-        "enabled": False,
+        "enabled": True,
     },
     {
         "id": "academy",
         "name": "VETS ACADEMY",
         "kind": "vets_academy_list",
         "start_url": "https://academy.eduone.jp/seminar",
-        "enabled": False,
+        "enabled": True,
     },
     {
         "id": "jbvp",
