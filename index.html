@@ -381,6 +381,7 @@
   function pad(n) { return (n < 10 ? "0" : "") + n; }
   function parse(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
   function md(s) { var d = parse(s); return (d.getMonth() + 1) + "/" + d.getDate(); }
+  function fullDate(s) { return s.slice(0, 4) + "/" + md(s); }
   function wd(s) { return WD[parse(s).getDay()]; }
   function endOf(e) { return e.end_date || e.start_date; }
   function monthKey(y, m) { return y + "-" + pad(m); }
@@ -605,13 +606,13 @@
       var days = deadlineDays(e.deadline);
       var row = el("div", "deadline-row");
       var due = el("span", "deadline-date" + (days <= 7 ? " deadline-urgent" : ""),
-                   days === 0 ? "締切 今日" : "締切 " + md(e.deadline) + "（あと" + days + "日）");
+                   days === 0 ? "締切 今日（" + fullDate(e.deadline) + "）" : "締切 " + fullDate(e.deadline) + "（あと" + days + "日）");
       row.appendChild(due);
       var link = el("a", null, displayTitle(e));
       link.href = e.url || "#"; link.target = "_blank"; link.rel = "noopener noreferrer";
       row.appendChild(link);
       row.appendChild(el("span", "deadline-sub",
-        "開催 " + md(e.start_date) + "｜" + (e.source || "取得元不明")));
+        "開催 " + fullDate(e.start_date) + "｜" + (e.source || "取得元不明")));
       target.appendChild(row);
     });
     if (eligible.length > 8) {
