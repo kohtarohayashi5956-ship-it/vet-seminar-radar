@@ -4,8 +4,10 @@ import os
 
 # --- 連絡先（User-Agentに入ります）-----------------------------------------
 # 相手サイトの管理者が「誰のアクセスか」分かるようにするためのものです。
-# 環境変数 SEMINAR_RADAR_CONTACT にメールアドレスを入れるか、直接書き換えてください。
-CONTACT = os.environ.get("SEMINAR_RADAR_CONTACT", "")
+# 個人のメールアドレスは必要ありません。標準では公開リポジトリを記載します。
+# 希望する場合は環境変数 SEMINAR_RADAR_CONTACT で上書きできます。
+DEFAULT_CONTACT = "https://github.com/kohtarohayashi5956-ship-it/vet-seminar-radar"
+CONTACT = os.environ.get("SEMINAR_RADAR_CONTACT") or DEFAULT_CONTACT
 USER_AGENT = (
     "SeminarRadarPersonal/1.0 "
     f"(personal non-commercial use; contact: {CONTACT or 'not-set'})"
