@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 from extract import html_to_text
 from free_extract import _dates, _times
 
-MAX_DETAILS = 10
+MAX_DETAILS = 14
 REGISTRATION = re.compile(
     r"^(?:受付期間|申込期間|申込み期間|申し込み期間|お申込み締切|お申し込み締切|"
     r"申込締切|申し込み締切|申込期限|受付締切)\s*[：:]?"
