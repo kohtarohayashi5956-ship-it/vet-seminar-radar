@@ -121,13 +121,47 @@ def _courses(text):
     return list({x["id"]: x for x in blocks}.values())
 
 
+def _booking_start_time(url, expected_day):
+    """Only a fully dated, event-matched official booking timestamp is usable."""
+    if not url:
+        return None
+    try:
+        parsed = urlsplit(url)
+    except ValueError:
+        return None
+    if (parsed.scheme != "https" or parsed.hostname != "seminar.gakusai.co.jp"
+            or parsed.username or parsed.password
+            or parsed.path != "/reservations/add"):
+        return None
+    params = parse_qsl(parsed.query, keep_blank_values=True)
+    stamp = [v for k, v in params if k == "usage_timestamp_from"]
+    booking_ids = [v for k, v in params if k == "event_id"]
+    if (len(stamp) != 1 or len(booking_ids) != 1
+            or not re.fullmatch(r"\d{1,10}", booking_ids[0])):
+        return None
+    match = re.fullmatch(
+        r"(20\d{2})/(\d{2})/(\d{2})[ T](\d{2}):(\d{2})(?::00)?",
+        stamp[0]
+    )
+    if not match:
+        return None
+    year, month, day, hour, minute = map(int, match.groups()[:5])
+    try:
+        date = datetime.date(year, month, day).isoformat()
+    except ValueError:
+        return None
+    if date != expected_day or hour > 23 or minute > 59:
+        return None
+    return f"{hour:02d}:{minute:02d}"
+
+
 def enrich_handson(events, fetcher, today, stats):
     candidates = [e for e in events
                   if e.get("source_id") in (None, "gakusai")
                   and e.get("start_date", "").startswith("2027-")
                   and e.get("url", "").startswith("https://www.gakusai.co.jp/doubutu/")
                   and e.get("format") not in ("オンデマンド", "ライブ配信")
-                  and (not e.get("price") or not e.get("detail_url"))]
+                  and (not e.get("price") or not e.get("detail_url") or not e.get("start_time"))]
     if not candidates:
         stats["handson_pages"] = 0
         stats["handson_fees_found"] = 0
@@ -191,10 +225,19 @@ def enrich_handson(events, fetcher, today, stats):
             event["prefecture"] = {"東京":"東京都","大阪":"大阪府",
                                    "宮崎":"宮崎県","福岡":"福岡県"}[selected_city]
         application = course["applications"].get((event["start_date"], selected_city))
-        if application and not event.get("detail_url"):
-            event["detail_url"] = application
-            stats["handson_applications_found"] = (
-                stats.get("handson_applications_found", 0) + 1)
+        if application:
+            # Read the official booking start timestamp only after the
+            # independently matched title/date/city/course decision above.
+            # End times, application deadlines and venue names are not inferred.
+            booking_time = _booking_start_time(application, event["start_date"])
+            if booking_time and not event.get("start_time"):
+                event["start_time"] = booking_time
+                stats["handson_start_times_found"] = (
+                    stats.get("handson_start_times_found", 0) + 1)
+            if not event.get("detail_url"):
+                event["detail_url"] = application
+                stats["handson_applications_found"] = (
+                    stats.get("handson_applications_found", 0) + 1)
     stats["handson_pages"] = 1
     stats["handson_course_cards"] = len(courses)
     stats["handson_fees_found"] = added
