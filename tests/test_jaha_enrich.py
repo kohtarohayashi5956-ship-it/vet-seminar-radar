@@ -291,6 +291,49 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertEqual(item["end_time"], "16:30")
         self.assertEqual(stats["times_found"], 1)
 
+    def test_seniorcare_table_verified_first_and_third_round_fee_and_signup(self):
+        html = """<main><h2>2026年度 講座内容（全5回）</h2>
+        <table><tr><td>第1回 行動の変化</td>
+        <td>2026年11月12日 14:00-16:30</td></tr>
+        <tr><td>第3回 整形疾患</td>
+        <td>2027年1月21日 14:00-17:00</td></tr></table>
+        <h2>受講料（税込）</h2>
+        <p>JAHA会員 | 会員外一般</p>
+        <p>全5回一括 | 19,800円 | 27,500円</p>
+        <p>単回申込 | 4,950円 | 7,150円</p>
+        <h2>お申込</h2>
+        <p>単回申込の受付は、各回セミナー実施日の前日までとなります。</p>
+        </main>"""
+        class Fetcher:
+            def get(self, url):
+                return html
+        rows = []
+        for day, num in (("2026-11-12", 1), ("2027-01-21", 3)):
+            row = event(day, "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+            row["title"] = f"シニアケア講座・第{num}回"
+            rows.append(row)
+        stats = {}
+        enrich_jaha(rows, Fetcher(), datetime.date(2026, 11, 9), stats)
+        self.assertEqual(rows[0]["deadline"], "2026-11-11")
+        self.assertEqual(rows[1]["deadline"], "2027-01-20")
+        for item in rows:
+            self.assertIn("19,800円", item["price"])
+            self.assertIn("4,950円", item["price"])
+        self.assertEqual(stats["times_found"], 2)
+        self.assertEqual(stats["prices_found"], 2)
+
+    def test_seniorcare_table_no_published_policy_no_deadline(self):
+        html = """<h2>2026年度 講座内容（全5回）</h2>
+        <table><tr><td>第1回 行動の変化</td>
+        <td>2026年11月12日 14:00-16:30</td></tr></table>"""
+        class Fetcher:
+            def get(self, url):
+                return html
+        item = event("2026-11-12", "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "シニアケア講座 第1回"
+        enrich_jaha([item], Fetcher(), datetime.date(2026, 11, 9), {})
+        self.assertNotIn("deadline", item)
+
     def test_numbered_course_time_does_not_borrow_neighboring_round(self):
         page = ("2026年度 講座内容（全5回）\n"
                 "第1回 | 老化に伴う行動の変化 | 2026年11月12日 14:00-16:30\n"
