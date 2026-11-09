@@ -1,27 +1,27 @@
 {
-  "checked_at_jst": "2026-11-07T23:41:21+09:00",
+  "checked_at_jst": "2026-11-09T11:59:21+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
     "total": 82,
     "field_presence": {
       "start_date": 81,
-      "start_time": 26,
+      "start_time": 25,
       "venue": 25,
-      "price": 28,
-      "deadline": 20,
-      "topics": 66,
-      "audience": 41,
+      "price": 29,
+      "deadline": 19,
+      "topics": 64,
+      "audience": 42,
       "url": 82
     },
     "field_presence_pct": {
       "start_date": 98.8,
-      "start_time": 31.7,
+      "start_time": 30.5,
       "venue": 30.5,
-      "price": 34.1,
-      "deadline": 24.4,
-      "topics": 80.5,
-      "audience": 50.0,
+      "price": 35.4,
+      "deadline": 23.2,
+      "topics": 78.0,
+      "audience": 51.2,
       "url": 100.0
     },
     "note": "Field presence only; dates, prices and details are not independently verified."
@@ -76,24 +76,24 @@
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
     "jaha": {
-      "total": 19,
+      "total": 20,
       "field_presence": {
-        "start_date": 19,
-        "start_time": 5,
+        "start_date": 20,
+        "start_time": 4,
         "venue": 0,
-        "price": 3,
-        "deadline": 6,
+        "price": 4,
+        "deadline": 5,
         "topics": 12,
-        "audience": 19,
-        "url": 19
+        "audience": 20,
+        "url": 20
       },
       "field_presence_pct": {
         "start_date": 100.0,
-        "start_time": 26.3,
+        "start_time": 20.0,
         "venue": 0.0,
-        "price": 15.8,
-        "deadline": 31.6,
-        "topics": 63.2,
+        "price": 20.0,
+        "deadline": 25.0,
+        "topics": 60.0,
         "audience": 100.0,
         "url": 100.0
       },
@@ -172,24 +172,24 @@
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
     "jsvas": {
-      "total": 4,
+      "total": 3,
       "field_presence": {
-        "start_date": 4,
+        "start_date": 3,
         "start_time": 2,
-        "venue": 4,
+        "venue": 3,
         "price": 2,
         "deadline": 2,
-        "topics": 3,
-        "audience": 4,
-        "url": 4
+        "topics": 2,
+        "audience": 3,
+        "url": 3
       },
       "field_presence_pct": {
         "start_date": 100.0,
-        "start_time": 50.0,
+        "start_time": 66.7,
         "venue": 100.0,
-        "price": 50.0,
-        "deadline": 50.0,
-        "topics": 75.0,
+        "price": 66.7,
+        "deadline": 66.7,
+        "topics": 66.7,
         "audience": 100.0,
         "url": 100.0
       },
@@ -200,7 +200,7 @@
       "field_presence": {
         "start_date": 1,
         "start_time": 0,
-        "venue": 0,
+        "venue": 1,
         "price": 0,
         "deadline": 0,
         "topics": 1,
@@ -210,7 +210,7 @@
       "field_presence_pct": {
         "start_date": 100.0,
         "start_time": 0.0,
-        "venue": 0.0,
+        "venue": 100.0,
         "price": 0.0,
         "deadline": 0.0,
         "topics": 100.0,
@@ -323,8 +323,8 @@
         "venue": 0,
         "price": 3,
         "deadline": 0,
-        "topics": 3,
-        "audience": 2,
+        "topics": 2,
+        "audience": 3,
         "url": 4
       },
       "field_presence_pct": {
@@ -333,8 +333,8 @@
         "venue": 0.0,
         "price": 75.0,
         "deadline": 0.0,
-        "topics": 75.0,
-        "audience": 50.0,
+        "topics": 50.0,
+        "audience": 75.0,
         "url": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
@@ -345,14 +345,14 @@
       "id": "jaha",
       "name": "JAHA",
       "pages": 1,
-      "extracted": 19,
-      "added": 0,
-      "updated": 19,
-      "replaced_stale": 0,
+      "extracted": 20,
+      "added": 4,
+      "updated": 16,
+      "replaced_stale": 3,
       "details_scanned": 6,
       "details_accepted": 7,
-      "deadlines_found": 6,
-      "prices_found": 3,
+      "deadlines_found": 5,
+      "prices_found": 4,
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
@@ -361,16 +361,6 @@
       "fee_amount_pages": 6,
       "fee_parsed_pages": 2,
       "fee_detail_checks": [
-        {
-          "path": "/owners/dog-training/kougi3ol/",
-          "fee_label": true,
-          "yen_amount": true,
-          "fee_section": false,
-          "corroborated_dates": [
-            "2026-11-07",
-            "2026-11-14"
-          ]
-        },
         {
           "path": "/training/seminar/vet/endocrine26/",
           "fee_label": false,
@@ -388,13 +378,23 @@
           ]
         },
         {
+          "path": "/owners/dog-training/kougi3ol/",
+          "fee_label": true,
+          "yen_amount": true,
+          "fee_section": false,
+          "corroborated_dates": [
+            "2026-11-14"
+          ]
+        },
+        {
           "path": "/training/seminar/puppy/basic/",
           "fee_label": true,
           "yen_amount": true,
           "fee_section": true,
           "corroborated_dates": [
             "2026-12-01",
-            "2027-01-01"
+            "2027-01-01",
+            "2027-02-01"
           ]
         },
         {
@@ -415,7 +415,7 @@
           "corroborated_dates": []
         }
       ],
-      "times_found": 5,
+      "times_found": 4,
       "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
@@ -426,9 +426,9 @@
       "name": "Life&Tail",
       "pages": 1,
       "extracted": 17,
-      "added": 0,
-      "updated": 17,
-      "replaced_stale": 0,
+      "added": 1,
+      "updated": 16,
+      "replaced_stale": 1,
       "details_scanned": 10,
       "details_accepted": 14,
       "deadlines_found": 14,
@@ -598,7 +598,7 @@
       "fee_parsed_pages": 0,
       "fee_detail_checks": [],
       "times_found": 0,
-      "venues_found": 0,
+      "venues_found": 1,
       "detail_fetch_failed": 0,
       "status": "ok",
       "note": ""
@@ -607,11 +607,11 @@
       "id": "jsvas",
       "name": "日本獣医麻酔外科学会",
       "pages": 2,
-      "extracted": 4,
+      "extracted": 3,
       "added": 0,
-      "updated": 4,
-      "replaced_stale": 0,
-      "details_scanned": 3,
+      "updated": 3,
+      "replaced_stale": 1,
+      "details_scanned": 2,
       "details_accepted": 2,
       "deadlines_found": 2,
       "prices_found": 2,
@@ -712,9 +712,9 @@
       "name": "VETS TECH",
       "pages": 3,
       "extracted": 5,
-      "added": 1,
-      "updated": 4,
-      "replaced_stale": 0,
+      "added": 2,
+      "updated": 3,
+      "replaced_stale": 1,
       "details_scanned": 0,
       "details_accepted": 0,
       "deadlines_found": 0,
