@@ -90,7 +90,8 @@ def parse_jsvc_meeting_venue(page_text, event):
         if not match:
             continue
         value = match.group(1).strip() or (scope[i + 1] if i + 1 < len(scope) else "")
-        if (4 <= len(value) <= 90 and not re.search(
+        if (4 <= len(value) <= 90 and chr(92) not in value
+                and not re.search(
                 r"https?://|@|〒|TEL|FAX|20\d{2}年|\\\\n|会\\s*場\\s*[：:]", value, re.I)):
             venues.append(value)
     if len(venues) != 1:
