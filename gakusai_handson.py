@@ -224,6 +224,15 @@ def enrich_handson(events, fetcher, today, stats):
         if not event.get("prefecture"):
             event["prefecture"] = {"東京":"東京都","大阪":"大阪府",
                                    "宮崎":"宮崎県","福岡":"福岡県"}[selected_city]
+        # For two 2027 Miyazaki wet labs, the official course title itself
+        # explicitly names the university. Do not infer Tokyo/Osaka venues
+        # from a city label or transfer this venue to another course.
+        if (not event.get("venue") and selected_city == "宮崎"
+                and "宮崎大学" in course["title"]
+                and "宮崎大学" in (event.get("title") or "")):
+            event["venue"] = "宮崎大学"
+            stats["handson_venues_found"] = (
+                stats.get("handson_venues_found", 0) + 1)
         application = course["applications"].get((event["start_date"], selected_city))
         if application:
             # Read the official booking start timestamp only after the
