@@ -34,12 +34,16 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
       - name: Run offline regression tests
+        id: unit_tests
         run: python -m unittest discover -s tests -q
       - name: Render from stored data (no network / no AI)
+        id: render
         run: python run.py --offline --out index.html
       - name: Validate public data contract
+        id: public_data
         run: python validate_public.py
       - name: Check browser JavaScript syntax
+        id: javascript
         run: |
           python - <<'PY'
           from html.parser import HTMLParser
@@ -66,6 +70,7 @@ jobs:
           PY
           node --check /tmp/vet-seminar-ui.js
       - name: Confirm generated HTML and controls
+        id: controls
         run: |
           python - <<'PY'
           from html.parser import HTMLParser
@@ -78,3 +83,25 @@ jobs:
           assert 'id="composer"' in content
           print('Offline HTML rendering and required controls: OK')
           PY
+      - name: Publish release-check summary
+        if: always()
+        env:
+          UNIT_RESULT: ${{ steps.unit_tests.outcome }}
+          RENDER_RESULT: ${{ steps.render.outcome }}
+          DATA_RESULT: ${{ steps.public_data.outcome }}
+          JS_RESULT: ${{ steps.javascript.outcome }}
+          UI_RESULT: ${{ steps.controls.outcome }}
+        run: |
+          {
+            echo "## Vet Seminar Radar v1.0 検証結果"
+            echo
+            echo "| 検査項目 | 結果 |"
+            echo "|---|---|"
+            echo "| Python単体テスト | $UNIT_RESULT |"
+            echo "| HTML再生成 | $RENDER_RESULT |"
+            echo "| 公開データ検証 | $DATA_RESULT |"
+            echo "| JavaScript構文 | $JS_RESULT |"
+            echo "| 主要UI構成 | $UI_RESULT |"
+            echo
+            echo "この検証はオフラインです。公式サイトでの事実照合とPC/スマホ実機操作の代わりにはなりません。"
+          } >> "$GITHUB_STEP_SUMMARY"
