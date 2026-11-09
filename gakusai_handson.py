@@ -161,7 +161,7 @@ def enrich_handson(events, fetcher, today, stats):
                   and e.get("start_date", "").startswith("2027-")
                   and e.get("url", "").startswith("https://www.gakusai.co.jp/doubutu/")
                   and e.get("format") not in ("オンデマンド", "ライブ配信")
-                  and (not e.get("price") or not e.get("detail_url"))]
+                  and (not e.get("price") or not e.get("detail_url") or not e.get("start_time"))]
     if not candidates:
         stats["handson_pages"] = 0
         stats["handson_fees_found"] = 0
