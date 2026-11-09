@@ -162,6 +162,19 @@ def enrich_handson(events, fetcher, today, stats):
                   and e.get("url", "").startswith("https://www.gakusai.co.jp/doubutu/")
                   and e.get("format") not in ("オンデマンド", "ライブ配信")
                   and (not e.get("price") or not e.get("detail_url") or not e.get("start_time"))]
+    # The Gakusai annual listing itself explicitly names the venue for
+    # these two 2027 wet labs. It remains valid even if course detail links
+    # are not yet published; never infer a venue from prefecture alone.
+    for event in candidates:
+        title = unicodedata.normalize("NFKC", event.get("title") or "")
+        if (not event.get("venue")
+                and event.get("start_date") == "2027-10-10"
+                and "ウェットラボ in 宮崎大学" in title
+                and ("軟部外科実習2027" in title
+                     or "麻酔管理実習2027" in title)):
+            event["venue"] = "宮崎大学"
+            stats["handson_venues_found"] = (
+                stats.get("handson_venues_found", 0) + 1)
     if not candidates:
         stats["handson_pages"] = 0
         stats["handson_fees_found"] = 0
