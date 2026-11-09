@@ -370,6 +370,47 @@ def _seniorcare_single_session_deadline(lines, event):
     return (date - datetime.timedelta(days=1)).isoformat()
 
 
+def _seniorcare_round_schedule(lines, event):
+    """Find one exact-year dated senior-care installment in its own programme row.
+
+    Never infer the year of a short date, even if neighboring installments
+    carry a year. A different round or registration date cannot satisfy it.
+    """
+    u = _url(event)
+    if not u or urlsplit(u).path != "/training/seminar/seniorcare_ol/":
+        return None
+    name = unicodedata.normalize("NFKC", event.get("title") or "")
+    m = re.search(r"第\s*([1-5])\s*回", name)
+    if not m or "シニアケア講座" not in name:
+        return None
+    try:
+        date = datetime.date.fromisoformat(event.get("start_date") or "")
+    except (TypeError, ValueError):
+        return None
+    if not any(re.search(r"2026年度\s*講座内容", line) for line in lines):
+        return None
+    found = []
+    for i, line in enumerate(lines):
+        if not re.match(rf"^第\s*{m.group(1)}\s*回(?:\s|\||$)", line):
+            continue
+        segment = []
+        for nxt in lines[i:i+8]:
+            if nxt != line and re.match(r"^第\s*[1-5]\s*回(?:\s|\||$)", nxt):
+                break
+            if (REGISTRATION.match(nxt) or EXCLUDE.search(nxt)
+                    or re.search(r"単回申込|全5回一括|申込.*受付", nxt)):
+                break
+            segment.append(nxt)
+        for row in segment:
+            if _dates(row) != [date.isoformat()]:
+                continue
+            t1, t2 = _times(row)
+            found.append((t1, t2))
+    if len(found) != 1:
+        return None
+    return found[0]
+
+
 def parse_jaha_detail(text, event):
     start_date = event.get("start_date")
     if not start_date:
@@ -384,9 +425,11 @@ def parse_jaha_detail(text, event):
         and not EXCLUDE.search(line)
         and start_date in _dates(line)
     ]
+    seniorcare_session = _seniorcare_round_schedule(lines, event)
     if (not schedule_matches
             and not _short_date_session_time(lines, start_date)
-            and not _date_from_numbered_course(lines, event)):
+            and not _date_from_numbered_course(lines, event)
+            and seniorcare_session is None):
         return {}
     out = {}
     deadline = _registration_deadline(lines, start_date)
@@ -421,6 +464,8 @@ def parse_jaha_detail(text, event):
         distinct.add(session_time)
     if numbered_time:
         distinct.add(numbered_time)
+    if seniorcare_session and all(seniorcare_session):
+        distinct.add(seniorcare_session)
     if len(distinct) == 1:
         t1, t2 = next(iter(distinct))
         if not event.get("start_time") or event["start_time"] == t1:
