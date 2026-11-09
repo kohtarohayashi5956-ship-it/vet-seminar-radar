@@ -54,6 +54,20 @@ def validate():
     assert isinstance(status.get("source_results"), list)
     assert isinstance(status.get("total_events"), int)
     assert status["total_events"] == len(payload["events"]), "status count differs from published page"
+    embedded_status = payload.get("run_status")
+    assert isinstance(embedded_status, dict), "missing embedded run status"
+    assert embedded_status.get("checked_at_jst") == status.get("checked_at_jst"), (
+        "published page contains an older collection status"
+    )
+    quality = status.get("data_quality") or {}
+    embedded_quality = embedded_status.get("data_quality") or {}
+    assert quality == embedded_quality, "published quality metrics differ from run status"
+    assert quality.get("total") == len(payload["events"]), "quality total differs from published page"
+    for field in ("start_date", "start_time", "venue", "price", "deadline", "topics", "audience", "url"):
+        count = sum(bool(event.get(field)) for event in payload["events"])
+        assert quality.get("field_presence", {}).get(field) == count, (
+            f"incorrect published {field} completeness"
+        )
     assert "sk-ant-" not in text
     print(f"public validation OK: {len(payload['events'])} events, {len(status['source_results'])} source results")
 
