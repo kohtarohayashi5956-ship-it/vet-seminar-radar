@@ -23,6 +23,16 @@ class Payload(HTMLParser):
             self.text.append(data)
 
 
+def valid_calendar_date(value):
+    """Require exact YYYY-MM-DD and an existing Gregorian date."""
+    if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        return False
+    try:
+        return datetime.date.fromisoformat(value).isoformat() == value
+    except ValueError:
+        return False
+
+
 def validate():
     with open("index.html", encoding="utf-8") as f:
         text = f.read()
@@ -42,8 +52,7 @@ def validate():
         for field in ("start_date", "end_date", "deadline"):
             d = event.get(field)
             if d is not None:
-                assert isinstance(d, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", d)
-                assert datetime.date.fromisoformat(d).isoformat() == d, "invalid calendar date"
+                assert valid_calendar_date(d), "invalid calendar date"
         if event.get("start_date") and event.get("end_date"):
             assert event["start_date"] <= event["end_date"], "end date before start date"
         if event.get("start_date") and event.get("deadline"):
