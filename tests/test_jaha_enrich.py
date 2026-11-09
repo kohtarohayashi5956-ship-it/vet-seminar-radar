@@ -2,7 +2,7 @@
 """JAHA seminar deadline: never mistake registration start or cancellation date."""
 import datetime
 import unittest
-from jaha_enrich import parse_jaha_detail, enrich_jaha, _url, _seniorcare_round_schedule
+from jaha_enrich import parse_jaha_detail, enrich_jaha, _url, _seniorcare_round_schedule, parse_jaha_seniorcare_table
 
 DATE=datetime.date(2026,11,6)
 URL="https://www.jaha.or.jp/owners/dog-training/kougi3ol/"
@@ -233,6 +233,63 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertIsNone(_seniorcare_round_schedule(page.splitlines(), item))
         item["title"] = "シニアケア講座 第2回"
         self.assertIsNone(_seniorcare_round_schedule(page.splitlines(), item))
+
+    def test_seniorcare_table_cells_keep_dates_in_same_course_row(self):
+        html = """<main><h2>2026年度 講座内容（全5回）</h2>
+        <table><tr><th>テーマと内容</th><th>日程・講師2026年度</th></tr>
+        <tr><td>第1回 老化に伴う行動変化</td><td>2026年11月12日（木）14:00-16:30</td></tr>
+        <tr><td>第2回 高齢動物のがん</td><td>12月9日（水）14:00-17:00</td></tr>
+        <tr><td>第3回 整形疾患とリハビリ</td><td>2027年1月21日（木）14:00-17:00</td></tr>
+        </table></main>"""
+        for num, day, ending in ((1, "2026-11-12", "16:30"),
+                                  (3, "2027-01-21", "17:00")):
+            item = event(day, "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+            item["title"] = f"【オンライン】シニアケア講座・第{num}回"
+            result = parse_jaha_seniorcare_table(html, item)
+            self.assertEqual(result["start_time"], "14:00")
+            self.assertEqual(result["end_time"], ending)
+        second = event("2026-12-09", "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        second["title"] = "シニアケア講座 第2回"
+        self.assertEqual(parse_jaha_seniorcare_table(html, second), {})
+
+    def test_seniorcare_table_rejects_conflicting_and_cross_row_times(self):
+        html = """<h2>2026年度 講座内容（全5回）</h2>
+        <table><tr><td>第1回 ケア</td><td>2026年11月12日 14:00-16:30</td></tr>
+        <tr><td>第2回 疾患</td><td>2026年12月9日 13:00-17:00</td></tr></table>"""
+        item = event("2026-11-12", "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "シニアケア講座 第1回"
+        item["start_time"] = "15:00"
+        self.assertEqual(parse_jaha_seniorcare_table(html, item), {})
+        item["start_time"] = None
+        self.assertEqual(parse_jaha_seniorcare_table(html, item)["end_time"], "16:30")
+        item["title"] = "シニアケア講座 第2回"
+        self.assertEqual(parse_jaha_seniorcare_table(html, item), {})
+
+    def test_seniorcare_table_rejects_duplicate_round_or_registration_date(self):
+        html = """<h2>2026年度 講座内容（全5回）</h2>
+        <table><tr><td>第1回 ケア</td><td>2026年11月12日 14:00-16:30</td></tr>
+        <tr><td>第1回 再掲</td><td>2026年11月12日 15:00-17:00</td></tr></table>"""
+        item = event("2026-11-12", "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "シニアケア講座 第1回"
+        self.assertEqual(parse_jaha_seniorcare_table(html, item), {})
+        only_deadline = """<h2>2026年度 講座内容（全5回）</h2>
+        <table><tr><td>第1回 ケア</td><td>申込締切 2026年11月12日 14:00-16:30</td></tr></table>"""
+        self.assertEqual(parse_jaha_seniorcare_table(only_deadline, item), {})
+
+    def test_enrich_jaha_with_real_html_table_structure(self):
+        html = """<main><h2>2026年度 講座内容（全5回）</h2>
+        <table><tr><td>第1回 老化に伴う行動変化</td>
+        <td>2026年11月12日 14:00-16:30</td></tr></table></main>"""
+        class TableFetcher:
+            def get(self, url):
+                return html
+        item = event("2026-11-12", "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "シニアケア講座 第1回"
+        stats = {}
+        enrich_jaha([item], TableFetcher(), datetime.date(2026, 11, 9), stats)
+        self.assertEqual(item["start_time"], "14:00")
+        self.assertEqual(item["end_time"], "16:30")
+        self.assertEqual(stats["times_found"], 1)
 
     def test_numbered_course_time_does_not_borrow_neighboring_round(self):
         page = ("2026年度 講座内容（全5回）\n"
