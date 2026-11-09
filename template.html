@@ -79,6 +79,7 @@
   /* ---- 本体 ---- */
   .layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 20px; padding: 18px 20px 80px; align-items: start; }
   .empty { background: var(--panel); border: 1px dashed var(--line); padding: 28px; border-radius: var(--radius); color: var(--muted); }
+  .result-summary { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
 
   .day { display: grid; grid-template-columns: 78px minmax(0, 1fr); margin-bottom: 14px; }
   .rail { text-align: center; padding-top: 10px; }
@@ -283,7 +284,7 @@
 </section>
 
 <div class="layout">
-  <main id="list" aria-label="セミナー一覧"></main>
+  <main aria-label="セミナー一覧"><p id="resultSummary" class="result-summary" role="status" aria-live="polite"></p><div id="list"></div></main>
 
   <aside class="composer" id="composer" aria-label="告知文の作成">
     <button class="btn ghost closebtn" id="closeComposer">閉じる</button>
@@ -741,6 +742,13 @@
       return ka < kb ? -1 : ka > kb ? 1 : ((a.start_time || "99") < (b.start_time || "99") ? -1 : 1);
     });
 
+    var newCount = dated.filter(function(e) {
+      return e.first_seen && deadlineDays(e.first_seen) <= 0 && deadlineDays(e.first_seen) >= -7;
+    }).length;
+    $("resultSummary").textContent = cur.y + "年" + cur.m + "月："
+      + dated.length + "件"
+      + (newCount ? "（うち新着" + newCount + "件）" : "")
+      + (undated.length ? "／日程未確認" + undated.length + "件" : "");
     var list = $("list"); list.textContent = "";
     if (!dated.length) {
       list.appendChild(el("div", "empty", "この月に表示できるセミナーがありません。日付のあるセミナーは他の月に登録されている可能性があります。"));
