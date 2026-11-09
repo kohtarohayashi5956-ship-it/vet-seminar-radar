@@ -923,6 +923,18 @@
     $("updated").textContent = "最終更新 " + (DATA.generated || "") + (DATA.sources_summary ? "　" + DATA.sources_summary : "");
     var st = DATA.run_status || {};
 
+    // Warn only when an actual timestamp proves that collection is stale.
+    // Do not infer an update from the page-generation time.
+    if (!DATA.demo && st.checked_at_jst) {
+      var lastCollection = Date.parse(st.checked_at_jst);
+      var elapsed = now.getTime() - lastCollection;
+      if (Number.isFinite(lastCollection) && elapsed > 8 * 86400000) {
+        var daysStale = Math.floor(elapsed / 86400000);
+        $("banner").appendChild(el("div", "banner",
+          "最終収集から" + daysStale + "日経過しています。自動更新が停止している可能性があります。日程・受付状況は公式ページで確認してください。"));
+      }
+    }
+
     if (!DATA.demo) {
       var total = EVENTS.length, quality = $("quality");
       var good = (st.source_results || []).filter(function (x) { return x.status === "ok"; }).length;
