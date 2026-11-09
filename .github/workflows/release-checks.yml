@@ -39,6 +39,32 @@ jobs:
         run: python run.py --offline --out index.html
       - name: Validate public data contract
         run: python validate_public.py
+      - name: Check browser JavaScript syntax
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class InlineScripts(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.active = False
+                  self.snippets = []
+              def handle_starttag(self, tag, attrs):
+                  if tag == 'script' and dict(attrs).get('type') != 'application/json':
+                      self.active = True
+                      self.snippets.append('')
+              def handle_data(self, data):
+                  if self.active:
+                      self.snippets[-1] += data
+              def handle_endtag(self, tag):
+                  if tag == 'script':
+                      self.active = False
+          parser = InlineScripts()
+          parser.feed(Path('index.html').read_text(encoding='utf-8'))
+          assert len(parser.snippets) == 1, 'Expected one inline UI script'
+          Path('/tmp/vet-seminar-ui.js').write_text(parser.snippets[0], encoding='utf-8')
+          PY
+          node --check /tmp/vet-seminar-ui.js
       - name: Confirm generated HTML and controls
         run: |
           python - <<'PY'
