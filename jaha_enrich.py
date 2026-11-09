@@ -336,6 +336,30 @@ def _numbered_course_time(lines, event):
     return next(iter(schedules)) if len(schedules) == 1 else None
 
 
+def _seniorcare_single_session_deadline(lines, event):
+    """Explicit JAHA single-session policy, never cancellation or bundle rules."""
+    url = _url(event)
+    if not url or urlsplit(url).path != "/training/seminar/seniorcare_ol/":
+        return None
+    title = unicodedata.normalize("NFKC", event.get("title") or "")
+    if not ("シニアケア講座" in title
+            and re.search(r"第\s*[1-5]\s*回", title)):
+        return None
+    policy = "単回申込の受付は、各回セミナー実施日の前日までとなります"
+    if sum(policy in line for line in lines) != 1:
+        return None
+    date_str = event.get("start_date")
+    try:
+        date = datetime.date.fromisoformat(date_str)
+    except (ValueError, TypeError):
+        return None
+    # A course schedule must independently corroborate the particular
+    # installment; an isolated application/payment date is never enough.
+    if not _date_from_numbered_course(lines, event):
+        return None
+    return (date - datetime.timedelta(days=1)).isoformat()
+
+
 def parse_jaha_detail(text, event):
     start_date = event.get("start_date")
     if not start_date:
@@ -356,6 +380,8 @@ def parse_jaha_detail(text, event):
         return {}
     out = {}
     deadline = _registration_deadline(lines, start_date)
+    if not deadline:
+        deadline = _seniorcare_single_session_deadline(lines, event)
     if deadline and not event.get("deadline"):
         out["deadline"] = deadline
     if not event.get("price"):
