@@ -332,7 +332,7 @@ class TestJahaDeadlines(unittest.TestCase):
         item = event("2026-11-12", "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
         item["title"] = "シニアケア講座 第1回"
         enrich_jaha([item], Fetcher(), datetime.date(2026, 11, 9), {})
-        self.assertNotIn("deadline", item)
+        self.assertIsNone(item.get("deadline"))
 
     def test_numbered_course_time_does_not_borrow_neighboring_round(self):
         page = ("2026年度 講座内容（全5回）\n"
