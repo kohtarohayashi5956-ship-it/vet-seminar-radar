@@ -63,6 +63,11 @@ class TemplateContractTests(unittest.TestCase):
     def test_certification_section_follows_main_results(self):
         self.assertLess(self.html.index('id="list"'), self.html.index('id="certDisclosure"'))
 
+    def test_stale_collection_notice_uses_actual_collection_timestamp(self):
+        self.assertIn('st.checked_at_jst', self.html)
+        self.assertIn('elapsed > 8 * 86400000', self.html)
+        self.assertIn('最終収集から', self.html)
+
     def test_payload_marker_remains_for_safe_rendering(self):
         self.assertIn('/*__PAYLOAD__*/null', self.html)
 
