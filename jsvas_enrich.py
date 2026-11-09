@@ -108,7 +108,8 @@ def parse_jsvas_conference(text, event):
         return {}
     if not any("開催期間" in line and
                event["start_date"][:4] in " ".join(lines[i:i+3]) and
-               str(int(event["start_date"][5:7])) + "月" in " ".join(lines[i:i+3])
+               re.search(r"(?<!\\d)" + str(int(event["start_date"][5:7])) + r"\\s*月",
+                         " ".join(lines[i:i+3]))
                for i, line in enumerate(lines)):
         return {}
     for i, line in enumerate(lines):
