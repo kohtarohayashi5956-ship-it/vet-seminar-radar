@@ -102,11 +102,19 @@ def _times(context):
 
 
 def _price(context):
-    if re.search(r"(?:^|\s)無料(?:\s|$)|無料ライブ|無料配信",context): return "無料", True
+    """Require an unambiguous free admission statement, not a free member tier."""
     for line in context.splitlines():
-        if re.search(r"(参加費|受講料|料金|受講費)[：: ]",line) and len(line)<130:
-            return line.strip()[:110], True if "無料" in line else None
-    return None,None
+        if re.search(r"(?:参加費|受講料|料金|受講費)[：:\s]", line) and len(line) < 130:
+            value = line.strip()
+            # Paid tiers take precedence over any free tier on the same line.
+            if re.search(r"[0-9０-９,，]+\s*円", value):
+                return value[:110], None
+            if re.search(r"(?:[：:\s]|^)無料(?:$|\s|[（(])", value) and not re.search(r"無料会員", value):
+                return value[:110], True
+            return value[:110], None
+    if re.search(r"(?:^|\n)\s*無料(?:\s|$)|無料ライブ|無料配信", context):
+        return "無料", True
+    return None, None
 
 
 def _speakers_in_title(title):
@@ -357,10 +365,12 @@ def _feed_price(body):
         value = m.group(1).strip() or (lines[i + 1] if i + 1 < len(lines) else "")
         if len(value) > 100 or not value:
             continue
-        if re.search(r"無料(?:\s|$|[（(])", value):
-            return "無料", True
+        # A free member account, free trial, or free tier alongside a
+        # paid amount does not make the entire seminar free.
         if re.search(r"[0-9０-９,，]+\s*円", value):
             return value[:100], None
+        if re.fullmatch(r"無料(?:\s*[（(]税込[）)])?", value):
+            return "無料", True
     return None, None
 
 
