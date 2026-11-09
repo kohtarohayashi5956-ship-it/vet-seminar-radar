@@ -73,6 +73,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
+          echo "published=false" >> "$GITHUB_OUTPUT"
           git add index.html data/events.json data/run_status.json
           if ! git diff --staged --quiet; then
             git commit -m "Update seminar digest $(date -u +%Y-%m-%d)"
@@ -87,6 +88,7 @@ jobs:
             # Both check reports are diagnostic metadata, not source changes.
             if printf '%s\n' "$changed" | grep -Ev '^(data/(release_checks|collection_checks)\.json)?$' | grep -q .; then
               echo "::notice::Source or public data changed during crawl; discarding stale generated files."
+              echo "publication_reason=stale_source" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             if [ "$(git rev-parse origin/main)" != "$(git rev-parse HEAD)" ]; then
@@ -97,6 +99,8 @@ jobs:
               fi
             fi
             if git push origin HEAD:main; then
+              echo "published=true" >> "$GITHUB_OUTPUT"
+              echo "publication_reason=pushed" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             sleep "$((attempt * 2))"
@@ -111,6 +115,8 @@ jobs:
           COLLECT_RESULT: ${{ steps.collect_data.outcome }}
           VALIDATE_RESULT: ${{ steps.validate_data.outcome }}
           PUBLISH_RESULT: ${{ steps.publish_data.outcome }}
+          WAS_PUBLISHED: ${{ steps.publish_data.outputs.published }}
+          PUBLICATION_REASON: ${{ steps.publish_data.outputs.publication_reason }}
         run: |
           python - <<'PY'
           import datetime
@@ -129,9 +135,11 @@ jobs:
               "source_sha": os.environ["GITHUB_SHA"],
               "checked_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
               "run_url": "/".join((os.environ["GITHUB_SERVER_URL"], os.environ["GITHUB_REPOSITORY"], "actions/runs", os.environ["GITHUB_RUN_ID"])),
-              "result": "pass" if all(v == "success" for v in outcomes.values()) else "fail",
+              "result": "pass" if all(v == "success" for v in outcomes.values()) and os.environ.get("WAS_PUBLISHED") == "true" else "not_published" if all(v == "success" for v in outcomes.values()) else "fail",
+              "published": os.environ.get("WAS_PUBLISHED") == "true",
+              "publication_reason": os.environ.get("PUBLICATION_REASON", ""),
               "checks": outcomes,
-              "note": "Check data/run_status.json checked_at_jst separately to confirm a new digest was published",
+              "note": "Publication status is tracked explicitly; verify checked_at_jst separately",
           }
           Path("/tmp/vet-seminar-collection-report.json").write_text(
               json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
