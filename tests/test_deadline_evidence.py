@@ -25,7 +25,7 @@ class DeadlineEvidenceTests(unittest.TestCase):
 
     def test_explicit_same_day_signup_deadline(self):
         self.assertEqual(
-            _explicit_deadline("日時：11月11日（水）21:00～22:30\\n申込締切：当日17:30",
+            _explicit_deadline("日時：11月11日（水）21:00～22:30\n申込締切：当日17:30",
                                "2026-11-11"),
             "2026-11-11",
         )
@@ -36,20 +36,20 @@ class DeadlineEvidenceTests(unittest.TestCase):
 
     def test_unlabelled_same_day_does_not_imply_deadline(self):
         self.assertIsNone(
-            _explicit_deadline("開催日時：2026年11月11日\\n当日17:30開場", "2026-11-11"),
+            _explicit_deadline("開催日時：2026年11月11日\n当日17:30開場", "2026-11-11"),
         )
 
     def test_vets_tech_feed_article_same_day_deadline(self):
         # End-to-end feed regression: publication date is not event date,
         # but the explicitly stated event date anchors 当日.
         feed = (
-            "=====\\n"
-            "記事タイトル: 【ライブ】腫瘍科医からみた慢性腸症治療のその先\\n"
-            "記事URL: <https://vets-tech.jp/2026/10/27/example/12345/>\\n"
-            "公開日: 2026-10-27\\n"
-            "日時：11月11日（水）21:00～22:30\\n"
-            "申込締切：当日17:30\\n"
-            "参加費：無料\\n"
+            "=====\n"
+            "記事タイトル: 【ライブ】腫瘍科医からみた慢性腸症治療のその先\n"
+            "記事URL: <https://vets-tech.jp/2026/10/27/example/12345/>\n"
+            "公開日: 2026-10-27\n"
+            "日時：11月11日（水）21:00～22:30\n"
+            "申込締切：当日17:30\n"
+            "参加費：無料\n"
         )
         import datetime
         events = _feed(feed, "https://vets-tech.jp/feed/", datetime.date(2026, 11, 9))
