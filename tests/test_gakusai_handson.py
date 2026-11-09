@@ -84,6 +84,9 @@ class GakusaiHandsonTests(unittest.TestCase):
         self.assertNotIn("78,000円",rows[2]["price"])
         self.assertIn("78,000円",rows[3]["price"])
         self.assertNotIn("165,000円",rows[3]["price"])
+        self.assertEqual(rows[2]["venue"], "宮崎大学")
+        self.assertEqual(rows[3]["venue"], "宮崎大学")
+        self.assertEqual(stats["handson_venues_found"], 2)
         self.assertIsNone(rows[4]["price"])
         self.assertEqual(stats["handson_fees_found"],4)
         self.assertTrue(all("獣医師" in row.get("audience", []) for row in rows[:4]))
@@ -125,6 +128,22 @@ class GakusaiHandsonTests(unittest.TestCase):
         row = event("無関係な講義","2027-01-17")
         enrich_handson([row], Fetcher(), TODAY, {})
         self.assertNotIn("獣医師", row.get("audience", []))
+
+    def test_miyazaki_venue_not_inferred_from_city_alone(self):
+        row = event("別の宮崎の実習", "2027-10-10")
+        enrich_handson([row], Fetcher(), TODAY, {})
+        self.assertIsNone(row["venue"])
+
+    def test_miyazaki_existing_venue_is_preserved(self):
+        row = event("鳥巣先生・金子先生・山本先生・岡寺先生「軟部外科実習2027 ウェットラボ in 宮崎大学」", "2027-10-10")
+        row["venue"] = "主催者確認済みの実習施設"
+        enrich_handson([row], Fetcher(), TODAY, {})
+        self.assertEqual(row["venue"], "主催者確認済みの実習施設")
+
+    def test_miyazaki_title_must_name_university_on_both_sides(self):
+        row = event("鳥巣先生・金子先生・山本先生・岡寺先生「軟部外科実習2027 ウェットラボ」", "2027-10-10")
+        enrich_handson([row], Fetcher(), TODAY, {})
+        self.assertIsNone(row["venue"])
 
     def test_split_html_table_cells_are_matched_inside_same_course(self):
         html = TEXT.replace(
