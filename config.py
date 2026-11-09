@@ -62,7 +62,7 @@ SOURCES = [
         "name": "PEPPY",
         "kind": "peppy_list",
         "start_url": "https://www.peppy.jp/seminar",
-        "enabled": False,
+        "enabled": True,
     },
     {
         "id": "eduone",
