@@ -64,7 +64,7 @@ def validate():
     assert quality == embedded_quality, "published quality metrics differ from run status"
     assert quality.get("total") == len(payload["events"]), "quality total differs from published page"
     for field in ("start_date", "start_time", "venue", "price", "deadline", "topics", "audience", "url"):
-        count = sum(bool(event.get(field)) for event in payload["events"])
+        count = sum(1 for event in payload["events"] if event.get(field))
         assert quality.get("field_presence", {}).get(field) == count, (
             f"incorrect published {field} completeness"
         )
