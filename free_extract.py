@@ -139,7 +139,14 @@ def _explicit_deadline(body):
     for i, line in enumerate(lines):
         if not re.match(r"^(?:申込締切|お申込み締切|申し込み締切|受付締切|申込期限|応募締切)[：:\s]?",line):
             continue
-        dates = _dates(line + (" " + lines[i+1] if i+1<len(lines) else ""))
+        # Do not mistake the next field (e.g. 開催日時) for a deadline.
+        local = line
+        if not _dates(line) and i + 1 < len(lines) and re.match(
+            r"^20\d{2}\s*[年./-]\s*\d{1,2}\s*[月./-]\s*\d{1,2}",
+            lines[i + 1],
+        ):
+            local += " " + lines[i + 1]
+        dates = _dates(local)
         if dates:
             return dates[0]
     return None
