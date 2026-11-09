@@ -31,7 +31,7 @@ def _url(event):
         u = urlsplit(event.get("url") or "")
     except ValueError:
         return None
-    if u.scheme not in ("http", "https") or u.hostname not in (
+    if u.scheme not in ("http", "https") or u.username or u.password or u.hostname not in (
         "jaha.or.jp", "www.jaha.or.jp"
     ):
         return None
@@ -46,10 +46,20 @@ def _url(event):
 
 
 def _registration_deadline(lines, start_date):
-    for line in lines:
+    for i, line in enumerate(lines):
         if EXCLUDE.search(line) or not REGISTRATION.match(line):
             continue
         main = REGISTRATION.sub("", line).strip(" ：:")
+        # Some JAHA tables split the registration heading and value into
+        # adjacent cells. Read exactly the next cell only for an empty
+        # heading; never scan through other headings or unrelated schedules.
+        if not main and i + 1 < len(lines):
+            next_line = lines[i + 1].strip()
+            if (not EXCLUDE.search(next_line)
+                    and not REGISTRATION.match(next_line)
+                    and re.match(r"^20\\d{2}\\s*年", next_line)
+                    and len(next_line) <= 160):
+                main = next_line
         full = list(YMD.finditer(main))
         if not full:
             continue  # Never infer year from a neighboring event/page footer.
