@@ -101,14 +101,14 @@ def parse_jsvas_conference(text, event):
     lines = [unicodedata.normalize("NFKC", line).strip()
              for line in text.splitlines() if line.strip()]
     # Require the actual conference, rather than a link or unrelated meeting.
-    match = re.search(r"第(\\d+)回", event.get("title") or "")
+    match = re.search(r"第(\d+)回", event.get("title") or "")
     if not match or not any("第" + match.group(1) + "回" in line
                             and "日本獣医麻酔外科学会" in "".join(lines[max(0, i-2):i+3])
                             for i, line in enumerate(lines)):
         return {}
     if not any("開催期間" in line and
                event["start_date"][:4] in " ".join(lines[i:i+3]) and
-               re.search(r"(?<!\\d)" + str(int(event["start_date"][5:7])) + r"\\s*月",
+               re.search(r"(?<!\d)" + str(int(event["start_date"][5:7])) + r"\s*月",
                          " ".join(lines[i:i+3]))
                for i, line in enumerate(lines)):
         return {}
@@ -118,8 +118,8 @@ def parse_jsvas_conference(text, event):
         block = " ".join(lines[i:i+5])
         # Exactly one advance registration window with a year on its start.
         candidates = re.findall(
-            r"事前登録\\s*[：:]\\s*(20\\d{2})\\s*年\\s*(\\d{1,2})\\s*月\\s*\\d{1,2}\\s*日"
-            r"[^。\\n]{0,55}?[〜~～-]\\s*(?:(20\\d{2})\\s*年\\s*)?(\\d{1,2})\\s*月\\s*(\\d{1,2})\\s*日",
+            r"事前登録\s*[：:]\s*(20\d{2})\s*年\s*(\d{1,2})\s*月\s*\d{1,2}\s*日"
+            r"[^。\n]{0,55}?[〜~～-]\s*(?:(20\d{2})\s*年\s*)?(\d{1,2})\s*月\s*(\d{1,2})\s*日",
             block)
         if len(candidates) != 1:
             return {}
