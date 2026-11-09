@@ -30,16 +30,16 @@ jobs:
             -H "Authorization: Bearer ${GH_TOKEN}" \
             "${API}" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("status", "unknown"))')
           echo "Deployment state: ${STATUS}"
-          case "${STATUS}" in
-            succeed|success|cancelled|canceled|failed|error)
-              echo "Deployment is already terminal; no cancellation needed."
-              ;;
-            *)
-              echo "Cancelling only the nonterminal, known stuck deployment."
-              curl --fail --silent --show-error -X POST \
-                -H "Accept: application/vnd.github+json" \
-                -H "Authorization: Bearer ${GH_TOKEN}" \
-                "${API}/cancel"
-              echo "Cancellation request succeeded."
-              ;;
-          esac
+          if [ "${STATUS}" = "deployment_cancelled" ]; then
+            echo "Deployment already cancelled; no further action."
+          else
+            # The Pages status endpoint says 'succeed' but the deployment
+            # creator continues to reject ALL new deployments as in-progress
+            # for this exact SHA. Explicitly cancel ONLY this stale SHA.
+            echo "Requesting cancellation of the specific conflicting Pages SHA."
+            curl --fail --silent --show-error -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              "${API}/cancel"
+            echo "Explicit cancellation API call succeeded."
+          fi
