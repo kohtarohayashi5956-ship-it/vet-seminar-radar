@@ -343,7 +343,7 @@ def _seniorcare_single_session_deadline(lines, event):
         return None
     title = unicodedata.normalize("NFKC", event.get("title") or "")
     if not ("シニアケア講座" in title
-            and re.search(r"第\\s*[1-5]\\s*回", title)):
+            and re.search(r"第\s*[1-5]\s*回", title)):
         return None
     policy = "単回申込の受付は、各回セミナー実施日の前日までとなります"
     if sum(policy in line for line in lines) != 1:
