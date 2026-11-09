@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Safety and format validation before publishing to public GitHub Pages."""
+import datetime
 import json
 import os
 import re
@@ -35,12 +36,16 @@ def validate():
         assert isinstance(event.get("title"), str) and event["title"].strip()
         assert len(event["title"]) < 2000
         u = event.get("url")
-        if u:
-            p = urlparse(u)
-            assert p.scheme in ("https", "http") and p.netloc
+        assert isinstance(u, str) and u, "event missing official URL"
+        p = urlparse(u)
+        assert p.scheme in ("https", "http") and p.netloc, "invalid official URL"
         for field in ("start_date", "end_date", "deadline"):
             d = event.get(field)
-            assert d is None or re.fullmatch(r"\d{4}-\d{2}-\d{2}", d)
+            if d is not None:
+                assert isinstance(d, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", d)
+                assert datetime.date.fromisoformat(d).isoformat() == d, "invalid calendar date"
+        if event.get("start_date") and event.get("end_date"):
+            assert event["start_date"] <= event["end_date"], "end date before start date"
         if event.get("start_date") and event.get("deadline"):
             assert event["deadline"] <= event["start_date"], "deadline after event"
         if event.get("is_free") is True and event.get("price"):
