@@ -30,7 +30,10 @@ class SourceCoverageTests(unittest.TestCase):
         source = {"kind": "eduone_lecture", "start_url": "https://eduone.jp/lecture/",
                   "max_details": 3}
         f = Dummy('<main><h1>WEB講演会</h1><p>2026年11月24日 無料</p></main>')
-        self.assertEqual(list(pages_for(source, f, 3)), [])
+        pages = list(pages_for(source, f, 3))
+        self.assertEqual(len(pages), 1)
+        self.assertEqual(pages[0][1], "")
+        self.assertIn("詳細リンクなし", pages[0][2])
         self.assertEqual(f.calls, ["https://eduone.jp/lecture/"])
 
     def test_academy_cards_stay_event_specific(self):
