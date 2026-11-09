@@ -23,6 +23,7 @@ import config
 import demo
 import merge
 import render
+from verified_corrections import apply_verified_corrections
 from quality import summarize_quality, summarize_quality_by_source
 
 try:
@@ -60,6 +61,7 @@ def local_today():
 def build_events(today):
 
     store = merge.load_store()
+    apply_verified_corrections(store)
     manual = merge.load_manual(today)
     events = merge.dedupe_cross_source(list(store.values()) + manual)
     return store, events
@@ -243,6 +245,12 @@ def main(argv):
             warnings.append(src["name"] + ": " + note[:120])
 
     dropped = merge.purge(store, today)
+    corrected, correction_conflicts = apply_verified_corrections(store)
+    if corrected:
+        log("公式確認済み訂正を補完: " + ", ".join(corrected))
+    if correction_conflicts:
+        warnings.append("公式確認済み訂正と新規抽出値が不一致（上書きしません）: " +
+                        ", ".join(correction_conflicts))
     merge.save_store(store, datetime.datetime.now(ZoneInfo("Asia/Tokyo")))
     manual = merge.load_manual(today)
     events = merge.dedupe_cross_source(list(store.values()) + manual)
