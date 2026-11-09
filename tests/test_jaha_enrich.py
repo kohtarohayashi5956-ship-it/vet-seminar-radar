@@ -139,6 +139,55 @@ class TestJahaDeadlines(unittest.TestCase):
         item["start_date"] = "2026-12-10"
         self.assertEqual(parse_jaha_detail(page, item), {})
 
+    def test_seniorcare_explicit_single_session_signup_cutoff(self):
+        page = (
+            "2026年度 講座内容（全5回）\n"
+            "第1回 | 老化に伴う行動変化 | 2026年11月12日 14:00-16:30\n"
+            "第2回 | 高齢動物のがん | 12月9日 14:00-17:00\n"
+            "受講料（税込）\n"
+            "JAHA会員 19,800円\n"
+            "単回申込の受付は、各回セミナー実施日の前日までとなります。\n"
+        )
+        item = event("2026-12-09",
+                     "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "【オンライン】シニアケア講座 第2回"
+        got = parse_jaha_detail(page, item)
+        self.assertEqual(got["deadline"], "2026-12-08")
+
+    def test_seniorcare_cutoff_not_assumed_without_policy_or_year(self):
+        item = event("2026-12-09",
+                     "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "シニアケア講座 第2回"
+        base = ("2026年度 講座内容（全5回）\n"
+                "第2回 | 12月9日 14:00-17:00\n")
+        self.assertNotIn("deadline", parse_jaha_detail(base, item))
+        text = ("第2回 | 12月9日 14:00-17:00\n"
+                "単回申込の受付は、各回セミナー実施日の前日までとなります。\n")
+        self.assertNotIn("deadline", parse_jaha_detail(text, item))
+
+    def test_seniorcare_cutoff_not_borrowed_for_other_course_or_round(self):
+        page = ("2026年度 講座内容（全5回）\n"
+                "第2回 | 12月9日 14:00-17:00\n"
+                "単回申込の受付は、各回セミナー実施日の前日までとなります。\n")
+        event_senior = event("2026-12-09",
+                     "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        event_senior["title"] = "シニアケア講座 第3回"
+        self.assertNotIn("deadline", parse_jaha_detail(page, event_senior))
+        event_other = event("2026-12-09",
+                     "https://www.jaha.or.jp/training/seminar/puppy/basic/")
+        event_other["title"] = "シニアケア講座 第2回"
+        self.assertNotIn("deadline", parse_jaha_detail(page, event_other))
+
+    def test_seniorcare_explicit_deadline_takes_priority(self):
+        page = ("2026年度 講座内容（全5回）\n"
+                "第2回 | 12月9日 14:00-17:00\n"
+                "単回申込の受付は、各回セミナー実施日の前日までとなります。\n"
+                "申込締切：2026年12月6日\n")
+        item = event("2026-12-09",
+                     "https://www.jaha.or.jp/training/seminar/seniorcare_ol/")
+        item["title"] = "シニアケア講座 第2回"
+        self.assertEqual(parse_jaha_detail(page, item)["deadline"], "2026-12-06")
+
     def test_numbered_course_time_does_not_borrow_neighboring_round(self):
         page = ("2026年度 講座内容（全5回）\n"
                 "第1回 | 老化に伴う行動の変化 | 2026年11月12日 14:00-16:30\n"
