@@ -111,6 +111,7 @@ def main(argv):
     from jaha_enrich import enrich_jaha
     from society_enrich import enrich_jsvc
     from jsvas_enrich import enrich_jsvas
+    from peppy_enrich import enrich_peppy
     from jbvp_enrich import enrich_jbvp
 
     client = None
@@ -170,6 +171,12 @@ def main(argv):
             log(f"  ! {note}")
         # Optional, bounded enrichment after the successful source listing.
         # A detail-page failure never removes or invalidates a valid card.
+        if src["id"] == "peppy" and not note and fresh:
+            fresh = enrich_peppy(fresh, fetcher, today, stats)
+            log("  PEPPY詳細補完: " + str(stats.get("details_scanned", 0)) +
+                "ページ / 時刻 " + str(stats.get("times_found", 0)) +
+                "件 / 料金 " + str(stats.get("prices_found", 0)) +
+                "件 / 締切 " + str(stats.get("deadlines_found", 0)) + "件")
         if src["id"] == "jaha" and not note and fresh:
             fresh = enrich_jaha(fresh, fetcher, today, stats)
             log("  JAHA個別ページ: " + str(stats.get("details_scanned", 0)) +
