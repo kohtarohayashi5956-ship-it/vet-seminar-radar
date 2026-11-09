@@ -26,7 +26,7 @@
 - 2026-11-09 12:08 JSTの GitHub Actions 巡回で PEPPY・EDUWARD Press・VETS ACADEMY の公式一覧はいずれも共通 Fetcher の robots.txt 判定で取得不可となり、各0件でした。
 - これら3サイトを定期巡回対象から無効化しました。個別の解析コードと単体テストは保持しますが、許諾または正規の配信手段が確認できるまで使用しません。
 - **有効な自動巡回先は13サイトです。** 設定上の追加によって収集可能サイトが16に増えたわけではありません。既存の82件についても、フィールド記載率と個別の事実確認率は異なります。
-- SEMINAR_RADAR_CONTACT が未設定のため、相手サイトへ公開してよい連絡用アドレスを GitHub Actions の secret に設定することを推奨します（ソースに直書きしない）。
+- 巡回時の連絡先は公開GitHubリポジトリを初期値に設定済みです。個人メールアドレスを公開する必要はありません。必要に応じて `SEMINAR_RADAR_CONTACT` で上書きできます。
 
 ## GitHubでの初回導入（v1.1以降）
 
@@ -35,7 +35,7 @@
 1. **Settings → Pages** で `Deploy from a branch` / `main` / `/(root)` を選択し、公開を有効化します。
 2. **Actions → Vet Seminar Radar → Run workflow** で一度手動実行します。APIキー不要で、無料抽出が動きます。
 3. 実行ログと `data/run_status.json` を確認し、抽出件数・アクセス不可サイトを確認します。
-4. `SEMINAR_RADAR_CONTACT` には、巡回先へ示してよいメールアドレスを GitHub **Settings → Secrets and variables → Actions** から任意で登録できます（推奨）。連絡先は公開ソースに記述しないでください。
+4. `SEMINAR_RADAR_CONTACT` は未設定でも公開GitHubリポジトリURLが巡回時の連絡先として使われます。専用の連絡先に変更する場合のみ、GitHub **Settings → Secrets and variables → Actions** のSecretsで設定してください。
 
 **無料利用には `ANTHROPIC_API_KEY` の作成・登録・決済設定は不要です。** GitHub Actionsで実行するだけで無料ルール抽出を行います。
 
