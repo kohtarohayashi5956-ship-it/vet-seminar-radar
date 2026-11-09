@@ -57,7 +57,7 @@ def _registration_deadline(lines, start_date):
             next_line = lines[i + 1].strip()
             if (not EXCLUDE.search(next_line)
                     and not REGISTRATION.match(next_line)
-                    and re.match(r"^20\\d{2}\\s*年", next_line)
+                    and re.match(r"^20\d{2}\s*年", next_line)
                     and len(next_line) <= 160):
                 main = next_line
         full = list(YMD.finditer(main))
