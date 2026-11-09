@@ -51,6 +51,20 @@ class TestGakusaiEnrichment(unittest.TestCase):
         self.assertNotIn("77,000",out["price"])
         self.assertNotIn("deadline",out)
 
+    def test_explicit_vet_tier_adds_audience_without_overwriting_other_audience(self):
+        item = ev()
+        item["audience"] = ["動物看護師"]
+        result = parse_gakusai(PAGE, item)
+        self.assertEqual(result["audience"], ["動物看護師", "獣医師"])
+        item["audience"] = ["獣医師"]
+        result = parse_gakusai(PAGE, item)
+        self.assertNotIn("audience", result)
+
+    def test_generic_fee_does_not_imply_vet_audience(self):
+        text = PAGE.replace("一般獣医師", "一般参加者")
+        result = parse_gakusai(text, ev())
+        self.assertNotIn("audience", result)
+
     def test_reject_mismatched_date_or_time(self):
         self.assertEqual(parse_gakusai(PAGE,ev(start="2027-03-08")),{})
         self.assertEqual(parse_gakusai(PAGE,ev(time="14:30")),{})
