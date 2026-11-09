@@ -10,6 +10,7 @@ import datetime
 import re
 import unicodedata
 from urllib.parse import urlsplit
+from bs4 import BeautifulSoup
 from extract import html_to_text
 from free_extract import _dates, _times
 
@@ -411,6 +412,63 @@ def _seniorcare_round_schedule(lines, event):
     return found[0]
 
 
+def parse_jaha_seniorcare_table(html, event):
+    """Validate a JAHA installment from its own HTML table row.
+
+    html_to_text() flattens <td> cells and loses row boundaries; a date in
+    another row must never be associated with the selected installment.
+    """
+    url = _url(event)
+    if not url or urlsplit(url).path != "/training/seminar/seniorcare_ol/":
+        return {}
+    title = unicodedata.normalize("NFKC", event.get("title") or "")
+    round_match = re.search(r"第\s*([1-5])\s*回", title)
+    if not round_match or "シニアケア講座" not in title:
+        return {}
+    start = event.get("start_date")
+    if not start:
+        return {}
+    soup = BeautifulSoup(html, "html.parser")
+    for tag in soup(["script", "style", "nav", "footer", "form"]):
+        tag.decompose()
+    # Check that this is the official year-anchored programme table.
+    page = unicodedata.normalize("NFKC", soup.get_text(" ", strip=True))
+    if not re.search(r"2026年度\s*講座内容", page):
+        return {}
+    schedule = set()
+    for tr in soup.find_all("tr"):
+        cells = tr.find_all(["th", "td"], recursive=False)
+        if len(cells) < 2:
+            continue
+        values = [unicodedata.normalize("NFKC", c.get_text(" ", strip=True))
+                  for c in cells]
+        # Round identifier must belong to the first course/subject cell.
+        if not re.search(rf"第\s*{round_match.group(1)}\s*回\b", values[0]):
+            continue
+        dates = []
+        for value in values:
+            dates.extend(_dates(value))
+        if dates != [start]:
+            continue
+        matching = [value for value in values
+                    if _dates(value) == [start] and _times(value)[0] and _times(value)[1]]
+        if len(matching) != 1:
+            continue
+        schedule.add(_times(matching[0]))
+    if len(schedule) != 1:
+        return {}
+    t1, t2 = next(iter(schedule))
+    if (event.get("start_time") and event["start_time"] != t1) or (
+            event.get("end_time") and event["end_time"] != t2):
+        return {}
+    result = {}
+    if not event.get("start_time"):
+        result["start_time"] = t1
+    if not event.get("end_time"):
+        result["end_time"] = t2
+    return result
+
+
 def parse_jaha_detail(text, event):
     start_date = event.get("start_date")
     if not start_date:
@@ -486,11 +544,13 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
             candidates.append((start, u, e))
     candidates.sort(key=lambda x: x[0])
     fetched = {}
+    raw_html = {}
     for _, url, _ in candidates:
         if url in fetched or len(fetched) >= limit:
             continue
         try:
-            fetched[url] = html_to_text(fetcher.get(url), url)
+            raw_html[url] = fetcher.get(url)
+            fetched[url] = html_to_text(raw_html[url], url)
         except Exception:
             fetched[url] = None
     # Aggregate diagnostics only: no page contents or personal data in logs.
@@ -532,6 +592,14 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
         if not fetched.get(url):
             continue
         detail = parse_jaha_detail(fetched[url], e)
+        # Table cells can be split into separate lines in flattened text.
+        # Trust only the selected same-row date/time, never neighboring rows.
+        table_time = parse_jaha_seniorcare_table(raw_html[url], e)
+        for key, value in table_time.items():
+            if key in detail and detail[key] != value:
+                detail.pop(key, None)
+            elif key not in detail:
+                detail[key] = value
         if detail:
             before = (e.get("deadline"), e.get("start_time"), e.get("end_time"),
                       e.get("price"))
