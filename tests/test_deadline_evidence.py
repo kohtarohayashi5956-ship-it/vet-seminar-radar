@@ -58,6 +58,26 @@ class DeadlineEvidenceTests(unittest.TestCase):
         self.assertEqual(events[0]["deadline"], "2026-11-11")
         self.assertEqual(events[0]["price"], "無料")
 
+    def test_signup_deadline_is_not_carried_to_next_article(self):
+        import datetime
+        feed = (
+            "=====\n"
+            "記事タイトル: 【ライブ】慢性腸症セミナー\n"
+            "記事URL: <https://vets-tech.jp/2026/10/27/example/12345/>\n"
+            "公開日: 2026-10-27\n"
+            "開催日時：2026年11月11日 21:00\n"
+            "申込締切：当日17:30\n"
+            "=====\n"
+            "記事タイトル: 【ライブ】次の眼科セミナー\n"
+            "記事URL: <https://vets-tech.jp/2026/10/28/example/12346/>\n"
+            "公開日: 2026-10-28\n"
+            "開催日時：2026年11月12日 21:00\n"
+        )
+        events = _feed(feed, "https://vets-tech.jp/feed/", datetime.date(2026, 11, 9))
+        self.assertEqual(len(events), 2)
+        self.assertEqual(events[0]["deadline"], "2026-11-11")
+        self.assertIsNone(events[1]["deadline"])
+
     def test_other_dates_not_deadlines(self):
         self.assertIsNone(
             _explicit_deadline("録画配信：2026年12月10日\nキャンセル期限：2026年12月1日"),
