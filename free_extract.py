@@ -152,7 +152,7 @@ def _explicit_deadline(body, event_date=None):
         # 当日 is meaningful only next to a labelled registration deadline,
         # and only if this specific event already has a verified start date.
         if re.match(r"^(?:申込締切|お申込み締切|申し込み締切|受付締切|申込期限|応募締切)[：:\s]*当日(?:\s|[0-9０-９]|$)", line):
-            if event_date and re.fullmatch(r"20\\d{2}-\\d{2}-\\d{2}", event_date):
+            if event_date and re.fullmatch(r"20\d{2}-\d{2}-\d{2}", event_date):
                 try:
                     datetime.date.fromisoformat(event_date)
                 except ValueError:
