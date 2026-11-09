@@ -1,25 +1,25 @@
 {
-  "checked_at_jst": "2026-11-09T17:12:43+09:00",
+  "checked_at_jst": "2026-11-09T17:55:28+09:00",
   "mode": "free_rules",
   "total_events": 82,
   "data_quality": {
     "total": 82,
     "field_presence": {
       "start_date": 81,
-      "start_time": 25,
+      "start_time": 27,
       "venue": 25,
-      "price": 29,
-      "deadline": 20,
+      "price": 31,
+      "deadline": 22,
       "topics": 64,
       "audience": 42,
       "url": 82
     },
     "field_presence_pct": {
       "start_date": 98.8,
-      "start_time": 30.5,
+      "start_time": 32.9,
       "venue": 30.5,
-      "price": 35.4,
-      "deadline": 24.4,
+      "price": 37.8,
+      "deadline": 26.8,
       "topics": 78.0,
       "audience": 51.2,
       "url": 100.0
@@ -79,20 +79,20 @@
       "total": 20,
       "field_presence": {
         "start_date": 20,
-        "start_time": 4,
+        "start_time": 6,
         "venue": 0,
-        "price": 4,
-        "deadline": 6,
+        "price": 6,
+        "deadline": 8,
         "topics": 12,
         "audience": 20,
         "url": 20
       },
       "field_presence_pct": {
         "start_date": 100.0,
-        "start_time": 20.0,
+        "start_time": 30.0,
         "venue": 0.0,
-        "price": 20.0,
-        "deadline": 30.0,
+        "price": 30.0,
+        "deadline": 40.0,
         "topics": 60.0,
         "audience": 100.0,
         "url": 100.0
@@ -350,9 +350,9 @@
       "updated": 20,
       "replaced_stale": 0,
       "details_scanned": 6,
-      "details_accepted": 7,
-      "deadlines_found": 6,
-      "prices_found": 4,
+      "details_accepted": 9,
+      "deadlines_found": 8,
+      "prices_found": 6,
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
@@ -415,7 +415,7 @@
           "corroborated_dates": []
         }
       ],
-      "times_found": 4,
+      "times_found": 6,
       "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
