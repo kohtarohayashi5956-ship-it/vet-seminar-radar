@@ -394,7 +394,7 @@ def _feed_schedule_times(body, event_date):
             continue
         if not re.match(
             r"^(?:[■●◆]\s*)?(?:開催日時|開催日|開催時間|配信日時|配信開始日時|日時|日程)"
-            r"(?:\s*[：:]|\s*$)",
+            r"(?:\s*[：:]|\s+(?=(?:20\d{2}\s*年|\d{1,2}\s*月))|\s*$)",
             line,
         ):
             continue
@@ -424,14 +424,29 @@ def _feed_schedule_times(body, event_date):
                     or (int(monthdays[0].group(1)), int(monthdays[0].group(2)))
                     != (target.month, target.day)):
                 continue
+        # Authoritative event schedules also use 21時～22時半 or
+        # 21時00分～22時30分. Normalize ONLY the schedule field.
+        def normalized_clock(match):
+            hour = int(match.group(1))
+            minute_text = match.group(2)
+            minute = int(minute_text) if minute_text else (30 if match.group(3) else 0)
+            if minute > 59:
+                return match.group(0)
+            return f"{hour:02d}:{minute:02d}"
+
+        normalized = re.sub(
+            r"(?<!\d)([01]?\d|2[0-3])時(?:(\d{1,2})分|(半))?",
+            normalized_clock,
+            local,
+        )
         matches = list(re.finditer(
-            r"(?<!\d)([01]?\d|2[0-3])[：:]([0-5]\d)(?!\d)", local
+            r"(?<!\d)([01]?\d|2[0-3])[：:]([0-5]\d)(?!\d)", normalized
         ))
         if len(matches) == 1:
             m = matches[0]
             return f"{int(m.group(1)):02d}:{m.group(2)}", None
         if len(matches) == 2:
-            range_match = TIME_RANGE.search(local)
+            range_match = TIME_RANGE.search(normalized)
             if range_match and range_match.start() == matches[0].start():
                 return (
                     f"{int(range_match.group(1)):02d}:{range_match.group(2)}",
