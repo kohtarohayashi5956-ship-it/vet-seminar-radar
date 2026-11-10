@@ -97,6 +97,26 @@ class DeadlineEvidenceTests(unittest.TestCase):
             "2026-11-25",
         ))
 
+    def test_bare_heading_followed_by_same_day(self):
+        self.assertEqual(_explicit_deadline(
+            "申込締切\n当日17:30\n開催日時：2026年11月11日",
+            "2026-11-11"), "2026-11-11")
+
+    def test_bare_heading_colon_followed_by_same_day(self):
+        self.assertEqual(_explicit_deadline(
+            "申込締切：\n当日 17:30",
+            "2026-11-11"), "2026-11-11")
+
+    def test_unrelated_field_after_heading_not_used(self):
+        self.assertIsNone(_explicit_deadline(
+            "申込締切\n会場：オンライン\n当日17:30",
+            "2026-11-11"))
+
+    def test_label_with_nonempty_text_cannot_borrow_next_date(self):
+        self.assertIsNone(_explicit_deadline(
+            "申込締切：現在調整中\n2026年11月11日",
+            "2026-11-11"))
+
     def test_other_dates_not_deadlines(self):
         self.assertIsNone(
             _explicit_deadline("録画配信：2026年12月10日\nキャンセル期限：2026年12月1日"),
