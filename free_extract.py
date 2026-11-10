@@ -375,18 +375,18 @@ def _feed_event_schedule(body, published=None):
 
 
 
-def _feed_explicit_start_time(body, event_date):
-    """Extract a single start time only from this article's event-date field.
+def _feed_schedule_times(body, event_date):
+    """Return times only from a schedule field matching this event's date.
 
-    Do not infer it from signup deadlines, cancellation terms, or unrelated
-    webinar promotion. A dated schedule field is required.
+    Single times, and explicit ranges, are supported. A date range or several
+    independent sessions are ambiguous and must not be merged.
     """
     if not event_date:
-        return None
+        return None, None
     try:
-        datetime.date.fromisoformat(event_date)
+        target = datetime.date.fromisoformat(event_date)
     except (TypeError, ValueError):
-        return None
+        return None, None
     lines = [re.sub(r"<https?://[^>]*>|https?://\S+", "", ln).strip()
              for ln in body[:5500].splitlines()]
     for i, line in enumerate(lines):
@@ -398,36 +398,51 @@ def _feed_explicit_start_time(body, event_date):
             line,
         ):
             continue
-        # The event date and time must be in the same labelled field or
-        # its immediately following line. Never cross another field label.
         context = [line]
         if i + 1 < len(lines):
             following = lines[i + 1]
-            if not EXCLUDE_DATE.search(following) and not re.match(
-                r"^(?:参加費|受講料|料金|講師|主催|会場|対象|詳細|申込|応募|受付|視聴期限)[：:]",
-                following,
-            ):
+            # Allow the schedule to wrap onto a second line, but do not
+            # consume a different labelled field (especially a deadline).
+            if (not EXCLUDE_DATE.search(following)
+                    and not re.match(
+                        r"^(?:参加費|受講料|料金|講師|主催|会場|対象|詳細|申込|応募|受付|視聴期限)[：:]",
+                        following,
+                    )
+                    and re.match(
+                        r"^(?:20\d{2}\s*年|\d{1,2}\s*月|\d{1,2}[：:]\d{2}\b)",
+                        following,
+                    )):
                 context.append(following)
         local = " ".join(context)
         dates = _dates(local)
         if dates:
-            if event_date not in dates:
+            if len(dates) != 1 or dates[0] != event_date:
                 continue
         else:
-            md = MONTH_DAY.search(local)
-            if not md:
-                continue
-            _, month, day = map(int, event_date.split("-"))
-            if (int(md.group(1)), int(md.group(2))) != (month, day):
+            monthdays = list(MONTH_DAY.finditer(local))
+            if (len(monthdays) != 1
+                    or (int(monthdays[0].group(1)), int(monthdays[0].group(2)))
+                    != (target.month, target.day)):
                 continue
         matches = list(re.finditer(
             r"(?<!\d)([01]?\d|2[0-3])[：:]([0-5]\d)(?!\d)", local
         ))
-        if len(matches) != 1:
-            continue  # A range or multiple sessions must be handled separately.
-        match = matches[0]
-        return f"{int(match.group(1)):02d}:{match.group(2)}"
-    return None
+        if len(matches) == 1:
+            m = matches[0]
+            return f"{int(m.group(1)):02d}:{m.group(2)}", None
+        if len(matches) == 2:
+            range_match = TIME_RANGE.search(local)
+            if range_match and range_match.start() == matches[0].start():
+                return (
+                    f"{int(range_match.group(1)):02d}:{range_match.group(2)}",
+                    f"{int(range_match.group(3)):02d}:{range_match.group(4)}",
+                )
+    return None, None
+
+
+def _feed_explicit_start_time(body, event_date):
+    """Backward-compatible single-start helper; full ranges use the pair."""
+    return _feed_schedule_times(body, event_date)[0]
 
 
 def _feed_price(body):
@@ -480,8 +495,7 @@ def _feed(text,page,today):
         e["status"] = _feed_status(title, content)
         e["price"], e["is_free"] = _feed_price(content)
         e["deadline"] = _explicit_deadline(content, when)
-        if not e["start_time"]:
-            e["start_time"] = _feed_explicit_start_time(content, when)
+        e["start_time"], e["end_time"] = _feed_schedule_times(content, when)
         if re.search(r"[\[［【]録画[\]］】]|(?:^|　)録画", title):
             e["format"] = "オンデマンド"
         elif re.search(r"[\[［【]ライブ[\]］】]", title):
