@@ -142,19 +142,26 @@ def _explicit_deadline(body, event_date=None):
     for i, line in enumerate(lines):
         if not re.match(r"^(?:申込締切|お申込み締切|申し込み締切|受付締切|申込期限|応募締切)[：:\s]?",line):
             continue
-        # Do not mistake the next field (e.g. 開催日時) for a deadline.
+        # The official RSS may put the actual deadline on the next line.
+        # Only a *bare* heading may absorb it; never borrow another field.
         local = line
-        if not _dates(line) and i + 1 < len(lines) and re.match(
-            r"^20\d{2}\s*[年./-]\s*\d{1,2}\s*[月./-]\s*\d{1,2}",
-            lines[i + 1],
-        ):
-            local += " " + lines[i + 1]
+        bare_label = re.fullmatch(
+            r"(?:申込締切|お申込み締切|申し込み締切|受付締切|申込期限|応募締切)[：:]?",
+            line,
+        )
+        if bare_label and i + 1 < len(lines):
+            following = lines[i + 1]
+            if (re.match(
+                    r"^20\d{2}\s*[年./-]\s*\d{1,2}\s*[月./-]\s*\d{1,2}",
+                    following,
+                ) or re.match(r"^当日(?:\s|[0-9０-９]|$)", following)):
+                local += " " + following
         dates = _dates(local)
         if dates:
             return dates[0]
         # 当日 is meaningful only next to a labelled registration deadline,
         # and only if this specific event already has a verified start date.
-        if re.match(r"^(?:申込締切|お申込み締切|申し込み締切|受付締切|申込期限|応募締切)[：:\s]*当日(?:\s|[0-9０-９]|$)", line):
+        if re.match(r"^(?:申込締切|お申込み締切|申し込み締切|受付締切|申込期限|応募締切)[：:\s]*当日(?:\s|[0-9０-９]|$)", local):
             if event_date and re.fullmatch(r"20\d{2}-\d{2}-\d{2}", event_date):
                 try:
                     datetime.date.fromisoformat(event_date)
@@ -475,7 +482,7 @@ def _feed_price(body):
         # paid amount does not make the entire seminar free.
         if re.search(r"[0-9０-９,，]+\s*円", value):
             return value[:100], None
-        if re.fullmatch(r"無料(?:\s*[（(]税込[）)])?", value):
+        if re.fullmatch(r"無料(?:\s*[（(](?:税込|見逃し配信[^）)]{0,40})[）)])?", value):
             return "無料", True
     return None, None
 
