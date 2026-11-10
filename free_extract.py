@@ -394,7 +394,7 @@ def _feed_schedule_times(body, event_date):
             continue
         if not re.match(
             r"^(?:[■●◆]\s*)?(?:開催日時|開催日|開催時間|配信日時|配信開始日時|日時|日程)"
-            r"\s*[：:]",
+            r"(?:\s*[：:]|\s*$)",
             line,
         ):
             continue
@@ -441,8 +441,9 @@ def _feed_schedule_times(body, event_date):
 
 
 def _feed_explicit_start_time(body, event_date):
-    """Backward-compatible single-start helper; full ranges use the pair."""
-    return _feed_schedule_times(body, event_date)[0]
+    """A single-start helper; multi-time fields must not be guessed."""
+    start, end = _feed_schedule_times(body, event_date)
+    return start if end is None else None
 
 
 def _feed_price(body):
