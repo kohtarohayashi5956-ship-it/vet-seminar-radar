@@ -47,6 +47,31 @@ class DatedScheduleTimesTests(unittest.TestCase):
             "日時：2026年11月26日 10:00、14:00",
             "2026-11-26"), (None, None))
 
+    def test_japanese_hour_and_half_range(self):
+        self.assertEqual(_feed_schedule_times(
+            "日時 2026年11月26日（木）21時～22時半",
+            "2026-11-26"), ("21:00", "22:30"))
+
+    def test_japanese_hour_minute_range(self):
+        self.assertEqual(_feed_schedule_times(
+            "日時\n11月26日（木）21時00分～22時30分",
+            "2026-11-26"), ("21:00", "22:30"))
+
+    def test_japanese_hour_single_start(self):
+        self.assertEqual(_feed_schedule_times(
+            "開催日時：2026年11月26日 21時開始",
+            "2026-11-26"), ("21:00", None))
+
+    def test_japanese_hour_does_not_take_deadline(self):
+        self.assertEqual(_feed_schedule_times(
+            "開催日時：2026年11月26日\n申込締切：当日17時30分",
+            "2026-11-26"), (None, None))
+
+    def test_invalid_japanese_minute_not_accepted(self):
+        self.assertEqual(_feed_schedule_times(
+            "日時：2026年11月26日 21時99分",
+            "2026-11-26"), (None, None))
+
     def test_feed_does_not_take_unrelated_early_range(self):
         feed = (
             "=====\n"
