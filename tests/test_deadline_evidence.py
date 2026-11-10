@@ -81,7 +81,7 @@ class DeadlineEvidenceTests(unittest.TestCase):
     def test_explicit_deadline_after_long_article_introduction(self):
         # An RSS article may place signup details well after its introduction.
         # This remains one article, so a clearly labelled deadline is valid.
-        intro = "開催の背景と学習内容について解説します。\n" * 110
+        intro = "開催の背景と学習内容について解説します。\n" * 160
         self.assertGreater(len(intro), 2500)
         self.assertLess(len(intro), 5300)
         self.assertEqual(
