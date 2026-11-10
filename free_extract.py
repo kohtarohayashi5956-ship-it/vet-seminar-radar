@@ -387,14 +387,14 @@ def _feed_explicit_start_time(body, event_date):
         datetime.date.fromisoformat(event_date)
     except (TypeError, ValueError):
         return None
-    lines = [re.sub(r"<https?://[^>]*>|https?://\\S+", "", ln).strip()
+    lines = [re.sub(r"<https?://[^>]*>|https?://\S+", "", ln).strip()
              for ln in body[:5500].splitlines()]
     for i, line in enumerate(lines):
         if EXCLUDE_DATE.search(line):
             continue
         if not re.match(
-            r"^(?:[■●◆]\\s*)?(?:開催日時|開催日|開催時間|配信日時|配信開始日時|日時|日程)"
-            r"\\s*[：:]",
+            r"^(?:[■●◆]\s*)?(?:開催日時|開催日|開催時間|配信日時|配信開始日時|日時|日程)"
+            r"\s*[：:]",
             line,
         ):
             continue
@@ -409,10 +409,19 @@ def _feed_explicit_start_time(body, event_date):
             ):
                 context.append(following)
         local = " ".join(context)
-        if event_date not in _dates(local) and not MONTH_DAY.search(local):
-            continue
+        dates = _dates(local)
+        if dates:
+            if event_date not in dates:
+                continue
+        else:
+            md = MONTH_DAY.search(local)
+            if not md:
+                continue
+            _, month, day = map(int, event_date.split("-"))
+            if (int(md.group(1)), int(md.group(2))) != (month, day):
+                continue
         matches = list(re.finditer(
-            r"(?<!\\d)([01]?\\d|2[0-3])[：:]([0-5]\\d)(?!\\d)", local
+            r"(?<!\d)([01]?\d|2[0-3])[：:]([0-5]\d)(?!\d)", local
         ))
         if len(matches) != 1:
             continue  # A range or multiple sessions must be handled separately.
