@@ -78,6 +78,25 @@ class DeadlineEvidenceTests(unittest.TestCase):
         self.assertEqual(events[0]["deadline"], "2026-11-11")
         self.assertIsNone(events[1]["deadline"])
 
+    def test_explicit_deadline_after_long_article_introduction(self):
+        # An RSS article may place signup details well after its introduction.
+        # This remains one article, so a clearly labelled deadline is valid.
+        intro = "開催の背景と学習内容について解説します。\n" * 110
+        self.assertGreater(len(intro), 2500)
+        self.assertLess(len(intro), 5300)
+        self.assertEqual(
+            _explicit_deadline(intro + "申込締切：2026年11月20日\n",
+                               "2026-11-25"),
+            "2026-11-20",
+        )
+
+    def test_later_unlabelled_date_is_not_deadline(self):
+        intro = "セミナーのご案内です。\n" * 150
+        self.assertIsNone(_explicit_deadline(
+            intro + "視聴期限：2026年11月20日\n",
+            "2026-11-25",
+        ))
+
     def test_other_dates_not_deadlines(self):
         self.assertIsNone(
             _explicit_deadline("録画配信：2026年12月10日\nキャンセル期限：2026年12月1日"),
