@@ -135,7 +135,10 @@ def _speakers_in_title(title):
 
 def _explicit_deadline(body, event_date=None):
     """Use a labelled calendar date, or explicit 当日 tied to this event date."""
-    lines = [line.strip() for line in body[:2500].splitlines() if line.strip()]
+    # Some RSS articles put signup details after a long introduction.
+    # Restrict evidence to this article and the same 5,500-character
+    # window used for its other descriptive fields.
+    lines = [line.strip() for line in body[:5500].splitlines() if line.strip()]
     for i, line in enumerate(lines):
         if not re.match(r"^(?:申込締切|お申込み締切|申し込み締切|受付締切|申込期限|応募締切)[：:\s]?",line):
             continue
