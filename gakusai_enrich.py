@@ -55,8 +55,8 @@ def parse_gakusai(text, event):
     if not t1 and idx + 1 < len(schedule):
         next_line = schedule[idx + 1]
         bare_range = re.fullmatch(
-            r"\\s*([01]?\\d|2[0-3])[：:]([0-5]\\d)\\s*[〜~～－―–-]"
-            r"\\s*([01]?\\d|2[0-3])[：:]([0-5]\\d)\\s*",
+            r"\s*([01]?\d|2[0-3])[：:]([0-5]\d)\s*[〜~～－―–-]"
+            r"\s*([01]?\d|2[0-3])[：:]([0-5]\d)\s*",
             next_line,
         )
         if bare_range:
