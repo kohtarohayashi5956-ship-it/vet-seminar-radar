@@ -48,6 +48,19 @@ def parse_gakusai(text, event):
         return {}
     date_line = schedule[idx]
     t1, t2 = _times(date_line)
+    # A single detail-card schedule sometimes wraps its clock range to
+    # the immediately following line. Accept ONLY a standalone range,
+    # never a second date, location, registration/cancellation time, or
+    # another field. The preceding line must uniquely match this event.
+    if not t1 and idx + 1 < len(schedule):
+        next_line = schedule[idx + 1]
+        bare_range = re.fullmatch(
+            r"\\s*([01]?\\d|2[0-3])[：:]([0-5]\\d)\\s*[〜~～－―–-]"
+            r"\\s*([01]?\\d|2[0-3])[：:]([0-5]\\d)\\s*",
+            next_line,
+        )
+        if bare_range:
+            t1, t2 = _times(next_line)
     if event.get("start_time") and t1 and event["start_time"] != t1:
         return {}
     out = {}
