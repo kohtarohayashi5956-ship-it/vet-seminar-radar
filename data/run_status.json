@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-12T11:08:36+09:00",
+  "checked_at_jst": "2026-11-12T11:42:46+09:00",
   "mode": "free_rules",
   "total_events": 81,
   "data_quality": {
@@ -7,9 +7,9 @@
     "field_presence": {
       "start_date": 80,
       "start_time": 36,
-      "venue": 27,
+      "venue": 26,
       "price": 31,
-      "deadline": 23,
+      "deadline": 22,
       "topics": 63,
       "audience": 52,
       "url": 81
@@ -17,9 +17,9 @@
     "field_presence_pct": {
       "start_date": 98.8,
       "start_time": 44.4,
-      "venue": 33.3,
+      "venue": 32.1,
       "price": 38.3,
-      "deadline": 28.4,
+      "deadline": 27.2,
       "topics": 77.8,
       "audience": 64.2,
       "url": 100.0
@@ -296,9 +296,9 @@
       "field_presence": {
         "start_date": 12,
         "start_time": 12,
-        "venue": 9,
+        "venue": 8,
         "price": 8,
-        "deadline": 9,
+        "deadline": 8,
         "topics": 7,
         "audience": 12,
         "url": 12
@@ -306,9 +306,9 @@
       "field_presence_pct": {
         "start_date": 100.0,
         "start_time": 100.0,
-        "venue": 75.0,
+        "venue": 66.7,
         "price": 66.7,
-        "deadline": 75.0,
+        "deadline": 66.7,
         "topics": 58.3,
         "audience": 100.0,
         "url": 100.0
@@ -348,7 +348,7 @@
       "extracted": 19,
       "added": 0,
       "updated": 19,
-      "replaced_stale": 1,
+      "replaced_stale": 0,
       "details_scanned": 5,
       "details_accepted": 9,
       "deadlines_found": 8,
@@ -418,14 +418,14 @@
       "id": "lifetail",
       "name": "Life&Tail",
       "pages": 1,
-      "extracted": 18,
-      "added": 5,
-      "updated": 13,
-      "replaced_stale": 5,
-      "details_scanned": 9,
-      "details_accepted": 13,
-      "deadlines_found": 13,
-      "prices_found": 7,
+      "extracted": 17,
+      "added": 1,
+      "updated": 16,
+      "replaced_stale": 2,
+      "details_scanned": 8,
+      "details_accepted": 11,
+      "deadlines_found": 11,
+      "prices_found": 5,
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
