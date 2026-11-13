@@ -846,6 +846,10 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
             "fee_label": any(FEE_HEADING.match(value) for value in lines),
             "yen_amount": any(FEE_AMOUNT.search(value) for value in lines),
             "fee_section": bool(parsed_price),
+            "dog_lecture_fee_parsed": bool(
+                page and any(_dog_lecture_fee(lines, event)
+                             for _, event in same_page)
+            ),
             "corroborated_dates": eligible_dates,
         })
     accepted = 0
