@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-13T12:41:20+09:00",
+  "checked_at_jst": "2026-11-13T12:52:39+09:00",
   "mode": "free_rules",
   "total_events": 83,
   "data_quality": {
@@ -13,7 +13,7 @@
       "topics": 65,
       "audience": 54,
       "url": 83,
-      "format": 65
+      "format": 67
     },
     "field_presence_pct": {
       "start_date": 98.8,
@@ -24,7 +24,7 @@
       "topics": 78.3,
       "audience": 65.1,
       "url": 100.0,
-      "format": 78.3
+      "format": 80.7
     },
     "note": "Field presence only; dates, prices and details are not independently verified."
   },
@@ -92,7 +92,7 @@
         "topics": 13,
         "audience": 20,
         "url": 20,
-        "format": 9
+        "format": 11
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -103,7 +103,7 @@
         "topics": 65.0,
         "audience": 100.0,
         "url": 100.0,
-        "format": 45.0
+        "format": 55.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -434,14 +434,14 @@
           "start_time": 10,
           "price": 13,
           "deadline": 11,
-          "format": 11
+          "format": 9
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 1,
           "price": 4,
           "deadline": 2,
-          "format": 3
+          "format": 1
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
@@ -765,30 +765,12 @@
         ]
       },
       {
-        "id": "89d5e9b970d0",
-        "source_id": "jaha",
-        "start_date": "2026-12-07",
-        "link_type": "individual_detail",
-        "missing": [
-          "format"
-        ]
-      },
-      {
         "id": "111a60a65ee8",
         "source_id": "jaha",
         "start_date": "2026-12-12",
         "link_type": "individual_detail",
         "missing": [
           "price"
-        ]
-      },
-      {
-        "id": "e5d868cc3828",
-        "source_id": "jaha",
-        "start_date": "2027-01-16",
-        "link_type": "individual_detail",
-        "missing": [
-          "format"
         ]
       },
       {
@@ -940,9 +922,33 @@
           "deadline",
           "format"
         ]
+      },
+      {
+        "id": "db44f096193a",
+        "source_id": "gakusai",
+        "start_date": "2027-10-17",
+        "link_type": "listing_or_other",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline",
+          "format"
+        ]
+      },
+      {
+        "id": "0e07fec9d245",
+        "source_id": "gakusai",
+        "start_date": "2027-10-31",
+        "link_type": "listing_or_other",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline",
+          "format"
+        ]
       }
     ],
-    "review_candidate_total": 68,
+    "review_candidate_total": 66,
     "note": "Missing means only that the published field is blank, not that the official source lacks the information. For on-demand events a blank start_time is considered not applicable. A detail link is recognized by URL pattern, not verified page content."
   },
   "source_results": [
