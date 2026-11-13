@@ -1259,6 +1259,61 @@ def _dourinken_meeting(text,page,today,stats):
     return out
 
 
+def _jsvd_certification(text, page, today, stats):
+    """Publish one annual dermatology certification course, never invented lessons.
+
+    The official page specifies a repeating March 21–March 20 viewing year,
+    18,000 yen annual fee and year-round signup. It does not publish six
+    individual lecture schedules, so only one annual record is warranted.
+    """
+    if page.rstrip("/") != "https://www.jsvd.jp/certifiedphysicians/certifiedphysician.html":
+        return []
+    lines = [unicodedata.normalize("NFKC", ln.strip())
+             for ln in text.splitlines() if ln.strip()]
+    heading = next((i for i, ln in enumerate(lines)
+                    if ln == "日本獣医皮膚科学会 認定医講習"), None)
+    if heading is None:
+        return []
+    next_section = next((i for i in range(heading + 1, len(lines))
+                         if "第15回 日本獣医皮膚科学会認定医試験" in lines[i]),
+                        len(lines))
+    block = lines[heading:next_section]
+    # Restrict facts to the specific certification-course policy section.
+    window = [ln for ln in block
+              if re.search(r"配信期間\s*[:：]\s*3月21日\s*[～〜~－–-]\s*翌年3月20日", ln)]
+    fee = [ln for ln in block
+           if re.search(r"受講料\s*[:：]\s*年間一律\s*18,000円", ln)]
+    signup = [ln for ln in block if re.search(r"申込時期\s*[:：]\s*通年", ln)]
+    lessons = [ln for ln in block
+               if re.search(r"1年間で合計6講義を更新予定", ln)]
+    if not (len(window) == len(fee) == len(signup) == len(lessons) == 1):
+        return []
+    fiscal_year = today.year if (today.month, today.day) >= (3, 21) else today.year - 1
+    start = _date(fiscal_year, 3, 21)
+    end = _date(fiscal_year + 1, 3, 20)
+    if not start or not end or end < today.isoformat():
+        return []
+    ev = _event(
+        "日本獣医皮膚科学会 認定医講習",
+        start, page, page, "録画配信", "日本獣医皮膚科学会",
+        end=end,
+    )
+    ev["format"] = "オンデマンド"
+    ev["audience"] = ["獣医師"]
+    ev["topics"] = ["皮膚"]
+    ev["price"] = "年間一律 18,000円"
+    ev["is_free"] = None
+    ev["deadline"] = None  # Year-round enrollment is not a fixed cutoff.
+    ev["start_time"] = None
+    ev["end_time"] = None
+    ev["certification_note"] = (
+        "日本獣医皮膚科学会認定医講習。年間最大6講義の受講修了が可能。"
+        "認定条件・修了手続きは公式案内で確認"
+    )
+    stats["jsvd_certification_courses"] = 1
+    return [ev]
+
+
 def _javnu_certification(text, page, today, stats):
     """Extract the official 3rd-period curriculum schedule, one course per row.
 
@@ -1342,6 +1397,7 @@ def extract_free(source_name,page_url,hint,text,today,stats):
     elif "eduward" in source or "eduone" in source:raw=_eduone(text,page_url,today,stats)
     elif "javnu認定講習会" in source:raw=_javnu_certification(text,page_url,today,stats)
     elif source in ("javnu", "日本獣医腎泌尿器学会"):raw=_society(text,page_url,today,stats,"javnu")
+    elif "jsvd認定医講習" in source:raw=_jsvd_certification(text,page_url,today,stats)
     elif source in ("日本獣医皮膚科学会","jsvd"):raw=_society(text,page_url,today,stats,"jsvd")
     elif source in ("日本獣医がん学会","jvcs"):raw=_society(text,page_url,today,stats,"jvcs")
     elif source in ("日本獣医循環器学会","jsvc"):raw=_society(text,page_url,today,stats,"jsvc")
