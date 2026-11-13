@@ -65,7 +65,7 @@ def _review_link_type(event):
             continue
         if (source == "gakusai" and parts.hostname in
                 ("gakusai.co.jp", "www.gakusai.co.jp") and
-                re.fullmatch(r"/vet/vet-seminar/\\d+/?", parts.path)):
+                re.fullmatch(r"/vet/vet-seminar/\d+/?", parts.path)):
             return "individual_detail"
         if (source == "jaha" and parts.hostname in
                 ("jaha.or.jp", "www.jaha.or.jp") and
