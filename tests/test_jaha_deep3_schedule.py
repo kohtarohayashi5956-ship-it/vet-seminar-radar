@@ -34,6 +34,26 @@ class Deep3TimeTests(unittest.TestCase):
         self.assertNotIn("start_time", parse_jaha_detail(PAGE, event(
             "2027-01-16", "https://www.jaha.or.jp/training/seminar/other/")))
 
+    def test_round_label_date_and_time_split_across_lines(self):
+        page = PAGE.replace(
+            "第1回：2026年12月7日（月）開催",
+            "第1回：\n2026年12月7日（月）開催",
+        ).replace(
+            "第1回： 12月7日(月) 13：00～15：00",
+            "第1回：\n12月7日(月) 13：00～15：00",
+        )
+        got = parse_jaha_detail(page, event("2026-12-07"))
+        self.assertEqual((got.get("start_time"), got.get("end_time")),
+                         ("13:00", "15:00"))
+
+    def test_must_not_cross_next_round(self):
+        page = PAGE.replace(
+            "第1回： 12月7日(月) 13：00～15：00",
+            "第1回：\n第2回： 12月7日(月) 13：00～15：00",
+        )
+        got = parse_jaha_detail(page, event("2026-12-07"))
+        self.assertNotIn("start_time", got)
+
     def test_duplicate_conflicting_time_rejected(self):
         page = PAGE.replace("《 配信形式 》",
                             "第1回： 12月7日(月) 09:00～11:00\n《 配信形式 》")
