@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-13T20:32:37+09:00",
+  "checked_at_jst": "2026-11-13T20:48:21+09:00",
   "mode": "free_rules",
   "total_events": 91,
   "data_quality": {
@@ -1152,9 +1152,9 @@
       "name": "Life&Tail",
       "pages": 1,
       "extracted": 13,
-      "added": 0,
-      "updated": 13,
-      "replaced_stale": 0,
+      "added": 1,
+      "updated": 12,
+      "replaced_stale": 1,
       "details_scanned": 9,
       "details_accepted": 9,
       "deadlines_found": 9,
