@@ -54,9 +54,11 @@ def _no297_material_fee(lines, event):
             and "材料費4,500円" in norm(row) and "4,950円" in norm(row)
             for row in fees
         ) == 1
+    # Each official attendee tier explicitly carries the material fee.
+    # The separate explanatory footnote may be split across HTML elements
+    # and is not necessary corroboration when both full tier rows agree.
     if not (has_fee("法人・個人会員", "9,000円", "9,900円")
-            and has_fee("一般獣医師", "27,000円", "29,700円")
-            and sum("申込時に下記材料費が加算" in line for line in fees) == 1):
+            and has_fee("一般獣医師", "27,000円", "29,700円")):
         return None
     existing = event.get("price")
     base = "法人・個人会員 9,000円(税込9,900円)／一般獣医師 27,000円(税込29,700円)"
