@@ -33,6 +33,30 @@ def valid_calendar_date(value):
         return False
 
 
+
+def valid_clock_time(value):
+    """Only precise, normalized 24-hour HH:MM clock strings are publishable."""
+    return isinstance(value, str) and bool(
+        re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", value)
+    )
+
+
+def validate_event_clock(event):
+    """Reject malformed clock values and incomplete interval endpoints."""
+    start = event.get("start_time")
+    end = event.get("end_time")
+    for value in (start, end):
+        if value is not None:
+            assert valid_clock_time(value), "invalid published clock time"
+    if end is not None:
+        assert start is not None, "end time without start time"
+    if start is not None:
+        assert event.get("start_date"), "start time without event date"
+    # A printed overnight event may legitimately end on the next day.
+    # Do not fabricate a same-day duration here.
+
+
+
 def validate():
     with open("index.html", encoding="utf-8") as f:
         text = f.read()
@@ -57,6 +81,7 @@ def validate():
             assert event["start_date"] <= event["end_date"], "end date before start date"
         if event.get("start_date") and event.get("deadline"):
             assert event["deadline"] <= event["start_date"], "deadline after event"
+        validate_event_clock(event)
         if event.get("is_free") is True and event.get("price"):
             assert not re.search(r"[0-9０-９][0-9０-９,，]*\s*円", event["price"]), "paid fee marked free"
         assert not any(k in event for k in ("raw_html", "raw_text", "page_text", "evidence"))
