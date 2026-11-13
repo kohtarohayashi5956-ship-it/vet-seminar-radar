@@ -41,6 +41,8 @@ class No297FallbackTests(unittest.TestCase):
         self.assertEqual(e["start_time"], "10:00")
         self.assertEqual(e["end_time"], "16:00")
         self.assertEqual(e["url"], DETAIL)
+        self.assertTrue(e["verified"])
+        self.assertFalse(e["url_is_page"])
 
     def test_listing_and_detail_share_same_event_id(self):
         rows = extract_free("学際企画", LISTING, "", LIST_TEXT, TODAY, {})
