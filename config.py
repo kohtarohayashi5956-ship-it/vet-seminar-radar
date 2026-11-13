@@ -96,6 +96,14 @@ SOURCES = [
         "enabled": True,
     },
     {
+        "id": "javnu_cert",
+        "name": "JAVNU認定講習会",
+        "kind": "html_page",
+        "urls": ["https://www.javnu.jp/certification/schedule/"],
+        "enabled": True,
+    },
+
+    {
         "id": "jsvd",
         "name": "日本獣医皮膚科学会",
         "kind": "society_meeting",
