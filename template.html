@@ -474,7 +474,7 @@
 
   /* ---------- 認定医関連：分野・種別の横断検索 ---------- */
   function certArea(e) {
-    var groups = { jsvc: "循環器", jsvd: "皮膚科", javnu: "腎・泌尿器" };
+    var groups = { jsvc: "循環器", jsvd: "皮膚科", jsvd_cert: "皮膚科", javnu: "腎・泌尿器", javnu_cert: "腎・泌尿器" };
     return groups[e.source_id] || "その他";
   }
   function certKind(e) {
@@ -533,7 +533,7 @@
     entries.slice(0, 10).forEach(function (e) {
       var item = el("article", "cert-item");
       var meta = el("div", "cert-meta");
-      meta.appendChild(el("span", "cert-date", md(e.start_date) + "（" + wd(e.start_date) + "）"));
+      meta.appendChild(el("span", "cert-date", (e.format === "オンデマンド" && e.end_date ? "視聴期間：" + dateText(e) : md(e.start_date) + "（" + wd(e.start_date) + "）")));
       meta.appendChild(el("span", null, certArea(e)));
       meta.appendChild(el("span", null, certKindLabel(certKind(e))));
       meta.appendChild(el("span", null, e.source || ""));
