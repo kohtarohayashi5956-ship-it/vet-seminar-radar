@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13T11:40:36+09:00",
+ "updated": "2026-11-13T11:56:11+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -1521,8 +1521,8 @@
    "title": "202６年度VNセミナー【深堀シリーズ】「緊急疾患・救急対応」学 科目 全3回",
    "start_date": "2026-12-07",
    "end_date": null,
-   "start_time": null,
-   "end_time": null,
+   "start_time": "13:00",
+   "end_time": "15:00",
    "format": null,
    "venue": null,
    "prefecture": "東京都",
@@ -2299,8 +2299,8 @@
    "title": "202６年度VNセミナー【深堀シリーズ】「緊急疾患・救急対応」学 科目 全3回",
    "start_date": "2027-01-16",
    "end_date": null,
-   "start_time": null,
-   "end_time": null,
+   "start_time": "13:00",
+   "end_time": "15:00",
    "format": null,
    "venue": null,
    "prefecture": "東京都",

@@ -1,12 +1,12 @@
 {
-  "checked_at_jst": "2026-11-13T11:40:36+09:00",
+  "checked_at_jst": "2026-11-13T11:56:11+09:00",
   "mode": "free_rules",
   "total_events": 83,
   "data_quality": {
     "total": 83,
     "field_presence": {
       "start_date": 82,
-      "start_time": 35,
+      "start_time": 37,
       "venue": 27,
       "price": 32,
       "deadline": 23,
@@ -16,7 +16,7 @@
     },
     "field_presence_pct": {
       "start_date": 98.8,
-      "start_time": 42.2,
+      "start_time": 44.6,
       "venue": 32.5,
       "price": 38.6,
       "deadline": 27.7,
@@ -79,7 +79,7 @@
       "total": 20,
       "field_presence": {
         "start_date": 20,
-        "start_time": 5,
+        "start_time": 7,
         "venue": 0,
         "price": 7,
         "deadline": 9,
@@ -89,7 +89,7 @@
       },
       "field_presence_pct": {
         "start_date": 100.0,
-        "start_time": 25.0,
+        "start_time": 35.0,
         "venue": 0.0,
         "price": 35.0,
         "deadline": 45.0,
@@ -388,13 +388,13 @@
         "total": 20,
         "missing": {
           "start_date": 0,
-          "start_time": 15,
+          "start_time": 13,
           "price": 13,
           "deadline": 11
         },
         "missing_with_detail_link": {
           "start_date": 0,
-          "start_time": 6,
+          "start_time": 4,
           "price": 4,
           "deadline": 2
         },
@@ -668,15 +668,6 @@
         ]
       },
       {
-        "id": "89d5e9b970d0",
-        "source_id": "jaha",
-        "start_date": "2026-12-07",
-        "link_type": "individual_detail",
-        "missing": [
-          "start_time"
-        ]
-      },
-      {
         "id": "111a60a65ee8",
         "source_id": "jaha",
         "start_date": "2026-12-12",
@@ -689,15 +680,6 @@
         "id": "79362b50b816",
         "source_id": "jaha",
         "start_date": "2027-01-01",
-        "link_type": "individual_detail",
-        "missing": [
-          "start_time"
-        ]
-      },
-      {
-        "id": "e5d868cc3828",
-        "source_id": "jaha",
-        "start_date": "2027-01-16",
         "link_type": "individual_detail",
         "missing": [
           "start_time"
@@ -817,9 +799,31 @@
           "price",
           "deadline"
         ]
+      },
+      {
+        "id": "e282d87f8190",
+        "source_id": "jsvas",
+        "start_date": "2027-01-17",
+        "link_type": "unclassified",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "f9094bfd45f4",
+        "source_id": "jaha",
+        "start_date": "2027-01-17",
+        "link_type": "unclassified",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
       }
     ],
-    "review_candidate_total": 71,
+    "review_candidate_total": 69,
     "note": "Missing means only that the published field is blank, not that the official source lacks the information. A detail link is recognized by URL pattern and is not a content verification."
   },
   "source_results": [
