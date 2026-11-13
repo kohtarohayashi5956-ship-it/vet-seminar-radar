@@ -40,6 +40,22 @@ def uncovered_gakusai_lectures(listing_text, events):
         candidate = _norm(title)
         if not candidate:
             continue
-        if not any(_norm(e.get("title")) == candidate for e in events):
+        dates = {(int(m.group(1)), int(m.group(2)))
+                 for row in segment[1:] for m in MONTH_DAY.finditer(
+                     row.split("ウェブ受講")[0])}
+        def matches(event):
+            parsed_title = _norm(event.get("title"))
+            if not parsed_title:
+                return False
+            exact_or_speaker_prefix = (
+                parsed_title == candidate or
+                (number == "297" and len(parsed_title) >= 16 and
+                 "腸管吻合" in parsed_title and
+                 candidate.endswith(parsed_title + "」"))
+            )
+            date = event.get("start_date") or ""
+            return (exact_or_speaker_prefix and len(date) == 10 and
+                    (int(date[5:7]), int(date[8:10])) in dates)
+        if not any(matches(e) for e in events):
             missing.append(number)
     return sorted(set(missing), key=int)
