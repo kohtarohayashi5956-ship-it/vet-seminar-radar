@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-13T11:15:43+09:00",
+  "checked_at_jst": "2026-11-13T11:40:36+09:00",
   "mode": "free_rules",
   "total_events": 83,
   "data_quality": {
@@ -8,8 +8,8 @@
       "start_date": 82,
       "start_time": 35,
       "venue": 27,
-      "price": 30,
-      "deadline": 21,
+      "price": 32,
+      "deadline": 23,
       "topics": 65,
       "audience": 54,
       "url": 83
@@ -18,8 +18,8 @@
       "start_date": 98.8,
       "start_time": 42.2,
       "venue": 32.5,
-      "price": 36.1,
-      "deadline": 25.3,
+      "price": 38.6,
+      "deadline": 27.7,
       "topics": 78.3,
       "audience": 65.1,
       "url": 100.0
@@ -81,8 +81,8 @@
         "start_date": 20,
         "start_time": 5,
         "venue": 0,
-        "price": 5,
-        "deadline": 7,
+        "price": 7,
+        "deadline": 9,
         "topics": 13,
         "audience": 20,
         "url": 20
@@ -91,8 +91,8 @@
         "start_date": 100.0,
         "start_time": 25.0,
         "venue": 0.0,
-        "price": 25.0,
-        "deadline": 35.0,
+        "price": 35.0,
+        "deadline": 45.0,
         "topics": 65.0,
         "audience": 100.0,
         "url": 100.0
@@ -389,14 +389,14 @@
         "missing": {
           "start_date": 0,
           "start_time": 15,
-          "price": 15,
-          "deadline": 13
+          "price": 13,
+          "deadline": 11
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 6,
-          "price": 6,
-          "deadline": 4
+          "price": 4,
+          "deadline": 2
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
@@ -640,28 +640,6 @@
         ]
       },
       {
-        "id": "89d5e9b970d0",
-        "source_id": "jaha",
-        "start_date": "2026-12-07",
-        "link_type": "individual_detail",
-        "missing": [
-          "start_time",
-          "price",
-          "deadline"
-        ]
-      },
-      {
-        "id": "e5d868cc3828",
-        "source_id": "jaha",
-        "start_date": "2027-01-16",
-        "link_type": "individual_detail",
-        "missing": [
-          "start_time",
-          "price",
-          "deadline"
-        ]
-      },
-      {
         "id": "47c28952de1e",
         "source_id": "jaha",
         "start_date": "2026-11-14",
@@ -690,6 +668,15 @@
         ]
       },
       {
+        "id": "89d5e9b970d0",
+        "source_id": "jaha",
+        "start_date": "2026-12-07",
+        "link_type": "individual_detail",
+        "missing": [
+          "start_time"
+        ]
+      },
+      {
         "id": "111a60a65ee8",
         "source_id": "jaha",
         "start_date": "2026-12-12",
@@ -702,6 +689,15 @@
         "id": "79362b50b816",
         "source_id": "jaha",
         "start_date": "2027-01-01",
+        "link_type": "individual_detail",
+        "missing": [
+          "start_time"
+        ]
+      },
+      {
+        "id": "e5d868cc3828",
+        "source_id": "jaha",
+        "start_date": "2027-01-16",
         "link_type": "individual_detail",
         "missing": [
           "start_time"
@@ -836,9 +832,9 @@
       "updated": 20,
       "replaced_stale": 0,
       "details_scanned": 5,
-      "details_accepted": 8,
-      "deadlines_found": 7,
-      "prices_found": 5,
+      "details_accepted": 10,
+      "deadlines_found": 9,
+      "prices_found": 7,
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
@@ -882,7 +878,10 @@
           "fee_label": false,
           "yen_amount": true,
           "fee_section": false,
-          "corroborated_dates": []
+          "corroborated_dates": [
+            "2026-12-07",
+            "2027-01-16"
+          ]
         },
         {
           "path": "/training/seminar/seniorcare_ol/",

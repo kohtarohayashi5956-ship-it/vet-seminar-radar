@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13T11:15:43+09:00",
+ "updated": "2026-11-13T11:40:36+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -1533,10 +1533,10 @@
    "topics": [
     "麻酔・救急"
    ],
-   "price": null,
+   "price": "全3回一括：JAHA会員 8,250円／会員外 14,850円／JAHA正会員病院団体視聴 40,755円",
    "is_free": null,
    "status": "受付中",
-   "deadline": null,
+   "deadline": "2026-11-30",
    "organizer": "JAHA",
    "speaker": null,
    "url": "https://www.jaha.or.jp/training/seminar/vnseries/aigan26deep3/",
@@ -2311,10 +2311,10 @@
    "topics": [
     "麻酔・救急"
    ],
-   "price": null,
+   "price": "全3回一括：JAHA会員 8,250円／会員外 14,850円／JAHA正会員病院団体視聴 40,755円",
    "is_free": null,
    "status": "受付中",
-   "deadline": null,
+   "deadline": "2026-11-30",
    "organizer": "JAHA",
    "speaker": null,
    "url": "https://www.jaha.or.jp/training/seminar/vnseries/aigan26deep3/",
