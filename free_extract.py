@@ -80,7 +80,7 @@ def _fmt(context):
     if re.search(r"ハイブリッド|現地.{0,12}(配信|オンライン)|オンライン.{0,12}現地",context,re.I): return "ハイブリッド"
     if re.search(r"オンデマンド|アーカイブ|録画配信|ウェブ受講|配信期間",context,re.I): return "オンデマンド"
     if re.search(r"オンライン|ライブ配信|無料ライブ|ウェビナー|zoom|webinar|(?:^|\s)ライブ(?:\s|$)",context,re.I): return "ライブ配信"
-    if re.search(r"実習|会場|現地|博多開催|大宮開催|東京開催|大阪開催",context): return "現地"
+    if re.search(r"実習|会場|現地|博多開催|大宮開催|東京開催|大阪開催|[【［\[]対面[】］\]]|\bWet\s*(?:&\s*Dry\s*)?Lab\b",context,re.I): return "現地"
     return None
 
 
