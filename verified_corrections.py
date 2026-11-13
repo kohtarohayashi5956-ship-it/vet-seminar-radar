@@ -7,6 +7,7 @@ Never overwrite a different extracted value; mismatches require human review.
 import datetime
 import json
 import os
+import re
 from urllib.parse import urlsplit
 
 PATH = os.path.join(os.path.dirname(__file__), "data", "verified_corrections.json")
@@ -36,23 +37,42 @@ def apply_verified_corrections(store, path=PATH):
                 or _identity_url(event.get("url")) != _identity_url(rule.get("url"))):
             conflicts.append(rule.get("id"))
             continue
-        new_value = rule.get("deadline")
-        if not isinstance(new_value, str):
-            conflicts.append(rule.get("id"))
+        proposed = {field: rule[field] for field in
+                    ("deadline", "start_time", "end_time") if field in rule}
+        if not proposed:
+            conflicts.append(rule["id"])
             continue
         try:
-            deadline = datetime.date.fromisoformat(new_value)
             start = datetime.date.fromisoformat(event["start_date"])
+            if "deadline" in proposed:
+                deadline = datetime.date.fromisoformat(proposed["deadline"])
+                if deadline > start:
+                    raise ValueError("deadline after event")
+            for field in ("start_time", "end_time"):
+                if field in proposed:
+                    value = proposed[field]
+                    if not isinstance(value, str) or not re.fullmatch(
+                            r"(?:[01]\\d|2[0-3]):[0-5]\\d", value):
+                        raise ValueError("invalid time")
+                    h, m = map(int, value.split(":"))
+                    if h > 23 or m > 59:
+                        raise ValueError("invalid time")
+            start_time = proposed.get("start_time", event.get("start_time"))
+            end_time = proposed.get("end_time", event.get("end_time"))
+            if start_time and end_time and end_time <= start_time:
+                raise ValueError("invalid time order")
         except (ValueError, TypeError):
-            conflicts.append(rule.get("id"))
-            continue
-        if deadline > start:
-            conflicts.append(rule.get("id"))
-            continue
-        existing = event.get("deadline")
-        if not existing:
-            event["deadline"] = new_value
-            filled.append(rule["id"])
-        elif existing != new_value:
             conflicts.append(rule["id"])
+            continue
+        if any(event.get(field) and event[field] != value
+               for field, value in proposed.items()):
+            conflicts.append(rule["id"])
+            continue
+        changed = False
+        for field, value in proposed.items():
+            if not event.get(field):
+                event[field] = value
+                changed = True
+        if changed:
+            filled.append(rule["id"])
     return filled, conflicts
