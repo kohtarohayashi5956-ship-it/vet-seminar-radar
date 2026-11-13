@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-13T20:18:53+09:00",
+  "checked_at_jst": "2026-11-13T20:32:37+09:00",
   "mode": "free_rules",
   "total_events": 91,
   "data_quality": {
@@ -891,7 +891,7 @@
         "id": "fecc161b5e56",
         "source_id": "jaha",
         "start_date": "2026-11-15",
-        "link_type": "unclassified",
+        "link_type": "listing_or_other",
         "missing": [
           "start_time",
           "price",
@@ -915,7 +915,7 @@
         "id": "4b7a76ea0d37",
         "source_id": "jaha",
         "start_date": "2026-12-06",
-        "link_type": "unclassified",
+        "link_type": "listing_or_other",
         "missing": [
           "start_time",
           "price",
@@ -927,7 +927,7 @@
         "id": "eecda9cd1205",
         "source_id": "jaha",
         "start_date": "2026-12-13",
-        "link_type": "unclassified",
+        "link_type": "listing_or_other",
         "missing": [
           "start_time",
           "price",
@@ -939,7 +939,7 @@
         "id": "b083c1e5643a",
         "source_id": "jaha",
         "start_date": "2027-01-10",
-        "link_type": "unclassified",
+        "link_type": "listing_or_other",
         "missing": [
           "start_time",
           "price",
@@ -951,7 +951,7 @@
         "id": "f9094bfd45f4",
         "source_id": "jaha",
         "start_date": "2027-01-17",
-        "link_type": "unclassified",
+        "link_type": "listing_or_other",
         "missing": [
           "start_time",
           "price",
@@ -963,7 +963,7 @@
         "id": "5a17f33107d6",
         "source_id": "jaha",
         "start_date": "2027-02-07",
-        "link_type": "unclassified",
+        "link_type": "listing_or_other",
         "missing": [
           "start_time",
           "price",
@@ -975,7 +975,7 @@
         "id": "023e5aa56f95",
         "source_id": "jaha",
         "start_date": "2027-02-14",
-        "link_type": "unclassified",
+        "link_type": "listing_or_other",
         "missing": [
           "start_time",
           "price",
