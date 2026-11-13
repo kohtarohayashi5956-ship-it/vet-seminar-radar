@@ -24,7 +24,7 @@ import demo
 import merge
 import render
 from verified_corrections import apply_verified_corrections
-from quality import summarize_quality, summarize_quality_by_source
+from quality import summarize_quality, summarize_quality_by_source, summarize_review_candidates
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -260,6 +260,7 @@ def main(argv):
         "total_events": len(events),
         "data_quality": summarize_quality(events),
         "quality_by_source": summarize_quality_by_source(events),
+        "review_diagnostics": summarize_review_candidates(events),
         "source_results": health,
         "warnings": warnings,
     }
