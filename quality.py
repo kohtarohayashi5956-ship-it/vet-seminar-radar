@@ -41,3 +41,80 @@ def summarize_quality_by_source(events):
         source: summarize_quality(rows)
         for source, rows in sorted(groups.items())
     }
+
+
+REVIEW_FIELDS = ("start_date", "start_time", "price", "deadline")
+
+
+def _review_link_type(event):
+    """Recognize known detail URL patterns without asserting field availability."""
+    import re
+    from urllib.parse import urlsplit
+
+    try:
+        parts = urlsplit(event.get("url") or "")
+    except ValueError:
+        return "unclassified"
+    source = event.get("source_id")
+    if (source == "gakusai" and parts.hostname in
+            ("gakusai.co.jp", "www.gakusai.co.jp")):
+        return ("individual_detail" if
+                re.fullmatch(r"/vet/vet-seminar/\\d+/?", parts.path)
+                else "listing_or_other")
+    if (source == "jaha" and parts.hostname in
+            ("jaha.or.jp", "www.jaha.or.jp")):
+        return ("individual_detail" if
+                parts.path.startswith(("/training/seminar/", "/owners/dog-training/"))
+                else "listing_or_other")
+    return "unclassified"
+
+
+def summarize_review_candidates(events, limit=20):
+    """Count missing fields and prioritize IDs; do not infer reasons for blanks."""
+    by_source = {}
+    candidates = []
+    for event in events:
+        source = event.get("source_id") or "unknown"
+        row = by_source.setdefault(source, {
+            "total": 0,
+            "missing": {field: 0 for field in REVIEW_FIELDS},
+            "missing_with_detail_link": {field: 0 for field in REVIEW_FIELDS},
+            "missing_without_confirmed_detail_link": {
+                field: 0 for field in REVIEW_FIELDS
+            },
+        })
+        row["total"] += 1
+        missing = [field for field in REVIEW_FIELDS if not event.get(field)]
+        link_type = _review_link_type(event)
+        for field in missing:
+            row["missing"][field] += 1
+            key = ("missing_with_detail_link" if link_type == "individual_detail"
+                   else "missing_without_confirmed_detail_link")
+            row[key][field] += 1
+        if missing and event.get("id"):
+            score = (100 if "start_date" in missing else 0)
+            score += 20 if link_type == "individual_detail" else 0
+            score += len(missing)
+            candidates.append((
+                -score,
+                event.get("start_date") or "9999-99-99",
+                str(event["id"]),
+                {
+                    "id": str(event["id"]),
+                    "source_id": source,
+                    "start_date": event.get("start_date"),
+                    "link_type": link_type,
+                    "missing": missing,
+                },
+            ))
+    candidates.sort(key=lambda item: item[:3])
+    return {
+        "source_summary": dict(sorted(by_source.items())),
+        "priority_review": [item[3] for item in candidates[:max(0, limit)]],
+        "review_candidate_total": len(candidates),
+        "note": (
+            "Missing means only that the published field is blank, not that "
+            "the official source lacks the information. A detail link is "
+            "recognized by URL pattern and is not a content verification."
+        ),
+    }
