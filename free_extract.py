@@ -1316,6 +1316,9 @@ def _javnu_certification(text, page, today, stats):
                 start, page, page, "オンライン認定講習会", "日本獣医腎泌尿器学会",
                 end=end,
             )
+            # Validation must see verbatim official-page evidence; the
+            # prefixed display title itself does not occur on the page.
+            ev["evidence"] = title
             ev["format"] = "オンデマンド"
             ev["audience"] = ["獣医師"]
             ev["topics"] = ["腎・泌尿器"]
