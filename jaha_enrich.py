@@ -471,6 +471,53 @@ def parse_jaha_seniorcare_table(html, event):
     return result
 
 
+
+def _deep3_session_time(lines, event):
+    """Read one dated installment from JAHA's 2026 deep-dive VN course.
+
+    Match the exact installment in BOTH the fully year-dated programme and
+    the separately labelled schedule section; neither a generic page time
+    nor the registration window can stand in for a course time.
+    """
+    url = _url(event)
+    if not url or urlsplit(url).path != "/training/seminar/vnseries/aigan26deep3/":
+        return None
+    if not any(re.search(r"2026年度.*(?:セミナー|深掘り|シリーズ)", x) for x in lines):
+        return None
+    try:
+        day = datetime.date.fromisoformat(event.get("start_date") or "")
+    except ValueError:
+        return None
+    # No hardcoded clock or date: each run checks the official printed rows.
+    confirmed_rounds = []
+    for ln in lines:
+        m = re.search(r"第\\s*([1-3])\\s*回\\s*[：:]", ln)
+        if not m or re.search(r"受付|申込|キャンセル", ln):
+            continue
+        dates = _dates(ln)
+        if dates == [day.isoformat()]:
+            confirmed_rounds.append(m.group(1))
+    if len(confirmed_rounds) != 1:
+        return None
+    round_no = confirmed_rounds[0]
+    headers = [i for i, ln in enumerate(lines) if "セミナー開催日時" in ln]
+    if len(headers) != 1:
+        return None
+    starts = []
+    for ln in lines[headers[0] + 1:headers[0] + 10]:
+        if re.search(r"配信形式|見返し配信|申込区分|受講料", ln):
+            break
+        matched = re.match(r"^第\\s*([1-3])\\s*回\\s*[：:]\\s*(\\d{1,2})月\\s*(\\d{1,2})日", ln)
+        if not matched or matched.group(1) != round_no:
+            continue
+        if (int(matched.group(2)), int(matched.group(3))) != (day.month, day.day):
+            return None
+        clock = _times(ln)
+        if all(clock):
+            starts.append(clock)
+    return starts[0] if len(starts) == 1 else None
+
+
 def parse_jaha_detail(text, event):
     start_date = event.get("start_date")
     if not start_date:
@@ -486,10 +533,12 @@ def parse_jaha_detail(text, event):
         and start_date in _dates(line)
     ]
     seniorcare_session = _seniorcare_round_schedule(lines, event)
+    deep3_session = _deep3_session_time(lines, event)
     if (not schedule_matches
             and not _short_date_session_time(lines, start_date)
             and not _date_from_numbered_course(lines, event)
-            and seniorcare_session is None):
+            and seniorcare_session is None
+            and deep3_session is None):
         return {}
     out = {}
     deadline = _registration_deadline(lines, start_date)
@@ -526,6 +575,8 @@ def parse_jaha_detail(text, event):
         distinct.add(numbered_time)
     if seniorcare_session and all(seniorcare_session):
         distinct.add(seniorcare_session)
+    if deep3_session:
+        distinct.add(deep3_session)
     if len(distinct) == 1:
         t1, t2 = next(iter(distinct))
         if not event.get("start_time") or event["start_time"] == t1:
