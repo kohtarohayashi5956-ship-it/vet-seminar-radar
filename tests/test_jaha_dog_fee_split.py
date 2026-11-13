@@ -46,6 +46,42 @@ class DogLectureFeeTests(unittest.TestCase):
         out = parse_jaha_detail(SCHEDULE + SPLIT, event())
         self.assertEqual(out.get("price"), price)
 
+    def test_label_amounts_in_separate_text_cells(self):
+        fragmented = """受講料
+通常受講
+一般料金
+19,800円
+JAHA会員
+16,500円
+学生料金
+9,900円
+単発受講
+一般料金
+22,000円
+JAHA会員
+18,700円
+お申し込み
+"""
+        self.assertEqual(_dog_lecture_fee(fragmented.splitlines(), event()),
+                         _dog_lecture_fee(FEES.splitlines(), event()))
+
+    def test_missing_student_amount_does_not_infer(self):
+        fragmented = """受講料
+通常受講
+一般料金
+19,800円
+JAHA会員
+16,500円
+学生料金
+単発受講
+一般料金
+22,000円
+JAHA会員
+18,700円
+お申し込み
+"""
+        self.assertIsNone(_dog_lecture_fee(fragmented.splitlines(), event()))
+
     def test_lecture_three_uses_exact_official_page(self):
         self.assertEqual(_dog_lecture_fee(FEES.splitlines(),
                          event(3, URL3, "2026-11-14")),
