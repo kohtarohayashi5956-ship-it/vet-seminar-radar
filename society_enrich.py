@@ -10,6 +10,7 @@ import unicodedata
 from extract import html_to_text
 
 JSVC_COURSES_URL = "https://www.jsvc.jp/certification/session/records/session2026/"
+JSVC_REGISTRATION_URL = "https://www.jsvc.jp/meeting/regular/conf125/entry125/"
 EXPLICIT_COURSES = {
     "22": "感染性心内膜炎",
     "23": "犬のフィラリア症",
@@ -104,6 +105,53 @@ def parse_jsvc_meeting_venue(page_text, event):
     return result
 
 
+
+def parse_jsvc_registration(page_text, event):
+    """Extract 125th meeting registration facts without borrowing dinner deadlines."""
+    if (event.get("source_id") not in (None, "jsvc")
+            or event.get("start_date") != "2026-12-19"
+            or "第125回日本獣医循環器学会定例大会" not in event.get("title", "")):
+        return {}
+    lines = [unicodedata.normalize("NFKC", x).strip()
+             for x in page_text.splitlines() if x.strip()]
+    overview = next((i for i, x in enumerate(lines)
+                     if "1.参加申込概要" in re.sub(r"\s+", "", x)), None)
+    presenter = next((i for i, x in enumerate(lines)
+                      if "2.発表要領" in re.sub(r"\s+", "", x)), None)
+    if overview is None or presenter is None or presenter <= overview:
+        return {}
+    scope = lines[overview:presenter]
+    fee_start = next((i for i, x in enumerate(scope)
+                      if x.endswith("参加費")), None)
+    deadlines = next((i for i, x in enumerate(scope)
+                      if "各種締切日" in x), None)
+    if fee_start is None or deadlines is None or not fee_start < deadlines:
+        return {}
+    fees = scope[fee_start + 1:deadlines]
+    attendee = [x for x in fees if re.fullmatch(
+        r"会場参加\s*一般[:：]10,000円[、,]\s*学生[:：]3,000円[、,]\s*"
+        r"研修医\(フルタイム\)[:：]5,000円", x)]
+    on_demand = [x for x in fees if re.fullmatch(
+        r"オンデマンド配信の視聴費\s*\+10,000円", x)]
+    result = {}
+    if len(attendee) == len(on_demand) == 1 and not event.get("price"):
+        result["price"] = (
+            "会場参加：一般 10,000円／学生 3,000円／"
+            "研修医（フルタイム）5,000円／オンデマンド視聴追加 10,000円"
+        )
+    cutoff = next((i for i in range(deadlines + 1, len(scope))
+                   if "懇親会" in scope[i]), len(scope))
+    deadline_section = scope[deadlines + 1:cutoff]
+    abstract_rows = [x for x in deadline_section if re.fullmatch(
+        r"演題登録[:：]\s*10月18日(?:\s*\(日\))?", x)]
+    if len(abstract_rows) == 1 and not event.get("abstract_deadline"):
+        result["abstract_deadline"] = "2026-10-18"
+    if result and not event.get("detail_url"):
+        result["detail_url"] = JSVC_REGISTRATION_URL
+    return result
+
+
+
 def enrich_jsvc(events, fetcher, today, stats):
     candidates = [
         e for e in events if e.get("start_date") == "2026-12-19"
@@ -133,4 +181,21 @@ def enrich_jsvc(events, fetcher, today, stats):
                 ev.update(venue)
     stats["certification_programs_found"] = updated
     stats["venues_found"] = venues_found
+    if updated:
+        try:
+            registration_html = fetcher.get(JSVC_REGISTRATION_URL)
+            registration_text = html_to_text(registration_html, JSVC_REGISTRATION_URL)
+        except Exception:
+            stats["registration_detail_failed"] = 1
+        else:
+            stats["registration_details_scanned"] = 1
+            for ev in candidates:
+                facts = parse_jsvc_registration(registration_text, ev)
+                for field, value in facts.items():
+                    if not ev.get(field):
+                        ev[field] = value
+            stats["registration_prices_found"] = sum(
+                bool(e.get("price")) for e in candidates)
+            stats["registration_abstract_deadlines_found"] = sum(
+                bool(e.get("abstract_deadline")) for e in candidates)
     return events
