@@ -79,7 +79,8 @@ class CertificationProgramTests(unittest.TestCase):
         rows=[e()]
         stat={}
         enrich_jsvc(rows,f,NOW,stat)
-        self.assertEqual(f.calls,[JSVC_COURSES_URL,\n                                  "https://www.jsvc.jp/meeting/regular/conf125/entry125/"])
+        self.assertEqual(f.calls,[JSVC_COURSES_URL,
+                                  "https://www.jsvc.jp/meeting/regular/conf125/entry125/"])
         self.assertEqual(stat["certification_programs_found"],1)
         self.assertEqual(stat["venues_found"],1)
         self.assertEqual(rows[0]["venue"],"パピヨン24ガスホール(福岡)")
