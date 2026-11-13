@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-13T17:02:50+09:00",
+  "checked_at_jst": "2026-11-13T17:19:35+09:00",
   "mode": "free_rules",
   "total_events": 91,
   "data_quality": {
@@ -1184,8 +1184,8 @@
       "name": "学際企画",
       "pages": 2,
       "extracted": 27,
-      "added": 1,
-      "updated": 26,
+      "added": 0,
+      "updated": 27,
       "replaced_stale": 0,
       "details_scanned": 3,
       "details_accepted": 3,
