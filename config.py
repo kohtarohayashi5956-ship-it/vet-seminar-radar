@@ -56,7 +56,10 @@ SOURCES = [
         "id": "gakusai",
         "name": "学際企画",
         "kind": "html_page",
-        "urls": ["https://www.gakusai.co.jp/doubutu/seminar-comingup/"],
+        "urls": [
+            "https://www.gakusai.co.jp/doubutu/seminar-comingup/",
+            "https://www.gakusai.co.jp/vet/vet-seminar/35591/",
+        ],
         "enabled": True,
     },
     {
