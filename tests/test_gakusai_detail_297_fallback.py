@@ -38,6 +38,7 @@ class No297FallbackTests(unittest.TestCase):
         self.assertEqual(e["title"], "失敗しない腸管吻合 ミニドライラボ&セミナー")
         self.assertEqual(e["start_date"], "2027-01-24")
         self.assertEqual(e["format"], "現地")
+        self.assertEqual(e["topics"], ["外科", "消化器"])
         self.assertEqual(e["start_time"], "10:00")
         self.assertEqual(e["end_time"], "16:00")
         self.assertEqual(e["url"], DETAIL)
