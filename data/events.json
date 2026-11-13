@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13T14:40:50+09:00",
+ "updated": "2026-11-13T14:55:42+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -3216,6 +3216,39 @@
    "id": "09566c378b5c",
    "source": "JAVNU認定講習会",
    "source_id": "javnu_cert",
+   "last_seen": "2026-11-13",
+   "first_seen": "2026-11-13"
+  },
+  "405876bdf5ab": {
+   "title": "日本獣医皮膚科学会 認定医講習",
+   "start_date": "2026-03-21",
+   "end_date": "2027-03-20",
+   "start_time": null,
+   "end_time": null,
+   "format": "オンデマンド",
+   "venue": null,
+   "prefecture": null,
+   "audience": [
+    "獣医師"
+   ],
+   "topics": [],
+   "price": "年間一律 18,000円",
+   "is_free": null,
+   "status": null,
+   "deadline": null,
+   "organizer": "日本獣医皮膚科学会",
+   "speaker": null,
+   "url": "https://www.jsvd.jp/certifiedphysicians/certifiedphysician.html",
+   "detail_url": null,
+   "abstract_deadline": null,
+   "certification_note": "日本獣医皮膚科学会認定医講習。年間最大6講義の受講修了が可能。認定条件・修了手続きは公式案内で確認",
+   "certification_url": null,
+   "certification_program": null,
+   "url_is_page": true,
+   "verified": false,
+   "id": "405876bdf5ab",
+   "source": "JSVD認定医講習",
+   "source_id": "jsvd_cert",
    "last_seen": "2026-11-13",
    "first_seen": "2026-11-13"
   }

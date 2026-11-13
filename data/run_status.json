@@ -1,30 +1,30 @@
 {
-  "checked_at_jst": "2026-11-13T14:40:50+09:00",
+  "checked_at_jst": "2026-11-13T14:55:42+09:00",
   "mode": "free_rules",
-  "total_events": 89,
+  "total_events": 90,
   "data_quality": {
-    "total": 89,
+    "total": 90,
     "field_presence": {
-      "start_date": 88,
+      "start_date": 89,
       "start_time": 37,
       "venue": 27,
-      "price": 32,
+      "price": 33,
       "deadline": 23,
       "topics": 65,
-      "audience": 60,
-      "url": 89,
-      "format": 73
+      "audience": 61,
+      "url": 90,
+      "format": 74
     },
     "field_presence_pct": {
       "start_date": 98.9,
-      "start_time": 41.6,
-      "venue": 30.3,
-      "price": 36.0,
-      "deadline": 25.8,
-      "topics": 73.0,
-      "audience": 67.4,
+      "start_time": 41.1,
+      "venue": 30.0,
+      "price": 36.7,
+      "deadline": 25.6,
+      "topics": 72.2,
+      "audience": 67.8,
       "url": 100.0,
-      "format": 82.0
+      "format": 82.2
     },
     "note": "Field presence only; dates, prices and details are not independently verified."
   },
@@ -284,6 +284,32 @@
         "deadline": 50.0,
         "topics": 100.0,
         "audience": 0.0,
+        "url": 100.0,
+        "format": 100.0
+      },
+      "note": "Field presence only; dates, prices and details are not independently verified."
+    },
+    "jsvd_cert": {
+      "total": 1,
+      "field_presence": {
+        "start_date": 1,
+        "start_time": 0,
+        "venue": 0,
+        "price": 1,
+        "deadline": 0,
+        "topics": 0,
+        "audience": 1,
+        "url": 1,
+        "format": 1
+      },
+      "field_presence_pct": {
+        "start_date": 100.0,
+        "start_time": 0.0,
+        "venue": 0.0,
+        "price": 100.0,
+        "deadline": 0.0,
+        "topics": 0.0,
+        "audience": 100.0,
         "url": 100.0,
         "format": 100.0
       },
@@ -666,6 +692,33 @@
           "format": 0
         }
       },
+      "jsvd_cert": {
+        "total": 1,
+        "not_applicable": {
+          "start_time": 1
+        },
+        "missing": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 1,
+          "format": 0
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0,
+          "format": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 1,
+          "format": 0
+        }
+      },
       "jvcs": {
         "total": 2,
         "not_applicable": {
@@ -1001,7 +1054,7 @@
         ]
       }
     ],
-    "review_candidate_total": 72,
+    "review_candidate_total": 73,
     "note": "Missing means only that the published field is blank, not that the official source lacks the information. For on-demand events a blank start_time is considered not applicable. A detail link is recognized by URL pattern, not verified page content."
   },
   "source_results": [
@@ -1218,6 +1271,32 @@
       "extracted": 2,
       "added": 0,
       "updated": 2,
+      "replaced_stale": 0,
+      "details_scanned": 0,
+      "details_accepted": 0,
+      "deadlines_found": 0,
+      "prices_found": 0,
+      "handson_fees_found": 0,
+      "handson_applications_found": 0,
+      "handson_course_cards": 0,
+      "handson_fetch_failed": 0,
+      "fee_label_pages": 0,
+      "fee_amount_pages": 0,
+      "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
+      "times_found": 0,
+      "venues_found": 0,
+      "detail_fetch_failed": 0,
+      "status": "ok",
+      "note": ""
+    },
+    {
+      "id": "jsvd_cert",
+      "name": "JSVD認定医講習",
+      "pages": 1,
+      "extracted": 1,
+      "added": 1,
+      "updated": 0,
       "replaced_stale": 0,
       "details_scanned": 0,
       "details_accepted": 0,
