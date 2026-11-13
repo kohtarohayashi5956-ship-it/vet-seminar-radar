@@ -52,7 +52,7 @@ def apply_verified_corrections(store, path=PATH):
                 if field in proposed:
                     value = proposed[field]
                     if not isinstance(value, str) or not re.fullmatch(
-                            r"(?:[01]\\d|2[0-3]):[0-5]\\d", value):
+                            r"(?:[01]\d|2[0-3]):[0-5]\d", value):
                         raise ValueError("invalid time")
                     h, m = map(int, value.split(":"))
                     if h > 23 or m > 59:
