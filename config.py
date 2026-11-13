@@ -111,6 +111,14 @@ SOURCES = [
         "enabled": True,
     },
     {
+        "id": "jsvd_cert",
+        "name": "JSVD認定医講習",
+        "kind": "html_page",
+        "urls": ["https://www.jsvd.jp/certifiedphysicians/certifiedphysician.html"],
+        "enabled": True,
+    },
+
+    {
         "id": "jvcs",
         "name": "日本獣医がん学会",
         "kind": "society_meeting",
