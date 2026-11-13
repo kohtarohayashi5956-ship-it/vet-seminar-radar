@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-13T13:57:48+09:00",
+  "checked_at_jst": "2026-11-13T14:40:50+09:00",
   "mode": "free_rules",
   "total_events": 89,
   "data_quality": {
@@ -1190,8 +1190,8 @@
       "name": "JAVNU認定講習会",
       "pages": 1,
       "extracted": 6,
-      "added": 6,
-      "updated": 0,
+      "added": 0,
+      "updated": 6,
       "replaced_stale": 0,
       "details_scanned": 0,
       "details_accepted": 0,
