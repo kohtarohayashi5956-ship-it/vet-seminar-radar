@@ -621,6 +621,26 @@ def _deep3_fee_deadline(lines, event):
     return out
 
 
+def _puppy_basic_delivery(lines, event):
+    """Identify explicitly recorded puppy basic sessions, not live clock times."""
+    u = _url(event)
+    if not u or urlsplit(u).path != "/training/seminar/puppy/basic/":
+        return None
+    if not re.search(r"第\s*([1-6])\s*回", unicodedata.normalize(
+            "NFKC", event.get("title") or "")):
+        return None
+    # A year-anchored, exactly matching course row is mandatory.
+    if not _date_from_numbered_course(lines, event):
+        return None
+    statement = re.compile(
+        r"第\s*[1１]\s*回\s*[～〜~－–―-]\s*第\s*[6６]\s*回"
+        r".{0,15}録画配信"
+    )
+    if sum(bool(statement.search(line)) for line in lines) != 1:
+        return None
+    return "オンデマンド"
+
+
 def parse_jaha_detail(text, event):
     start_date = event.get("start_date")
     if not start_date:
@@ -644,6 +664,9 @@ def parse_jaha_detail(text, event):
             and deep3_session is None):
         return {}
     out = _deep3_fee_deadline(lines, event)
+    delivery = _puppy_basic_delivery(lines, event)
+    if delivery and not event.get("format"):
+        out["format"] = delivery
     deadline = _registration_deadline(lines, start_date)
     if not deadline:
         deadline = _seniorcare_single_session_deadline(lines, event)
