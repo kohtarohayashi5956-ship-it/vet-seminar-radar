@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-13T16:32:32+09:00",
+  "checked_at_jst": "2026-11-13T16:52:06+09:00",
   "mode": "free_rules",
   "total_events": 90,
   "data_quality": {
@@ -8,7 +8,7 @@
       "start_date": 89,
       "start_time": 37,
       "venue": 27,
-      "price": 34,
+      "price": 37,
       "deadline": 23,
       "topics": 65,
       "audience": 61,
@@ -19,7 +19,7 @@
       "start_date": 98.9,
       "start_time": 41.1,
       "venue": 30.0,
-      "price": 37.8,
+      "price": 41.1,
       "deadline": 25.6,
       "topics": 72.2,
       "audience": 67.8,
@@ -87,7 +87,7 @@
         "start_date": 20,
         "start_time": 7,
         "venue": 0,
-        "price": 7,
+        "price": 10,
         "deadline": 9,
         "topics": 13,
         "audience": 20,
@@ -98,7 +98,7 @@
         "start_date": 100.0,
         "start_time": 35.0,
         "venue": 0.0,
-        "price": 35.0,
+        "price": 50.0,
         "deadline": 45.0,
         "topics": 65.0,
         "audience": 100.0,
@@ -484,14 +484,14 @@
         "missing": {
           "start_date": 0,
           "start_time": 10,
-          "price": 13,
+          "price": 10,
           "deadline": 11,
           "format": 9
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 1,
-          "price": 4,
+          "price": 1,
           "deadline": 2,
           "format": 1
         },
@@ -857,26 +857,7 @@
         "start_date": "2026-11-14",
         "link_type": "individual_detail",
         "missing": [
-          "price",
           "deadline"
-        ]
-      },
-      {
-        "id": "a5f65a96aaa6",
-        "source_id": "jaha",
-        "start_date": "2026-12-05",
-        "link_type": "individual_detail",
-        "missing": [
-          "price"
-        ]
-      },
-      {
-        "id": "111a60a65ee8",
-        "source_id": "jaha",
-        "start_date": "2026-12-12",
-        "link_type": "individual_detail",
-        "missing": [
-          "price"
         ]
       },
       {
@@ -1052,9 +1033,33 @@
           "deadline",
           "format"
         ]
+      },
+      {
+        "id": "946072618eaa",
+        "source_id": "gakusai",
+        "start_date": "2027-11-07",
+        "link_type": "listing_or_other",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline",
+          "format"
+        ]
+      },
+      {
+        "id": "b229ba5201a8",
+        "source_id": "gakusai",
+        "start_date": "2027-11-21",
+        "link_type": "listing_or_other",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline",
+          "format"
+        ]
       }
     ],
-    "review_candidate_total": 73,
+    "review_candidate_total": 71,
     "note": "Missing means only that the published field is blank, not that the official source lacks the information. For on-demand events a blank start_time is considered not applicable. A detail link is recognized by URL pattern, not verified page content."
   },
   "source_results": [
@@ -1069,7 +1074,7 @@
       "details_scanned": 5,
       "details_accepted": 10,
       "deadlines_found": 9,
-      "prices_found": 7,
+      "prices_found": 10,
       "certification_programs_found": 0,
       "registration_details_scanned": 0,
       "registration_prices_found": 0,
@@ -1078,6 +1083,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 4,
       "fee_amount_pages": 5,
@@ -1088,6 +1094,7 @@
           "fee_label": true,
           "yen_amount": true,
           "fee_section": false,
+          "dog_lecture_fee_parsed": true,
           "corroborated_dates": [
             "2026-11-14"
           ]
@@ -1097,6 +1104,7 @@
           "fee_label": true,
           "yen_amount": true,
           "fee_section": true,
+          "dog_lecture_fee_parsed": false,
           "corroborated_dates": [
             "2026-12-01",
             "2027-01-01",
@@ -1108,6 +1116,7 @@
           "fee_label": true,
           "yen_amount": true,
           "fee_section": false,
+          "dog_lecture_fee_parsed": true,
           "corroborated_dates": [
             "2026-12-05",
             "2026-12-12"
@@ -1118,6 +1127,7 @@
           "fee_label": false,
           "yen_amount": true,
           "fee_section": false,
+          "dog_lecture_fee_parsed": false,
           "corroborated_dates": [
             "2026-12-07",
             "2027-01-16"
@@ -1128,6 +1138,7 @@
           "fee_label": true,
           "yen_amount": true,
           "fee_section": true,
+          "dog_lecture_fee_parsed": false,
           "corroborated_dates": [
             "2026-12-09"
           ]
@@ -1159,6 +1170,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1190,6 +1202,7 @@
       "handson_fees_found": 9,
       "handson_applications_found": 9,
       "handson_course_cards": 13,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1221,6 +1234,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1252,6 +1266,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1283,6 +1298,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1314,6 +1330,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1345,6 +1362,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1376,6 +1394,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1407,6 +1426,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1438,6 +1458,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1469,6 +1490,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1500,6 +1522,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1531,6 +1554,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
@@ -1562,6 +1586,7 @@
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
       "handson_fetch_failed": 0,
       "fee_label_pages": 0,
       "fee_amount_pages": 0,
