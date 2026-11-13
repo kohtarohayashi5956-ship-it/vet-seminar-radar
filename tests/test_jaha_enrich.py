@@ -604,6 +604,24 @@ class TestJahaDeadlines(unittest.TestCase):
               "お振込期限：2026年11月3日")
         self.assertEqual(parse_jaha_detail(text,event()),{})
 
+    def test_official_detail_url_used_when_primary_url_is_calendar(self):
+        row = event()
+        row["url"] = "https://www.jaha.or.jp/seminar-calendar/top/"
+        row["detail_url"] = URL
+        f = Fake()
+        stats = {}
+        enrich_jaha([row], f, DATE, stats)
+        self.assertEqual(f.calls, [URL])
+        self.assertEqual(row["start_time"], "14:00")
+        self.assertEqual(row["deadline"], "2026-11-04")
+
+    def test_untrusted_detail_url_falls_back_to_valid_primary(self):
+        row = event()
+        row["detail_url"] = "https://evil.example/owners/dog-training/kougi3ol/"
+        self.assertEqual(_url(row), URL)
+        row["url"] = "https://www.jaha.or.jp/seminar-calendar/top/"
+        self.assertIsNone(_url(row))
+
     def test_one_fetch_per_url(self):
         f=Fake()
         rows=[event(),event()]
