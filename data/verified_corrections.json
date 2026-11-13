@@ -8,6 +8,26 @@
       "deadline": "2026-11-11",
       "evidence_url": "https://vets-tech.jp/2026/10/27/vets-tech-web-seminar-vol83/116565/",
       "reason": "Official seminar notice specifies same-day application deadline at 17:30"
+    },
+    {
+      "id": "89d5e9b970d0",
+      "source_id": "jaha",
+      "start_date": "2026-12-07",
+      "url": "https://www.jaha.or.jp/training/seminar/vnseries/aigan26deep3/",
+      "start_time": "13:00",
+      "end_time": "15:00",
+      "evidence_url": "https://www.jaha.or.jp/training/seminar/vnseries/aigan26deep3/",
+      "reason": "Official 2026 JAHA VN deep-dive three-session page explicitly prints matching session date and 13:00–15:00"
+    },
+    {
+      "id": "e5d868cc3828",
+      "source_id": "jaha",
+      "start_date": "2027-01-16",
+      "url": "https://www.jaha.or.jp/training/seminar/vnseries/aigan26deep3/",
+      "start_time": "13:00",
+      "end_time": "15:00",
+      "evidence_url": "https://www.jaha.or.jp/training/seminar/vnseries/aigan26deep3/",
+      "reason": "Official 2026 JAHA VN deep-dive three-session page explicitly prints matching session date and 13:00–15:00"
     }
   ]
 }
