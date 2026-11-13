@@ -94,6 +94,27 @@ class TestGakusaiEnrichment(unittest.TestCase):
         self.assertNotIn("start_time", parsed)
         self.assertEqual(parsed["end_time"], "16:00")
 
+    def test_listing_with_official_detail_url_is_enriched(self):
+        item = ev(url="https://www.gakusai.co.jp/doubutu/seminar-comingup/")
+        item["detail_url"] = URL
+        fetcher = FakeFetcher(PAGE)
+        enrich_gakusai([item], fetcher, datetime.date(2026, 11, 6), {})
+        self.assertEqual(fetcher.calls, [URL])
+        self.assertEqual(item["start_time"], "10:00")
+        self.assertIn("9,000円", item["price"])
+
+    def test_booking_and_foreign_detail_urls_are_not_fetched(self):
+        from gakusai_enrich import detail_url
+        item = ev(url="https://www.gakusai.co.jp/doubutu/seminar-comingup/")
+        for link in (
+            "https://seminar.gakusai.co.jp/reservations/add?event_id=3151",
+            "https://evil.example/vet/vet-seminar/35589/",
+            "http://www.gakusai.co.jp/vet/vet-seminar/35589/",
+            "https://evil.example@attacker.example/vet/vet-seminar/35589/",
+        ):
+            item["detail_url"] = link
+            self.assertIsNone(detail_url(item))
+
     def test_only_detail_link_and_single_fetch(self):
         e1,e2=ev(),ev()
         invalid=ev(url="https://www.gakusai.co.jp/doubutu/seminar-comingup/")
