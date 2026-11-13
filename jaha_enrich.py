@@ -544,6 +544,83 @@ def _deep3_session_time(lines, event):
     return next(iter(candidates)) if len(candidates) == 1 else None
 
 
+def _deep3_fee_deadline(lines, event):
+    """Parse the exact JAHA three-part VN course's own fee and signup block.
+
+    The fee is for the complete three-session set, not a per-session charge.
+    This dedicated parser is never applied to another JAHA series.
+    """
+    u = _url(event)
+    if not u or urlsplit(u).path != "/training/seminar/vnseries/aigan26deep3/":
+        return {}
+    start = event.get("start_date")
+    if not start:
+        return {}
+    # Require this exact event date in one of the year-labelled programme
+    # rows, excluding publication, cancellation, and registration dates.
+    matching = [
+        line for line in lines
+        if re.search(r"^第\s*[1-3]\s*回\s*[：:]", line)
+        and _dates(line) == [start]
+        and not (REGISTRATION.match(line) or EXCLUDE.search(line))
+    ]
+    if len(matching) != 1:
+        return {}
+    if not any("全3回" in line for line in lines):
+        return {}
+    out = {}
+    heads = [n for n, line in enumerate(lines)
+             if re.search(r"申込区分および受講料", line)]
+    if len(heads) == 1:
+        block = []
+        for line in lines[heads[0] + 1:heads[0] + 22]:
+            if re.search(r"申込受付期間|申し込み受付期間|申込区分および受講料", line):
+                break
+            block.append(line)
+        text = " ".join(block)
+        amounts = [
+            match.group(0).replace(" ", "").replace("，", ",")
+            for match in re.finditer(r"(?<!\d)\d[\d,]*\s*円", text)
+        ]
+        # Each published table column is explicitly labelled and the
+        # three prices are strictly scoped to this course's fee block.
+        if (all(label in text for label in
+                ("JAHA会員料金", "会員外料金", "団体視聴"))
+                and len(amounts) == 3):
+            out["price"] = (
+                "全3回一括：JAHA会員 " + amounts[0] +
+                "／会員外 " + amounts[1] +
+                "／JAHA正会員病院団体視聴 " + amounts[2]
+            )
+    signup = [
+        line for line in lines
+        if re.match(r"^申し込み受付期間\s*[：:]", line)
+    ]
+    if len(signup) == 1:
+        line = signup[0]
+        matched = re.search(
+            r"(20\d{2})年\s*(\d{1,2})月\s*(\d{1,2})日"
+            r".{0,45}?[～〜~－–―-]\s*(\d{1,2})月\s*(\d{1,2})日",
+            line,
+        )
+        if matched:
+            year, first_month, first_day, last_month, last_day = (
+                int(x) for x in matched.groups()
+            )
+            try:
+                first = datetime.date(year, first_month, first_day)
+                # Do not infer a cross-year deadline: the exact course
+                # publishes both signup dates in autumn of 2026.
+                last = datetime.date(year, last_month, last_day)
+                course = datetime.date.fromisoformat(start)
+            except ValueError:
+                pass
+            else:
+                if first <= last <= course:
+                    out["deadline"] = last.isoformat()
+    return out
+
+
 def parse_jaha_detail(text, event):
     start_date = event.get("start_date")
     if not start_date:
@@ -566,13 +643,13 @@ def parse_jaha_detail(text, event):
             and seniorcare_session is None
             and deep3_session is None):
         return {}
-    out = {}
+    out = _deep3_fee_deadline(lines, event)
     deadline = _registration_deadline(lines, start_date)
     if not deadline:
         deadline = _seniorcare_single_session_deadline(lines, event)
-    if deadline and not event.get("deadline"):
+    if deadline and not event.get("deadline") and not out.get("deadline"):
         out["deadline"] = deadline
-    if not event.get("price"):
+    if not event.get("price") and not out.get("price"):
         price = _dog_lecture_fee(lines, event)
         is_free = None
         if not price:
