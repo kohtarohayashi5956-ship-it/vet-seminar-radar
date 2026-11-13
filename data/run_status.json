@@ -1,30 +1,30 @@
 {
-  "checked_at_jst": "2026-11-13T16:52:06+09:00",
+  "checked_at_jst": "2026-11-13T17:02:50+09:00",
   "mode": "free_rules",
-  "total_events": 90,
+  "total_events": 91,
   "data_quality": {
-    "total": 90,
+    "total": 91,
     "field_presence": {
-      "start_date": 89,
-      "start_time": 37,
-      "venue": 27,
-      "price": 37,
+      "start_date": 90,
+      "start_time": 38,
+      "venue": 28,
+      "price": 38,
       "deadline": 23,
       "topics": 65,
-      "audience": 61,
-      "url": 90,
-      "format": 74
+      "audience": 62,
+      "url": 91,
+      "format": 75
     },
     "field_presence_pct": {
       "start_date": 98.9,
-      "start_time": 41.1,
-      "venue": 30.0,
-      "price": 41.1,
-      "deadline": 25.6,
-      "topics": 72.2,
-      "audience": 67.8,
+      "start_time": 41.8,
+      "venue": 30.8,
+      "price": 41.8,
+      "deadline": 25.3,
+      "topics": 71.4,
+      "audience": 68.1,
       "url": 100.0,
-      "format": 82.2
+      "format": 82.4
     },
     "note": "Field presence only; dates, prices and details are not independently verified."
   },
@@ -56,28 +56,28 @@
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
     "gakusai": {
-      "total": 26,
+      "total": 27,
       "field_presence": {
-        "start_date": 26,
-        "start_time": 11,
-        "venue": 4,
-        "price": 11,
+        "start_date": 27,
+        "start_time": 12,
+        "venue": 5,
+        "price": 12,
         "deadline": 0,
         "topics": 24,
-        "audience": 11,
-        "url": 26,
-        "format": 19
+        "audience": 12,
+        "url": 27,
+        "format": 20
       },
       "field_presence_pct": {
         "start_date": 100.0,
-        "start_time": 42.3,
-        "venue": 15.4,
-        "price": 42.3,
+        "start_time": 44.4,
+        "venue": 18.5,
+        "price": 44.4,
         "deadline": 0.0,
-        "topics": 92.3,
-        "audience": 42.3,
+        "topics": 88.9,
+        "audience": 44.4,
         "url": 100.0,
-        "format": 73.1
+        "format": 74.1
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -450,7 +450,7 @@
         }
       },
       "gakusai": {
-        "total": 26,
+        "total": 27,
         "not_applicable": {
           "start_time": 0
         },
@@ -458,14 +458,14 @@
           "start_date": 0,
           "start_time": 15,
           "price": 15,
-          "deadline": 26,
+          "deadline": 27,
           "format": 7
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 2,
+          "deadline": 3,
           "format": 0
         },
         "missing_without_confirmed_detail_link": {
@@ -861,6 +861,15 @@
         ]
       },
       {
+        "id": "2c104e8a4e80",
+        "source_id": "gakusai",
+        "start_date": "2027-01-24",
+        "link_type": "individual_detail",
+        "missing": [
+          "deadline"
+        ]
+      },
+      {
         "id": "dc4573f8a1dd",
         "source_id": "gakusai",
         "start_date": "2027-03-07",
@@ -1045,21 +1054,9 @@
           "deadline",
           "format"
         ]
-      },
-      {
-        "id": "b229ba5201a8",
-        "source_id": "gakusai",
-        "start_date": "2027-11-21",
-        "link_type": "listing_or_other",
-        "missing": [
-          "start_time",
-          "price",
-          "deadline",
-          "format"
-        ]
       }
     ],
-    "review_candidate_total": 71,
+    "review_candidate_total": 72,
     "note": "Missing means only that the published field is blank, not that the official source lacks the information. For on-demand events a blank start_time is considered not applicable. A detail link is recognized by URL pattern, not verified page content."
   },
   "source_results": [
@@ -1185,15 +1182,15 @@
     {
       "id": "gakusai",
       "name": "学際企画",
-      "pages": 1,
-      "extracted": 26,
-      "added": 0,
+      "pages": 2,
+      "extracted": 27,
+      "added": 1,
       "updated": 26,
       "replaced_stale": 0,
-      "details_scanned": 2,
-      "details_accepted": 2,
+      "details_scanned": 3,
+      "details_accepted": 3,
       "deadlines_found": 0,
-      "prices_found": 2,
+      "prices_found": 3,
       "certification_programs_found": 0,
       "registration_details_scanned": 0,
       "registration_prices_found": 0,
