@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-13T17:19:35+09:00",
+  "checked_at_jst": "2026-11-13T17:28:12+09:00",
   "mode": "free_rules",
   "total_events": 91,
   "data_quality": {
@@ -10,7 +10,7 @@
       "venue": 28,
       "price": 38,
       "deadline": 23,
-      "topics": 65,
+      "topics": 66,
       "audience": 62,
       "url": 91,
       "format": 75
@@ -21,7 +21,7 @@
       "venue": 30.8,
       "price": 41.8,
       "deadline": 25.3,
-      "topics": 71.4,
+      "topics": 72.5,
       "audience": 68.1,
       "url": 100.0,
       "format": 82.4
@@ -63,7 +63,7 @@
         "venue": 5,
         "price": 12,
         "deadline": 0,
-        "topics": 24,
+        "topics": 25,
         "audience": 12,
         "url": 27,
         "format": 20
@@ -74,7 +74,7 @@
         "venue": 18.5,
         "price": 44.4,
         "deadline": 0.0,
-        "topics": 88.9,
+        "topics": 92.6,
         "audience": 44.4,
         "url": 100.0,
         "format": 74.1
