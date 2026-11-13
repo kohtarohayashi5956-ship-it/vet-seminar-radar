@@ -41,6 +41,16 @@ class QualityTests(unittest.TestCase):
         self.assertTrue(all(x == 0 for x in result["field_presence"].values()))
         self.assertTrue(all(x == 0.0 for x in result["field_presence_pct"].values()))
 
+    def test_official_detail_url_is_detected_without_guessing_from_registration_link(self):
+        from quality import _review_link_type
+        event = {"source_id": "gakusai", "url": "https://www.gakusai.co.jp/doubutu/seminar-comingup/",
+                 "detail_url": "https://www.gakusai.co.jp/vet/vet-seminar/35591/"}
+        self.assertEqual(_review_link_type(event), "individual_detail")
+        event["detail_url"] = "https://seminar.gakusai.co.jp/reservations/add?event_id=3151"
+        self.assertEqual(_review_link_type(event), "listing_or_other")
+        event["detail_url"] = "https://evil.example/vet/vet-seminar/35591/"
+        self.assertEqual(_review_link_type(event), "listing_or_other")
+
 
 if __name__ == "__main__":
     unittest.main()
