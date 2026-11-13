@@ -96,7 +96,18 @@ def main(argv):
 
     if args.offline:
         store, events = build_events(today)
-        render.write_html(events, args.out, sources_summary=summarize(events), run_status=read_status())
+        # Verified corrections can fill fields after the last network crawl.
+        # Preserve the crawl timestamp but refresh all derived diagnostics
+        # so public status and the regenerated HTML describe the same events.
+        status = read_status()
+        if status:
+            status["total_events"] = len(events)
+            status["data_quality"] = summarize_quality(events)
+            status["quality_by_source"] = summarize_quality_by_source(events)
+            status["review_diagnostics"] = summarize_review_candidates(events)
+            if os.path.abspath(args.out) == os.path.abspath("index.html"):
+                save_status(status)
+        render.write_html(events, args.out, sources_summary=summarize(events), run_status=status)
         log(f"{len(events)}件から {args.out} を作り直しました。")
         if args.open:
             webbrowser.open("file://" + os.path.abspath(args.out))
