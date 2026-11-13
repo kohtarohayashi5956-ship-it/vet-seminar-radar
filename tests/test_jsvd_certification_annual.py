@@ -36,7 +36,7 @@ class DermatologyCertificationTests(unittest.TestCase):
         self.assertIsNone(e["start_time"])
         self.assertIsNone(e["end_time"])
         self.assertTrue(e["certification_note"])
-        self.assertTrue(e["verified"])
+        # The source is a general certification policy page, not an\n        # event-specific application page. Keep the review flag.\n        self.assertFalse(e["verified"])
 
     def test_year_rollover_before_and_after_march_21(self):
         a = extract(date=datetime.date(2027, 3, 20))[0]
