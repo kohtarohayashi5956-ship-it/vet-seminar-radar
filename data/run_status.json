@@ -1,27 +1,27 @@
 {
-  "checked_at_jst": "2026-11-12T11:42:46+09:00",
+  "checked_at_jst": "2026-11-13T10:05:52+09:00",
   "mode": "free_rules",
-  "total_events": 81,
+  "total_events": 83,
   "data_quality": {
-    "total": 81,
+    "total": 83,
     "field_presence": {
-      "start_date": 80,
-      "start_time": 36,
-      "venue": 26,
-      "price": 31,
-      "deadline": 22,
-      "topics": 63,
-      "audience": 52,
-      "url": 81
+      "start_date": 82,
+      "start_time": 35,
+      "venue": 27,
+      "price": 30,
+      "deadline": 21,
+      "topics": 65,
+      "audience": 54,
+      "url": 83
     },
     "field_presence_pct": {
       "start_date": 98.8,
-      "start_time": 44.4,
-      "venue": 32.1,
-      "price": 38.3,
-      "deadline": 27.2,
-      "topics": 77.8,
-      "audience": 64.2,
+      "start_time": 42.2,
+      "venue": 32.5,
+      "price": 36.1,
+      "deadline": 25.3,
+      "topics": 78.3,
+      "audience": 65.1,
       "url": 100.0
     },
     "note": "Field presence only; dates, prices and details are not independently verified."
@@ -76,24 +76,24 @@
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
     "jaha": {
-      "total": 19,
+      "total": 20,
       "field_presence": {
-        "start_date": 19,
-        "start_time": 6,
+        "start_date": 20,
+        "start_time": 5,
         "venue": 0,
-        "price": 6,
-        "deadline": 8,
-        "topics": 11,
-        "audience": 19,
-        "url": 19
+        "price": 5,
+        "deadline": 7,
+        "topics": 13,
+        "audience": 20,
+        "url": 20
       },
       "field_presence_pct": {
         "start_date": 100.0,
-        "start_time": 31.6,
+        "start_time": 25.0,
         "venue": 0.0,
-        "price": 31.6,
-        "deadline": 42.1,
-        "topics": 57.9,
+        "price": 25.0,
+        "deadline": 35.0,
+        "topics": 65.0,
         "audience": 100.0,
         "url": 100.0
       },
@@ -172,24 +172,24 @@
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
     "jsvas": {
-      "total": 3,
+      "total": 4,
       "field_presence": {
-        "start_date": 3,
+        "start_date": 4,
         "start_time": 2,
-        "venue": 3,
+        "venue": 4,
         "price": 2,
         "deadline": 2,
         "topics": 2,
-        "audience": 3,
-        "url": 3
+        "audience": 4,
+        "url": 4
       },
       "field_presence_pct": {
         "start_date": 100.0,
-        "start_time": 66.7,
+        "start_time": 50.0,
         "venue": 100.0,
-        "price": 66.7,
-        "deadline": 66.7,
-        "topics": 66.7,
+        "price": 50.0,
+        "deadline": 50.0,
+        "topics": 50.0,
         "audience": 100.0,
         "url": 100.0
       },
@@ -340,19 +340,505 @@
       "note": "Field presence only; dates, prices and details are not independently verified."
     }
   },
+  "review_diagnostics": {
+    "source_summary": {
+      "dourinken": {
+        "total": 1,
+        "missing": {
+          "start_date": 0,
+          "start_time": 1,
+          "price": 1,
+          "deadline": 1
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 1,
+          "price": 1,
+          "deadline": 1
+        }
+      },
+      "gakusai": {
+        "total": 26,
+        "missing": {
+          "start_date": 0,
+          "start_time": 15,
+          "price": 15,
+          "deadline": 26
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 2
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 15,
+          "price": 15,
+          "deadline": 24
+        }
+      },
+      "jaha": {
+        "total": 20,
+        "missing": {
+          "start_date": 0,
+          "start_time": 15,
+          "price": 15,
+          "deadline": 13
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 6,
+          "price": 6,
+          "deadline": 4
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 9,
+          "price": 9,
+          "deadline": 9
+        }
+      },
+      "javnu": {
+        "total": 1,
+        "missing": {
+          "start_date": 0,
+          "start_time": 1,
+          "price": 1,
+          "deadline": 1
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 1,
+          "price": 1,
+          "deadline": 1
+        }
+      },
+      "jbvp": {
+        "total": 8,
+        "missing": {
+          "start_date": 0,
+          "start_time": 7,
+          "price": 8,
+          "deadline": 8
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 7,
+          "price": 8,
+          "deadline": 8
+        }
+      },
+      "jcvim": {
+        "total": 1,
+        "missing": {
+          "start_date": 0,
+          "start_time": 1,
+          "price": 1,
+          "deadline": 1
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 1,
+          "price": 1,
+          "deadline": 1
+        }
+      },
+      "jsvas": {
+        "total": 4,
+        "missing": {
+          "start_date": 0,
+          "start_time": 2,
+          "price": 2,
+          "deadline": 2
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 2,
+          "price": 2,
+          "deadline": 2
+        }
+      },
+      "jsvc": {
+        "total": 1,
+        "missing": {
+          "start_date": 0,
+          "start_time": 1,
+          "price": 1,
+          "deadline": 1
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 1,
+          "price": 1,
+          "deadline": 1
+        }
+      },
+      "jsvd": {
+        "total": 2,
+        "missing": {
+          "start_date": 0,
+          "start_time": 2,
+          "price": 2,
+          "deadline": 1
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 2,
+          "price": 2,
+          "deadline": 1
+        }
+      },
+      "jvcs": {
+        "total": 2,
+        "missing": {
+          "start_date": 0,
+          "start_time": 2,
+          "price": 2,
+          "deadline": 2
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 2,
+          "price": 2,
+          "deadline": 2
+        }
+      },
+      "jvna": {
+        "total": 1,
+        "missing": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        }
+      },
+      "lifetail": {
+        "total": 12,
+        "missing": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 4,
+          "deadline": 4
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 4,
+          "deadline": 4
+        }
+      },
+      "vetstech": {
+        "total": 4,
+        "missing": {
+          "start_date": 1,
+          "start_time": 1,
+          "price": 1,
+          "deadline": 2
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 1,
+          "start_time": 1,
+          "price": 1,
+          "deadline": 2
+        }
+      }
+    },
+    "priority_review": [
+      {
+        "id": "0ef9babbb51e",
+        "source_id": "vetstech",
+        "start_date": null,
+        "link_type": "unclassified",
+        "missing": [
+          "start_date",
+          "start_time",
+          "deadline"
+        ]
+      },
+      {
+        "id": "886693eafdf1",
+        "source_id": "jaha",
+        "start_date": "2026-11-11",
+        "link_type": "individual_detail",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "89d5e9b970d0",
+        "source_id": "jaha",
+        "start_date": "2026-12-07",
+        "link_type": "individual_detail",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "e5d868cc3828",
+        "source_id": "jaha",
+        "start_date": "2027-01-16",
+        "link_type": "individual_detail",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "47c28952de1e",
+        "source_id": "jaha",
+        "start_date": "2026-11-14",
+        "link_type": "individual_detail",
+        "missing": [
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "2ba4f42706ff",
+        "source_id": "jaha",
+        "start_date": "2026-12-01",
+        "link_type": "individual_detail",
+        "missing": [
+          "start_time"
+        ]
+      },
+      {
+        "id": "a5f65a96aaa6",
+        "source_id": "jaha",
+        "start_date": "2026-12-05",
+        "link_type": "individual_detail",
+        "missing": [
+          "price"
+        ]
+      },
+      {
+        "id": "111a60a65ee8",
+        "source_id": "jaha",
+        "start_date": "2026-12-12",
+        "link_type": "individual_detail",
+        "missing": [
+          "price"
+        ]
+      },
+      {
+        "id": "79362b50b816",
+        "source_id": "jaha",
+        "start_date": "2027-01-01",
+        "link_type": "individual_detail",
+        "missing": [
+          "start_time"
+        ]
+      },
+      {
+        "id": "80c859eeab51",
+        "source_id": "jaha",
+        "start_date": "2027-02-01",
+        "link_type": "individual_detail",
+        "missing": [
+          "start_time"
+        ]
+      },
+      {
+        "id": "dc4573f8a1dd",
+        "source_id": "gakusai",
+        "start_date": "2027-03-07",
+        "link_type": "individual_detail",
+        "missing": [
+          "deadline"
+        ]
+      },
+      {
+        "id": "5eccc7a69c33",
+        "source_id": "gakusai",
+        "start_date": "2027-03-28",
+        "link_type": "individual_detail",
+        "missing": [
+          "deadline"
+        ]
+      },
+      {
+        "id": "fecc161b5e56",
+        "source_id": "jaha",
+        "start_date": "2026-11-15",
+        "link_type": "unclassified",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "6e88c4d3307b",
+        "source_id": "jaha",
+        "start_date": "2026-11-25",
+        "link_type": "listing_or_other",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "4b7a76ea0d37",
+        "source_id": "jaha",
+        "start_date": "2026-12-06",
+        "link_type": "unclassified",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "eecda9cd1205",
+        "source_id": "jaha",
+        "start_date": "2026-12-13",
+        "link_type": "unclassified",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "74b9e9e9573b",
+        "source_id": "jaha",
+        "start_date": "2026-12-14",
+        "link_type": "listing_or_other",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "5ef2261aea8e",
+        "source_id": "jsvas",
+        "start_date": "2026-12-18",
+        "link_type": "unclassified",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "ac8b4a8d5899",
+        "source_id": "jsvc",
+        "start_date": "2026-12-19",
+        "link_type": "unclassified",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "b083c1e5643a",
+        "source_id": "jaha",
+        "start_date": "2027-01-10",
+        "link_type": "unclassified",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline"
+        ]
+      }
+    ],
+    "review_candidate_total": 71,
+    "note": "Missing means only that the published field is blank, not that the official source lacks the information. A detail link is recognized by URL pattern and is not a content verification."
+  },
   "source_results": [
     {
       "id": "jaha",
       "name": "JAHA",
       "pages": 1,
-      "extracted": 19,
-      "added": 0,
-      "updated": 19,
-      "replaced_stale": 0,
+      "extracted": 20,
+      "added": 2,
+      "updated": 18,
+      "replaced_stale": 1,
       "details_scanned": 5,
-      "details_accepted": 9,
-      "deadlines_found": 8,
-      "prices_found": 6,
+      "details_accepted": 8,
+      "deadlines_found": 7,
+      "prices_found": 5,
       "handson_fees_found": 0,
       "handson_applications_found": 0,
       "handson_course_cards": 0,
@@ -361,15 +847,6 @@
       "fee_amount_pages": 5,
       "fee_parsed_pages": 2,
       "fee_detail_checks": [
-        {
-          "path": "/training/seminar/seniorcare_ol/",
-          "fee_label": true,
-          "yen_amount": true,
-          "fee_section": true,
-          "corroborated_dates": [
-            "2026-12-09"
-          ]
-        },
         {
           "path": "/owners/dog-training/kougi3ol/",
           "fee_label": true,
@@ -406,9 +883,18 @@
           "yen_amount": true,
           "fee_section": false,
           "corroborated_dates": []
+        },
+        {
+          "path": "/training/seminar/seniorcare_ol/",
+          "fee_label": true,
+          "yen_amount": true,
+          "fee_section": true,
+          "corroborated_dates": [
+            "2026-12-09"
+          ]
         }
       ],
-      "times_found": 6,
+      "times_found": 5,
       "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
@@ -419,9 +905,9 @@
       "name": "Life&Tail",
       "pages": 1,
       "extracted": 17,
-      "added": 1,
-      "updated": 16,
-      "replaced_stale": 2,
+      "added": 3,
+      "updated": 14,
+      "replaced_stale": 3,
       "details_scanned": 8,
       "details_accepted": 11,
       "deadlines_found": 11,
@@ -600,11 +1086,11 @@
       "id": "jsvas",
       "name": "日本獣医麻酔外科学会",
       "pages": 2,
-      "extracted": 3,
-      "added": 0,
+      "extracted": 4,
+      "added": 1,
       "updated": 3,
       "replaced_stale": 0,
-      "details_scanned": 3,
+      "details_scanned": 4,
       "details_accepted": 3,
       "deadlines_found": 2,
       "prices_found": 2,
