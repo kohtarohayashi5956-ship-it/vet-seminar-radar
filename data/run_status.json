@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-13T12:18:22+09:00",
+  "checked_at_jst": "2026-11-13T12:34:11+09:00",
   "mode": "free_rules",
   "total_events": 83,
   "data_quality": {
@@ -12,7 +12,8 @@
       "deadline": 23,
       "topics": 65,
       "audience": 54,
-      "url": 83
+      "url": 83,
+      "format": 62
     },
     "field_presence_pct": {
       "start_date": 98.8,
@@ -22,7 +23,8 @@
       "deadline": 27.7,
       "topics": 78.3,
       "audience": 65.1,
-      "url": 100.0
+      "url": 100.0,
+      "format": 74.7
     },
     "note": "Field presence only; dates, prices and details are not independently verified."
   },
@@ -37,7 +39,8 @@
         "deadline": 0,
         "topics": 1,
         "audience": 1,
-        "url": 1
+        "url": 1,
+        "format": 1
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -47,7 +50,8 @@
         "deadline": 0.0,
         "topics": 100.0,
         "audience": 100.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -61,7 +65,8 @@
         "deadline": 0,
         "topics": 24,
         "audience": 11,
-        "url": 26
+        "url": 26,
+        "format": 19
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -71,7 +76,8 @@
         "deadline": 0.0,
         "topics": 92.3,
         "audience": 42.3,
-        "url": 100.0
+        "url": 100.0,
+        "format": 73.1
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -85,7 +91,8 @@
         "deadline": 9,
         "topics": 13,
         "audience": 20,
-        "url": 20
+        "url": 20,
+        "format": 6
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -95,7 +102,8 @@
         "deadline": 45.0,
         "topics": 65.0,
         "audience": 100.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 30.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -109,7 +117,8 @@
         "deadline": 0,
         "topics": 1,
         "audience": 0,
-        "url": 1
+        "url": 1,
+        "format": 1
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -119,7 +128,8 @@
         "deadline": 0.0,
         "topics": 100.0,
         "audience": 0.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -133,7 +143,8 @@
         "deadline": 0,
         "topics": 8,
         "audience": 0,
-        "url": 8
+        "url": 8,
+        "format": 8
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -143,7 +154,8 @@
         "deadline": 0.0,
         "topics": 100.0,
         "audience": 0.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -157,7 +169,8 @@
         "deadline": 0,
         "topics": 1,
         "audience": 1,
-        "url": 1
+        "url": 1,
+        "format": 1
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -167,7 +180,8 @@
         "deadline": 0.0,
         "topics": 100.0,
         "audience": 100.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -181,7 +195,8 @@
         "deadline": 2,
         "topics": 2,
         "audience": 4,
-        "url": 4
+        "url": 4,
+        "format": 4
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -191,7 +206,8 @@
         "deadline": 50.0,
         "topics": 50.0,
         "audience": 100.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -205,7 +221,8 @@
         "deadline": 0,
         "topics": 1,
         "audience": 0,
-        "url": 1
+        "url": 1,
+        "format": 1
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -215,7 +232,8 @@
         "deadline": 0.0,
         "topics": 100.0,
         "audience": 0.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -229,7 +247,8 @@
         "deadline": 1,
         "topics": 2,
         "audience": 0,
-        "url": 2
+        "url": 2,
+        "format": 2
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -239,7 +258,8 @@
         "deadline": 50.0,
         "topics": 100.0,
         "audience": 0.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -253,7 +273,8 @@
         "deadline": 0,
         "topics": 2,
         "audience": 1,
-        "url": 2
+        "url": 2,
+        "format": 2
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -263,7 +284,8 @@
         "deadline": 0.0,
         "topics": 100.0,
         "audience": 50.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -277,7 +299,8 @@
         "deadline": 1,
         "topics": 1,
         "audience": 1,
-        "url": 1
+        "url": 1,
+        "format": 1
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -287,7 +310,8 @@
         "deadline": 100.0,
         "topics": 100.0,
         "audience": 100.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -301,7 +325,8 @@
         "deadline": 8,
         "topics": 7,
         "audience": 12,
-        "url": 12
+        "url": 12,
+        "format": 12
       },
       "field_presence_pct": {
         "start_date": 100.0,
@@ -311,7 +336,8 @@
         "deadline": 66.7,
         "topics": 58.3,
         "audience": 100.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -325,7 +351,8 @@
         "deadline": 2,
         "topics": 2,
         "audience": 3,
-        "url": 4
+        "url": 4,
+        "format": 4
       },
       "field_presence_pct": {
         "start_date": 75.0,
@@ -335,7 +362,8 @@
         "deadline": 50.0,
         "topics": 50.0,
         "audience": 75.0,
-        "url": 100.0
+        "url": 100.0,
+        "format": 100.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     }
@@ -344,275 +372,353 @@
     "source_summary": {
       "dourinken": {
         "total": 1,
+        "not_applicable": {
+          "start_time": 0
+        },
         "missing": {
           "start_date": 0,
           "start_time": 1,
           "price": 1,
-          "deadline": 1
+          "deadline": 1,
+          "format": 0
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 1,
           "price": 1,
-          "deadline": 1
+          "deadline": 1,
+          "format": 0
         }
       },
       "gakusai": {
         "total": 26,
+        "not_applicable": {
+          "start_time": 0
+        },
         "missing": {
           "start_date": 0,
           "start_time": 15,
           "price": 15,
-          "deadline": 26
+          "deadline": 26,
+          "format": 7
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 2
+          "deadline": 2,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 15,
           "price": 15,
-          "deadline": 24
+          "deadline": 24,
+          "format": 7
         }
       },
       "jaha": {
         "total": 20,
+        "not_applicable": {
+          "start_time": 3
+        },
         "missing": {
           "start_date": 0,
-          "start_time": 13,
+          "start_time": 10,
           "price": 13,
-          "deadline": 11
+          "deadline": 11,
+          "format": 14
         },
         "missing_with_detail_link": {
           "start_date": 0,
-          "start_time": 4,
+          "start_time": 1,
           "price": 4,
-          "deadline": 2
+          "deadline": 2,
+          "format": 6
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 9,
           "price": 9,
-          "deadline": 9
+          "deadline": 9,
+          "format": 8
         }
       },
       "javnu": {
         "total": 1,
+        "not_applicable": {
+          "start_time": 0
+        },
         "missing": {
           "start_date": 0,
           "start_time": 1,
           "price": 1,
-          "deadline": 1
+          "deadline": 1,
+          "format": 0
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 1,
           "price": 1,
-          "deadline": 1
+          "deadline": 1,
+          "format": 0
         }
       },
       "jbvp": {
         "total": 8,
+        "not_applicable": {
+          "start_time": 1
+        },
         "missing": {
           "start_date": 0,
-          "start_time": 7,
+          "start_time": 6,
           "price": 8,
-          "deadline": 8
+          "deadline": 8,
+          "format": 0
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
-          "start_time": 7,
+          "start_time": 6,
           "price": 8,
-          "deadline": 8
+          "deadline": 8,
+          "format": 0
         }
       },
       "jcvim": {
         "total": 1,
+        "not_applicable": {
+          "start_time": 0
+        },
         "missing": {
           "start_date": 0,
           "start_time": 1,
           "price": 1,
-          "deadline": 1
+          "deadline": 1,
+          "format": 0
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 1,
           "price": 1,
-          "deadline": 1
+          "deadline": 1,
+          "format": 0
         }
       },
       "jsvas": {
         "total": 4,
+        "not_applicable": {
+          "start_time": 0
+        },
         "missing": {
           "start_date": 0,
           "start_time": 2,
           "price": 2,
-          "deadline": 2
+          "deadline": 2,
+          "format": 0
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 2,
           "price": 2,
-          "deadline": 2
+          "deadline": 2,
+          "format": 0
         }
       },
       "jsvc": {
         "total": 1,
+        "not_applicable": {
+          "start_time": 0
+        },
         "missing": {
           "start_date": 0,
           "start_time": 1,
           "price": 1,
-          "deadline": 1
+          "deadline": 1,
+          "format": 0
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 1,
           "price": 1,
-          "deadline": 1
+          "deadline": 1,
+          "format": 0
         }
       },
       "jsvd": {
         "total": 2,
+        "not_applicable": {
+          "start_time": 0
+        },
         "missing": {
           "start_date": 0,
           "start_time": 2,
           "price": 2,
-          "deadline": 1
+          "deadline": 1,
+          "format": 0
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 2,
           "price": 2,
-          "deadline": 1
+          "deadline": 1,
+          "format": 0
         }
       },
       "jvcs": {
         "total": 2,
+        "not_applicable": {
+          "start_time": 0
+        },
         "missing": {
           "start_date": 0,
           "start_time": 2,
           "price": 2,
-          "deadline": 2
+          "deadline": 2,
+          "format": 0
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 2,
           "price": 2,
-          "deadline": 2
+          "deadline": 2,
+          "format": 0
         }
       },
       "jvna": {
         "total": 1,
+        "not_applicable": {
+          "start_time": 0
+        },
         "missing": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         }
       },
       "lifetail": {
         "total": 12,
+        "not_applicable": {
+          "start_time": 0
+        },
         "missing": {
           "start_date": 0,
           "start_time": 0,
           "price": 4,
-          "deadline": 4
+          "deadline": 4,
+          "format": 0
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 4,
-          "deadline": 4
+          "deadline": 4,
+          "format": 0
         }
       },
       "vetstech": {
         "total": 4,
+        "not_applicable": {
+          "start_time": 1
+        },
         "missing": {
           "start_date": 1,
-          "start_time": 1,
+          "start_time": 0,
           "price": 1,
-          "deadline": 2
+          "deadline": 2,
+          "format": 0
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 0
+          "deadline": 0,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 1,
-          "start_time": 1,
+          "start_time": 0,
           "price": 1,
-          "deadline": 2
+          "deadline": 2,
+          "format": 0
         }
       }
     },
@@ -624,7 +730,6 @@
         "link_type": "unclassified",
         "missing": [
           "start_date",
-          "start_time",
           "deadline"
         ]
       },
@@ -636,7 +741,8 @@
         "missing": [
           "start_time",
           "price",
-          "deadline"
+          "deadline",
+          "format"
         ]
       },
       {
@@ -646,16 +752,8 @@
         "link_type": "individual_detail",
         "missing": [
           "price",
-          "deadline"
-        ]
-      },
-      {
-        "id": "2ba4f42706ff",
-        "source_id": "jaha",
-        "start_date": "2026-12-01",
-        "link_type": "individual_detail",
-        "missing": [
-          "start_time"
+          "deadline",
+          "format"
         ]
       },
       {
@@ -664,7 +762,8 @@
         "start_date": "2026-12-05",
         "link_type": "individual_detail",
         "missing": [
-          "price"
+          "price",
+          "format"
         ]
       },
       {
@@ -673,25 +772,26 @@
         "start_date": "2026-12-12",
         "link_type": "individual_detail",
         "missing": [
-          "price"
+          "price",
+          "format"
         ]
       },
       {
-        "id": "79362b50b816",
+        "id": "89d5e9b970d0",
         "source_id": "jaha",
-        "start_date": "2027-01-01",
+        "start_date": "2026-12-07",
         "link_type": "individual_detail",
         "missing": [
-          "start_time"
+          "format"
         ]
       },
       {
-        "id": "80c859eeab51",
+        "id": "e5d868cc3828",
         "source_id": "jaha",
-        "start_date": "2027-02-01",
+        "start_date": "2027-01-16",
         "link_type": "individual_detail",
         "missing": [
-          "start_time"
+          "format"
         ]
       },
       {
@@ -720,7 +820,8 @@
         "missing": [
           "start_time",
           "price",
-          "deadline"
+          "deadline",
+          "format"
         ]
       },
       {
@@ -731,7 +832,8 @@
         "missing": [
           "start_time",
           "price",
-          "deadline"
+          "deadline",
+          "format"
         ]
       },
       {
@@ -742,7 +844,8 @@
         "missing": [
           "start_time",
           "price",
-          "deadline"
+          "deadline",
+          "format"
         ]
       },
       {
@@ -753,40 +856,8 @@
         "missing": [
           "start_time",
           "price",
-          "deadline"
-        ]
-      },
-      {
-        "id": "74b9e9e9573b",
-        "source_id": "jaha",
-        "start_date": "2026-12-14",
-        "link_type": "listing_or_other",
-        "missing": [
-          "start_time",
-          "price",
-          "deadline"
-        ]
-      },
-      {
-        "id": "5ef2261aea8e",
-        "source_id": "jsvas",
-        "start_date": "2026-12-18",
-        "link_type": "unclassified",
-        "missing": [
-          "start_time",
-          "price",
-          "deadline"
-        ]
-      },
-      {
-        "id": "ac8b4a8d5899",
-        "source_id": "jsvc",
-        "start_date": "2026-12-19",
-        "link_type": "unclassified",
-        "missing": [
-          "start_time",
-          "price",
-          "deadline"
+          "deadline",
+          "format"
         ]
       },
       {
@@ -797,18 +868,8 @@
         "missing": [
           "start_time",
           "price",
-          "deadline"
-        ]
-      },
-      {
-        "id": "e282d87f8190",
-        "source_id": "jsvas",
-        "start_date": "2027-01-17",
-        "link_type": "unclassified",
-        "missing": [
-          "start_time",
-          "price",
-          "deadline"
+          "deadline",
+          "format"
         ]
       },
       {
@@ -819,12 +880,73 @@
         "missing": [
           "start_time",
           "price",
-          "deadline"
+          "deadline",
+          "format"
+        ]
+      },
+      {
+        "id": "5a17f33107d6",
+        "source_id": "jaha",
+        "start_date": "2027-02-07",
+        "link_type": "unclassified",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline",
+          "format"
+        ]
+      },
+      {
+        "id": "023e5aa56f95",
+        "source_id": "jaha",
+        "start_date": "2027-02-14",
+        "link_type": "unclassified",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline",
+          "format"
+        ]
+      },
+      {
+        "id": "15eb41478c1f",
+        "source_id": "gakusai",
+        "start_date": "2027-07-18",
+        "link_type": "listing_or_other",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline",
+          "format"
+        ]
+      },
+      {
+        "id": "1e7ab6045c7f",
+        "source_id": "gakusai",
+        "start_date": "2027-08-01",
+        "link_type": "listing_or_other",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline",
+          "format"
+        ]
+      },
+      {
+        "id": "02969e4b9581",
+        "source_id": "gakusai",
+        "start_date": "2027-09-12",
+        "link_type": "listing_or_other",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline",
+          "format"
         ]
       }
     ],
-    "review_candidate_total": 69,
-    "note": "Missing means only that the published field is blank, not that the official source lacks the information. A detail link is recognized by URL pattern and is not a content verification."
+    "review_candidate_total": 68,
+    "note": "Missing means only that the published field is blank, not that the official source lacks the information. For on-demand events a blank start_time is considered not applicable. A detail link is recognized by URL pattern, not verified page content."
   },
   "source_results": [
     {
