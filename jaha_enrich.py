@@ -491,7 +491,7 @@ def _deep3_session_time(lines, event):
     # No hardcoded clock or date: each run checks the official printed rows.
     confirmed_rounds = []
     for ln in lines:
-        m = re.search(r"第\\s*([1-3])\\s*回\\s*[：:]", ln)
+        m = re.search(r"第\s*([1-3])\s*回\s*[：:]", ln)
         if not m or re.search(r"受付|申込|キャンセル", ln):
             continue
         dates = _dates(ln)
@@ -507,7 +507,7 @@ def _deep3_session_time(lines, event):
     for ln in lines[headers[0] + 1:headers[0] + 10]:
         if re.search(r"配信形式|見返し配信|申込区分|受講料", ln):
             break
-        matched = re.match(r"^第\\s*([1-3])\\s*回\\s*[：:]\\s*(\\d{1,2})月\\s*(\\d{1,2})日", ln)
+        matched = re.match(r"^第\s*([1-3])\s*回\s*[：:]\s*(\d{1,2})月\s*(\d{1,2})日", ln)
         if not matched or matched.group(1) != round_no:
             continue
         if (int(matched.group(2)), int(matched.group(3))) != (day.month, day.day):
