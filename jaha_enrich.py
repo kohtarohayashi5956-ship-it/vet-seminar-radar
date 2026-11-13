@@ -473,49 +473,75 @@ def parse_jaha_seniorcare_table(html, event):
 
 
 def _deep3_session_time(lines, event):
-    """Read one dated installment from JAHA's 2026 deep-dive VN course.
+    """Return times only for one corroborated JAHA deep-dive course round.
 
-    Match the exact installment in BOTH the fully year-dated programme and
-    the separately labelled schedule section; neither a generic page time
-    nor the registration window can stand in for a course time.
+    The official HTML may split a round label and its date/time across
+    adjacent text nodes. Never scan across a new round, section, or signup
+    heading. The fully dated programme row and clock row must agree.
     """
     url = _url(event)
     if not url or urlsplit(url).path != "/training/seminar/vnseries/aigan26deep3/":
         return None
-    if not any(re.search(r"2026年度.*(?:セミナー|深掘り|シリーズ)", x) for x in lines):
+    if not any(re.search(r"2026年度.*(?:セミナー|深掘り|シリーズ)", x)
+               for x in lines):
         return None
     try:
         day = datetime.date.fromisoformat(event.get("start_date") or "")
     except ValueError:
         return None
-    # No hardcoded clock or date: each run checks the official printed rows.
-    confirmed_rounds = []
-    for ln in lines:
-        m = re.search(r"第\s*([1-3])\s*回\s*[：:]", ln)
-        if not m or re.search(r"受付|申込|キャンセル", ln):
+
+    round_re = re.compile(r"^第\s*([1-3])\s*回\s*[：:]")
+    stop_re = re.compile(
+        r"^(?:第\s*[1-3]\s*回\s*[：:]|[《＜<]?\s*(?:申込|受付|キャンセル|配信形式))"
+    )
+
+    def rows_after(index, last_index):
+        segment = [lines[index]]
+        for ln in lines[index + 1:min(index + 3, last_index)]:
+            if stop_re.search(ln) or re.search(r"申込|受付|キャンセル", ln):
+                break
+            segment.append(ln)
+        return " ".join(segment)
+
+    programme = set()
+    for n, line in enumerate(lines):
+        m = round_re.match(line)
+        if not m or re.search(r"申込|受付|キャンセル", line):
             continue
-        dates = _dates(ln)
-        if dates == [day.isoformat()]:
-            confirmed_rounds.append(m.group(1))
-    if len(confirmed_rounds) != 1:
+        scope = rows_after(n, len(lines))
+        if _dates(scope) == [day.isoformat()]:
+            programme.add(m.group(1))
+    if len(programme) != 1:
         return None
-    round_no = confirmed_rounds[0]
-    headers = [i for i, ln in enumerate(lines) if "セミナー開催日時" in ln]
+    round_no = next(iter(programme))
+
+    headers = [n for n, ln in enumerate(lines)
+               if re.search(r"セミナー\s*開催\s*日時", ln)]
     if len(headers) != 1:
         return None
-    starts = []
-    for ln in lines[headers[0] + 1:headers[0] + 10]:
-        if re.search(r"配信形式|見返し配信|申込区分|受講料", ln):
+    start_index = headers[0] + 1
+    end_index = min(len(lines), start_index + 24)
+    for k in range(start_index, end_index):
+        if re.search(r"配信形式|見返し配信|申込区分|受講料", lines[k]):
+            end_index = k
             break
-        matched = re.match(r"^第\s*([1-3])\s*回\s*[：:]\s*(\d{1,2})月\s*(\d{1,2})日", ln)
-        if not matched or matched.group(1) != round_no:
+    candidates = set()
+    for n in range(start_index, end_index):
+        m = round_re.match(lines[n])
+        if not m or m.group(1) != round_no:
             continue
-        if (int(matched.group(2)), int(matched.group(3))) != (day.month, day.day):
-            return None
-        clock = _times(ln)
-        if all(clock):
-            starts.append(clock)
-    return starts[0] if len(starts) == 1 else None
+        scope = rows_after(n, end_index)
+        # This section prints a month/day without a year: the same-round
+        # full-year programme row above provides the independent year anchor.
+        short = SHORT.findall(scope)
+        if len(short) != 1 or tuple(map(int, short[0])) != (day.month, day.day):
+            continue
+        if _dates(scope) and _dates(scope) != [day.isoformat()]:
+            continue
+        times = _times(scope)
+        if all(times):
+            candidates.add(times)
+    return next(iter(candidates)) if len(candidates) == 1 else None
 
 
 def parse_jaha_detail(text, event):
