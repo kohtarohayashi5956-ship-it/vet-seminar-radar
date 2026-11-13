@@ -544,6 +544,37 @@ def _deep3_session_time(lines, event):
     return next(iter(candidates)) if len(candidates) == 1 else None
 
 
+def _deep3_live_delivery(lines, event):
+    """Classify one date-confirmed deep-dive VN event from its delivery field.
+
+    The optional replay is not the primary format. Require a unique official
+    programme row for this event date and a uniquely labelled live-delivery
+    section; never infer the format from unrelated navigation content.
+    """
+    u = _url(event)
+    if not u or urlsplit(u).path != "/training/seminar/vnseries/aigan26deep3/":
+        return None
+    day = event.get("start_date")
+    if not day or not any("全3回" in line for line in lines):
+        return None
+    programme_rows = [
+        line for line in lines
+        if re.match(r"^第\s*[1-3]\s*回\s*[：:]", line)
+        and _dates(line) == [day]
+        and not re.search(r"申込|受付|キャンセル", line)
+    ]
+    if len(programme_rows) != 1:
+        return None
+    headers = [i for i, line in enumerate(lines)
+               if re.search(r"^[《＜<]?\s*配信形式\s*[》＞>]?$", line)]
+    if len(headers) != 1:
+        return None
+    next_lines = lines[headers[0] + 1:headers[0] + 4]
+    if any("Zoomミーティングを使用したライブ配信" in line for line in next_lines):
+        return "ライブ配信"
+    return None
+
+
 def _deep3_fee_deadline(lines, event):
     """Parse the exact JAHA three-part VN course's own fee and signup block.
 
@@ -694,7 +725,9 @@ def parse_jaha_detail(text, event):
             and deep3_session is None):
         return {}
     out = _deep3_fee_deadline(lines, event)
-    delivery = _puppy_basic_delivery(lines, event) or _dog_lecture_delivery(lines, event)
+    delivery = (_puppy_basic_delivery(lines, event)
+                or _dog_lecture_delivery(lines, event)
+                or _deep3_live_delivery(lines, event))
     if delivery and not event.get("format"):
         out["format"] = delivery
     deadline = _registration_deadline(lines, start_date)
