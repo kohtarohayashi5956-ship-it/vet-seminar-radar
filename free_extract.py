@@ -1259,6 +1259,77 @@ def _dourinken_meeting(text,page,today,stats):
     return out
 
 
+def _javnu_certification(text, page, today, stats):
+    """Extract the official 3rd-period curriculum schedule, one course per row.
+
+    Time windows are viewing periods, not live start/end clock times.
+    A range heading applies only to numbered titles in the immediately
+    following schedule block, not site navigation or another date block.
+    """
+    if page.rstrip("/") != "https://www.javnu.jp/certification/schedule":
+        return []
+    lines = [unicodedata.normalize("NFKC", line.strip())
+             for line in text.splitlines() if line.strip()]
+    heading = next((i for i, ln in enumerate(lines)
+                    if "現在の講習会スケジュール" in ln), None)
+    if heading is None or not any("第3期" in ln for ln in lines[heading:heading + 10]):
+        return []
+    date_header = re.compile(
+        r"^(20\d{2})年(\d{1,2})月(\d{1,2})日\s*[～〜~-]\s*"
+        r"(?:(20\d{2})年)?(\d{1,2})月(\d{1,2})日$")
+    number = re.compile(r"^(?:0?([1-9])|([12]\d)|30)$")
+    found = []
+    limit = next((i for i in range(heading + 1, len(lines))
+                  if "学会について" in lines[i]), len(lines))
+    # Inspect sections between full date-range headings, not across them.
+    boundaries = [(i, date_header.match(lines[i]))
+                  for i in range(heading + 1, limit)
+                  if date_header.match(lines[i])]
+    for n, (i, match) in enumerate(boundaries):
+        start = _date(*match.group(1, 2, 3))
+        endyear = match.group(4) or match.group(1)
+        end = _date(endyear, match.group(5), match.group(6))
+        if not start or not end or end < start or end < today.isoformat():
+            continue
+        block = lines[i + 1:boundaries[n + 1][0] if n + 1 < len(boundaries) else limit]
+        if len(block) > 50 or not any("オンライン認定講習会" in ln for ln in block):
+            continue
+        # A completed period is not an active/future course even if a
+        # stray status in navigation looks like a schedule state.
+        if any("配信終了" in ln for ln in block[:5]):
+            continue
+        if not any(ln in ("配信中", "配信予定") for ln in block[:5]):
+            continue
+        for k in range(len(block) - 1):
+            num = number.fullmatch(block[k])
+            if not num:
+                continue
+            course_no = int(block[k])
+            if not 1 <= course_no <= 30:
+                continue
+            title = block[k + 1].strip()
+            if (not 5 <= len(title) <= 150 or
+                    re.search(r"配信|カリキュラム\d|ログイン|お申込", title)):
+                continue
+            ev = _event(
+                f"JAVNU認定講習会 カリキュラム{course_no:02d}：{title}",
+                start, page, page, "オンライン認定講習会", "日本獣医腎泌尿器学会",
+                end=end,
+            )
+            ev["format"] = "オンデマンド"
+            ev["audience"] = ["獣医師"]
+            ev["topics"] = ["腎・泌尿器"]
+            ev["certification_note"] = "日本獣医腎泌尿器学会 第3期認定講習会（単位・受講資格は公式案内で確認）"
+            ev["certification_program"] = f"第3期カリキュラム{course_no:02d}：{title}"
+            # The end of a viewing period is not a registration deadline.
+            ev["deadline"] = None
+            ev["start_time"] = None
+            ev["end_time"] = None
+            found.append(ev)
+    stats["javnu_certification_courses"] = len(found)
+    return found
+
+
 def extract_free(source_name,page_url,hint,text,today,stats):
     source=source_name.lower().replace("&","")
     if "jaha" in source or "日本動物病院協会" in source:
@@ -1266,6 +1337,7 @@ def extract_free(source_name,page_url,hint,text,today,stats):
     elif "vets academy" in source:raw=_vets_academy(text,page_url,today,stats)
     elif "peppy" in source:raw=_peppy(text,page_url,today,stats)
     elif "eduward" in source or "eduone" in source:raw=_eduone(text,page_url,today,stats)
+    elif "javnu認定講習会" in source:raw=_javnu_certification(text,page_url,today,stats)
     elif source in ("javnu", "日本獣医腎泌尿器学会"):raw=_society(text,page_url,today,stats,"javnu")
     elif source in ("日本獣医皮膚科学会","jsvd"):raw=_society(text,page_url,today,stats,"jsvd")
     elif source in ("日本獣医がん学会","jvcs"):raw=_society(text,page_url,today,stats,"jvcs")
