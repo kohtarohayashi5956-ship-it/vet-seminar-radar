@@ -327,7 +327,16 @@ def _gakusai(text,page,today):
             m=MONTH_DAY.search(section)
             if not m:continue
             sd=_date(year,*m.groups())
-            if sd:out.append(_event(title,sd,detail,page,section,"学際企画"))
+            if sd:
+                event = _event(title, sd, detail, page, section, "学際企画")
+                # The explicitly named hands-on course is in person even
+                # when the annual-list date row has no venue details.
+                # Keep other or conflicting formats unchanged.
+                if not event["format"] and re.search(
+                    r"(?i)\bWet\s*(?:&\s*Dry\s*)?Lab\b", title
+                ):
+                    event["format"] = "現地"
+                out.append(event)
     return out
 
 
