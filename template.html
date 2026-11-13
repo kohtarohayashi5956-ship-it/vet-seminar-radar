@@ -689,6 +689,9 @@
     var kvs = el("div", "kvs");
     var place = [e.prefecture, e.venue].filter(Boolean).join(" ");
     if (place) kvs.appendChild(kv("会場", place));
+    if (e.format === "オンデマンド" && e.start_date && e.end_date && e.end_date >= e.start_date) {
+      kvs.appendChild(kv("視聴期間", dateText(e)));
+    }
     if (e.organizer) kvs.appendChild(kv("主催", e.organizer));
     if (e.speaker) kvs.appendChild(kv("講師", e.speaker));
     if ((e.audience || []).length) kvs.appendChild(kv("対象", e.audience.join("・")));
@@ -829,7 +832,7 @@
   }
   function eventText(e) {
     var multi = e.end_date && e.end_date > e.start_date;
-    var line1 = "■ " + dateText(e);
+    var line1 = "■ " + (e.format === "オンデマンド" && multi ? "視聴期間：" : "") + dateText(e);
     if (!multi && e.start_time) line1 += " " + e.start_time + (e.end_time ? "〜" + e.end_time : "〜");
     var pl = placeOf(e); if (pl) line1 += "｜" + pl;
     var lines = [line1, displayTitle(e)];
