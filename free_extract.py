@@ -946,6 +946,20 @@ def _jsvd_participant_deadline(lines, index, event_pat, event_date):
 # Only meeting+date combinations with explicitly supported official information.
 # Never infer credentials from the title or from a different society's page.
 def _certification_for_meeting(society, title, start, section_lines):
+    if society == "jvcs" and title == "第35回日本獣医がん学会" and start == "2027-01-30":
+        region = "\n".join(section_lines)
+        # The January meeting explicitly limits proof to the venue. Do not
+        # extrapolate the same policy to later meetings without their own notice.
+        if ("認定資格にかかわる証明取得について" in region
+                and "会場でのみ押印" in region
+                and "オンライン" in region
+                and "証明" in region):
+            return (
+                "獣医腫瘍科認定医の受講証明・更新出席証明は会場のみ。"
+                "オンライン録画視聴では証明取得不可。認定医手帳・認定証カードを持参し、"
+                "会場で所定の受付を行うこと",
+                "https://www.jvcs.jp/society/"
+            )
     if society == "jsvd" and "共催シンポジウム" in title and start == "2026-11-22":
         region = "\n".join(section_lines)
         m = re.search(r"(?:日本獣医皮膚科学会)?認定医更新評価点\s*(\d{1,2})\s*ポイント", region)
