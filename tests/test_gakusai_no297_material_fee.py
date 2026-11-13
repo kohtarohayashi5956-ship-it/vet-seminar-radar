@@ -46,7 +46,11 @@ class No297FeeTests(unittest.TestCase):
 
     def test_missing_material_fee_does_not_guess(self):
         self.assertIsNone(_no297_material_fee(
-            ROWS.replace("申込時に下記材料費が加算", "材料費について").splitlines(), event()))
+            ROWS.replace("＋ミニドライラボ材料費 4,500円（税込4,950円）", "").splitlines(), event()))
+
+    def test_split_explanatory_footnote_does_not_hide_both_explicit_fees(self):
+        split_footnote = ROWS.replace("申込時に下記材料費が加算", "お支払い時に別途計上")
+        self.assertIn("材料費", _no297_material_fee(split_footnote.splitlines(), event()))
 
     def test_existing_conflicting_price_not_overwritten(self):
         self.assertIsNone(_no297_material_fee(
