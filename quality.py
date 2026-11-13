@@ -51,22 +51,27 @@ def _review_link_type(event):
     import re
     from urllib.parse import urlsplit
 
-    try:
-        parts = urlsplit(event.get("url") or "")
-    except ValueError:
-        return "unclassified"
+    # An event can retain a listing URL while holding a separate official
+    # detail page. Only accept recognized first-party detail URL patterns;
+    # reservation URLs and arbitrary external links are not evidence.
     source = event.get("source_id")
-    if (source == "gakusai" and parts.hostname in
-            ("gakusai.co.jp", "www.gakusai.co.jp")):
-        return ("individual_detail" if
-                re.fullmatch(r"/vet/vet-seminar/\d+/?", parts.path)
-                else "listing_or_other")
-    if (source == "jaha" and parts.hostname in
-            ("jaha.or.jp", "www.jaha.or.jp")):
-        return ("individual_detail" if
-                parts.path.startswith(("/training/seminar/", "/owners/dog-training/"))
-                else "listing_or_other")
-    return "unclassified"
+    urls = [event.get("detail_url"), event.get("url")]
+    for candidate in urls:
+        try:
+            parts = urlsplit(candidate or "")
+        except ValueError:
+            continue
+        if parts.scheme != "https":
+            continue
+        if (source == "gakusai" and parts.hostname in
+                ("gakusai.co.jp", "www.gakusai.co.jp") and
+                re.fullmatch(r"/vet/vet-seminar/\\d+/?", parts.path)):
+            return "individual_detail"
+        if (source == "jaha" and parts.hostname in
+                ("jaha.or.jp", "www.jaha.or.jp") and
+                parts.path.startswith(("/training/seminar/", "/owners/dog-training/"))):
+            return "individual_detail"
+    return "listing_or_other" if source in ("jaha", "gakusai") else "unclassified"
 
 
 def summarize_review_candidates(events, limit=20):
