@@ -641,6 +641,36 @@ def _puppy_basic_delivery(lines, event):
     return "オンデマンド"
 
 
+def _dog_lecture_delivery(lines, event):
+    """Only the two published JAHA real-time online dog lectures.
+
+    A one-week replay is an accessory to the live webinar, not evidence
+    that the whole seminar should be classified as on-demand.
+    """
+    u = _url(event)
+    if not u:
+        return None
+    path = urlsplit(u).path
+    number = {"/owners/dog-training/kougi2_ol/": "２",
+              "/owners/dog-training/kougi3ol/": "３"}.get(path)
+    if not number:
+        return None
+    title = unicodedata.normalize("NFKC", event.get("title") or "")
+    if not re.search(r"講義\s*" + unicodedata.normalize("NFKC", number) + r"(?!\d)", title):
+        return None
+    # The page-specific sentence is mandatory. Ignore incidental references
+    # to other online seminars or videos in navigation/sidebar content.
+    expected = "講義" + number
+    live = any(
+        expected in line and
+        "Zoom" in line and "オンライン開催" in line
+        for line in lines
+    )
+    replay = any("リアルタイム配信後" in line and "見直し配信" in line
+                 for line in lines)
+    return "ライブ配信" if live and replay else None
+
+
 def parse_jaha_detail(text, event):
     start_date = event.get("start_date")
     if not start_date:
@@ -664,7 +694,7 @@ def parse_jaha_detail(text, event):
             and deep3_session is None):
         return {}
     out = _deep3_fee_deadline(lines, event)
-    delivery = _puppy_basic_delivery(lines, event)
+    delivery = _puppy_basic_delivery(lines, event) or _dog_lecture_delivery(lines, event)
     if delivery and not event.get("format"):
         out["format"] = delivery
     deadline = _registration_deadline(lines, start_date)
