@@ -172,45 +172,67 @@ DOG_FEE_VALUE = re.compile(
 
 
 def _dog_lecture_fee(lines, event):
-    """Keep two-day vs one-off registration prices on JAHA dog lectures.
+    """Read both normal and one-off tiers from one official fee section.
 
-    The real official pages sometimes separate fee headings and rows with
-    links, so generic fee-section scanning may fail. Require BOTH labelled
-    rows beneath a proper 受講料 heading and an event-specific URL.
+    HTML-to-text sometimes splits the labels and their numeric values into
+    adjacent lines. Accept at most two lines per tier, never a price quoted
+    in a course overview, sidebar, signup or a different seminar.
     """
     u = _url(event)
-    if not u or urlsplit(u).path not in (
-        "/owners/dog-training/kougi2_ol/",
-        "/owners/dog-training/kougi3ol/",
-    ):
+    paths = {
+        "/owners/dog-training/kougi2_ol/": "2",
+        "/owners/dog-training/kougi3ol/": "3",
+    }
+    if not u:
         return None
-    for i, line in enumerate(lines):
-        if line != "受講料":
+    number = paths.get(urlsplit(u).path)
+    title = unicodedata.normalize("NFKC", event.get("title") or "")
+    if not number or not re.search(r"講義\s*" + number + r"(?!\d)", title):
+        return None
+
+    sections = [i for i, line in enumerate(lines) if line == "受講料"]
+    if len(sections) != 1:
+        return None
+
+    section = []
+    for line in lines[sections[0] + 1:sections[0] + 34]:
+        if line.startswith(("お申し込み", "受付期間", "キャンセル",
+                            "JAHA入会のお手続き", "これからご入会")):
+            break
+        section.append(line)
+    rows = {}
+    labels = re.compile(r"^(通常受講|単発受講)[：:]\s*(.*)$")
+    for i, line in enumerate(section):
+        match = labels.match(line)
+        if not match or match.group(1) in rows:
             continue
-        rows = {}
-        for candidate in lines[i + 1:i + 45]:
-            if candidate.startswith(("お申し込み", "受付期間", "キャンセル")):
-                break
-            matched = DOG_FEE.match(candidate)
-            if not matched:
-                continue
-            amounts = {name: amount.replace(" ", "") for name, amount
-                       in DOG_FEE_VALUE.findall(matched.group(2))}
-            if {"一般料金", "JAHA会員"} <= set(amounts):
-                rows[matched.group(1)] = amounts
-        if not {"通常受講", "単発受講"} <= set(rows):
+        current = match.group(2)
+        # Some pages print the label on its own line. The only permitted
+        # continuation is the immediately following unlabeled fee line.
+        if not current and i + 1 < len(section):
+            next_line = section[i + 1]
+            if not labels.match(next_line):
+                current = next_line
+        amounts = {name: value.replace(" ", "")
+                   for name, value in DOG_FEE_VALUE.findall(current)}
+        required = {"一般料金", "JAHA会員"}
+        if not required <= amounts.keys():
             continue
-        normal, one_off = rows["通常受講"], rows["単発受講"]
-        items = [
-            "2回通し：一般 " + normal["一般料金"],
-            "JAHA会員 " + normal["JAHA会員"],
-        ]
-        if normal.get("学生料金"):
-            items.append("学生 " + normal["学生料金"])
-        items.extend(("単発：一般 " + one_off["一般料金"],
-                      "JAHA会員 " + one_off["JAHA会員"]))
-        return "／".join(items)
-    return None
+        if len(DOG_FEE_VALUE.findall(current)) != len(amounts):
+            continue  # Ambiguous repeated tiers.
+        rows[match.group(1)] = amounts
+    if set(rows) != {"通常受講", "単発受講"}:
+        return None
+    normal, one_off = rows["通常受講"], rows["単発受講"]
+    if "学生料金" not in normal or "学生料金" in one_off:
+        return None
+    return "／".join((
+        "2回通し：一般 " + normal["一般料金"],
+        "JAHA会員 " + normal["JAHA会員"],
+        "学生 " + normal["学生料金"],
+        "単発：一般 " + one_off["一般料金"],
+        "JAHA会員 " + one_off["JAHA会員"],
+    ))
 
 
 def _short_date_session_time(lines, start_date):
