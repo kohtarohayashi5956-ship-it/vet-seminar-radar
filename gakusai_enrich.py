@@ -12,15 +12,18 @@ AMOUNT = re.compile(r"\d[\d,]*\s*円(?:\s*\(税込\s*\d[\d,]*\s*円\))?")
 
 
 def detail_url(event):
-    try:
-        u = urlsplit(event.get("url") or "")
-    except ValueError:
-        return None
-    if (u.scheme not in ("https", "http")
-            or u.hostname not in ("www.gakusai.co.jp", "gakusai.co.jp")
-            or not re.fullmatch(r"/vet/vet-seminar/\d+/?", u.path)):
-        return None
-    return u.scheme + "://" + u.netloc + u.path
+    """Use a known first-party course detail even when the listing URL is primary."""
+    for candidate in (event.get("detail_url"), event.get("url")):
+        try:
+            u = urlsplit(candidate or "")
+        except ValueError:
+            continue
+        if (u.scheme == "https"
+                and not u.username and not u.password
+                and u.hostname in ("www.gakusai.co.jp", "gakusai.co.jp")
+                and re.fullmatch(r"/vet/vet-seminar/\d+/?", u.path)):
+            return u.scheme + "://" + u.netloc + u.path
+    return None
 
 
 def section(lines, name, stop, size=25):
