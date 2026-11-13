@@ -660,7 +660,7 @@ def _dog_lecture_delivery(lines, event):
         return None
     # The page-specific sentence is mandatory. Ignore incidental references
     # to other online seminars or videos in navigation/sidebar content.
-    expected = "講義" + number
+    expected = "講義" + unicodedata.normalize("NFKC", number)
     live = any(
         expected in line and
         "Zoom" in line and "オンライン開催" in line
