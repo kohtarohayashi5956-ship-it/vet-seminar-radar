@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13T14:55:42+09:00",
+ "updated": "2026-11-13T15:01:39+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -2242,15 +2242,15 @@
    "topics": [
     "学会・大会"
    ],
-   "price": null,
+   "price": "会場参加：一般 10,000円／学生 3,000円／研修医（フルタイム）5,000円／オンデマンド視聴追加 10,000円",
    "is_free": null,
    "status": null,
    "deadline": null,
    "organizer": "JSVC",
    "speaker": null,
    "url": "https://www.jsvc.jp/meeting/regular/conf125/",
-   "detail_url": null,
-   "abstract_deadline": null,
+   "detail_url": "https://www.jsvc.jp/meeting/regular/conf125/entry125/",
+   "abstract_deadline": "2026-10-18",
    "certification_note": "2026年度認定医講習会の開催予定大会（講座22・23・34とアドバンスコース）。取得単位・受講条件は公式案内で確認",
    "certification_url": "https://www.jsvc.jp/certification/session/records/session2026/",
    "certification_program": "講座22 感染性心内膜炎・講座23 犬のフィラリア症・講座34 心臓腫瘍・心膜疾患／アドバンス：基礎4 心血管疾患治療の先端技術・臨床20 循環器疾患のCT検査・臨床21 猫の心臓外科・臨床22 腫瘍循環器病学",
