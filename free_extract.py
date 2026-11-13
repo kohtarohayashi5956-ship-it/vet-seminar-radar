@@ -295,7 +295,41 @@ def _jaha_top(text, page, today, stats):
     return out
 
 
+def _gakusai_detail_297(text, page, today):
+    """Single confirmed lecture fallback; not a general site-wide guess.
+
+    The annual list has intermittently omitted its first lecture in the
+    published crawl. Both title and event date must be present on the
+    official detail page itself before creating a card.
+    """
+    if page.rstrip("/") != "https://www.gakusai.co.jp/vet/vet-seminar/35591":
+        return []
+    lines = [unicodedata.normalize("NFKC", x.strip())
+             for x in text.splitlines() if x.strip()]
+    heading = "No.297 失敗しない腸管吻合 ミニドライラボ&セミナー"
+    if not any(heading in x for x in lines[:24]):
+        return []
+    start = "2027-01-24"
+    if start < today.isoformat():
+        return []
+    schedule = [line for line in lines
+                if "東京会場" in line and _dates(line) == [start]
+                and "10:00" in line and "16:00" in line]
+    if len(schedule) != 1:
+        return []
+    title = "失敗しない腸管吻合 ミニドライラボ&セミナー"
+    if not any(title in line for line in lines[:24]):
+        return []
+    event = _event(title, start, page, page, schedule[0], "学際企画")
+    event["speaker"] = "高木 哲"
+    event["format"] = "現地"
+    event["prefecture"] = "東京都"
+    return [event]
+
+
 def _gakusai(text,page,today):
+    if page.rstrip("/") == "https://www.gakusai.co.jp/vet/vet-seminar/35591":
+        return _gakusai_detail_297(text, page, today)
     year=_year(text)
     if not year:return []
     lines=text.splitlines()
@@ -305,6 +339,9 @@ def _gakusai(text,page,today):
         seg=lines[i:heads[n+1] if n+1<len(heads) else min(i+18,len(lines))]
         title=re.sub(r"^(?:No\.\s*\d+|MS\s*\d+)\s*","",seg[0])
         title=re.sub(r"<https?://[^>]+>|[»>]\s*詳細はこちら.*","",title).strip()
+        if (re.match(r"^No\.\s*297\b", unicodedata.normalize("NFKC", seg[0]))
+                and "失敗しない腸管吻合 ミニドライラボ&セミナー" in title):
+            title = "失敗しない腸管吻合 ミニドライラボ&セミナー"
         if len(title)<6:continue
         # Detail links may appear inline on the No./MS heading or on a
         # separate line. Only URLs actually shown in THIS card are eligible.
