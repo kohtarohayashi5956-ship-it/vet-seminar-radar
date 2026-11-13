@@ -35,6 +35,40 @@ def section(lines, name, stop, size=25):
     return []
 
 
+
+def _no297_material_fee(lines, event):
+    """Add mandatory dry-lab materials only to the exact Jan 24 on-site event."""
+    url = detail_url(event)
+    if (not url or url.rstrip("/") != "https://www.gakusai.co.jp/vet/vet-seminar/35591"
+            or event.get("start_date") != "2027-01-24"
+            or event.get("title") != "失敗しない腸管吻合 ミニドライラボ&セミナー"
+            or event.get("format") in ("ライブ配信", "オンデマンド")):
+        return None
+    fees = section(lines, "来場受講料", ["ウェブ受講料", "開催にあたって"], 24)
+    member = "法人・個人会員 9,000円(税込9,900円)+ミニドライラボ材料費 4,500円(税込4,950円)"
+    general = "一般獣医師 27,000円(税込29,700円)+ミニドライラボ材料費 4,500円(税込4,950円)"
+    norm = lambda x: re.sub(r"\s+", "", unicodedata.normalize("NFKC", x))
+    def has_fee(tier, amount, taxed):
+        return sum(
+            tier in row and amount in norm(row) and taxed in norm(row)
+            and "材料費4,500円" in norm(row) and "4,950円" in norm(row)
+            for row in fees
+        ) == 1
+    if not (has_fee("法人・個人会員", "9,000円", "9,900円")
+            and has_fee("一般獣医師", "27,000円", "29,700円")
+            and sum("申込時に下記材料費が加算" in line for line in fees) == 1):
+        return None
+    existing = event.get("price")
+    base = "法人・個人会員 9,000円(税込9,900円)／一般獣医師 27,000円(税込29,700円)"
+    complete = member + "／" + general
+    if existing and norm(existing) not in (norm(base), norm(complete)):
+        return None
+    if existing and norm(existing) == norm(complete):
+        return None
+    return complete
+
+
+
 def parse_gakusai(text, event):
     """Only accept values belonging to an exact-date detail page."""
     lines = [unicodedata.normalize("NFKC", x.strip()) for x in text.splitlines() if x.strip()]
@@ -106,6 +140,11 @@ def parse_gakusai(text, event):
                 audience = event.get("audience") or []
                 if "獣医師" not in audience:
                     out["audience"] = audience + ["獣医師"]
+    # No.297 requires a separate material fee for on-site participation.
+    # This may correct an incomplete previously collected base tariff.
+    full_price = _no297_material_fee(lines, event)
+    if full_price:
+        out["price"] = full_price
     # Do not equate cancellation deadlines with registration deadlines.
     return out
 
