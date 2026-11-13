@@ -28,22 +28,22 @@ DATE_RANGE = re.compile(r"[～〜~－–―-]")
 
 
 def _url(event):
-    try:
-        u = urlsplit(event.get("url") or "")
-    except ValueError:
-        return None
-    if u.scheme not in ("http", "https") or u.username or u.password or u.hostname not in (
-        "jaha.or.jp", "www.jaha.or.jp"
-    ):
-        return None
-    if not (
-        u.path.startswith("/training/seminar/")
-        or u.path.startswith("/owners/dog-training/")
-    ):
-        return None
-    if u.path.endswith(("/top/", "/vet/", "/seminar/")):
-        return None
-    return u.scheme + "://" + u.netloc + u.path
+    """Select only an official individual JAHA course detail URL."""
+    for candidate in (event.get("detail_url"), event.get("url")):
+        try:
+            u = urlsplit(candidate or "")
+        except ValueError:
+            continue
+        if (u.scheme != "https" or u.username or u.password or u.hostname not in
+                ("jaha.or.jp", "www.jaha.or.jp")):
+            continue
+        if not (u.path.startswith("/training/seminar/")
+                or u.path.startswith("/owners/dog-training/")):
+            continue
+        if u.path.endswith(("/top/", "/vet/", "/seminar/")):
+            continue
+        return u.scheme + "://" + u.netloc + u.path
+    return None
 
 
 def _registration_deadline(lines, start_date):
