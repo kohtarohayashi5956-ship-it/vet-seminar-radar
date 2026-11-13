@@ -2,7 +2,7 @@
 
 These are field-presence metrics, not confirmation of factual accuracy.
 """
-FIELDS = ("start_date", "start_time", "venue", "price", "deadline", "topics", "audience", "url")
+FIELDS = ("start_date", "start_time", "venue", "price", "deadline", "topics", "audience", "url", "format")
 
 
 def summarize_quality(events):
@@ -43,7 +43,7 @@ def summarize_quality_by_source(events):
     }
 
 
-REVIEW_FIELDS = ("start_date", "start_time", "price", "deadline")
+REVIEW_FIELDS = ("start_date", "start_time", "price", "deadline", "format")
 
 
 def _review_link_type(event):
@@ -77,6 +77,7 @@ def summarize_review_candidates(events, limit=20):
         source = event.get("source_id") or "unknown"
         row = by_source.setdefault(source, {
             "total": 0,
+            "not_applicable": {"start_time": 0},
             "missing": {field: 0 for field in REVIEW_FIELDS},
             "missing_with_detail_link": {field: 0 for field in REVIEW_FIELDS},
             "missing_without_confirmed_detail_link": {
@@ -84,7 +85,14 @@ def summarize_review_candidates(events, limit=20):
             },
         })
         row["total"] += 1
-        missing = [field for field in REVIEW_FIELDS if not event.get(field)]
+        # Recorded/on-demand seminars typically have a viewing period,
+        # not one clock-time start. Their blank clock is not a repair target.
+        is_on_demand = event.get("format") == "オンデマンド"
+        if is_on_demand:
+            row["not_applicable"]["start_time"] += 1
+        missing = [field for field in REVIEW_FIELDS
+                   if not event.get(field)
+                   and not (field == "start_time" and is_on_demand)]
         link_type = _review_link_type(event)
         for field in missing:
             row["missing"][field] += 1
@@ -114,7 +122,8 @@ def summarize_review_candidates(events, limit=20):
         "review_candidate_total": len(candidates),
         "note": (
             "Missing means only that the published field is blank, not that "
-            "the official source lacks the information. A detail link is "
-            "recognized by URL pattern and is not a content verification."
+            "the official source lacks the information. For on-demand events "
+            "a blank start_time is considered not applicable. A detail link "
+            "is recognized by URL pattern, not verified page content."
         ),
     }
