@@ -201,25 +201,24 @@ def _dog_lecture_fee(lines, event):
             break
         section.append(line)
     rows = {}
-    labels = re.compile(r"^(通常受講|単発受講)[：:]\s*(.*)$")
-    for i, line in enumerate(section):
-        match = labels.match(line)
-        if not match or match.group(1) in rows:
-            continue
-        current = match.group(2)
-        # Some pages print the label on its own line. The only permitted
-        # continuation is the immediately following unlabeled fee line.
-        if not current and i + 1 < len(section):
-            next_line = section[i + 1]
-            if not labels.match(next_line):
-                current = next_line
-        amounts = {name: value.replace(" ", "")
-                   for name, value in DOG_FEE_VALUE.findall(current)}
-        required = {"一般料金", "JAHA会員"}
-        if not required <= amounts.keys():
-            continue
-        if len(DOG_FEE_VALUE.findall(current)) != len(amounts):
-            continue  # Ambiguous repeated tiers.
+    labels = re.compile(r"^(通常受講|単発受講)\s*[：:]?\s*(.*)$")
+    boundaries = [(i, m) for i, line in enumerate(section)
+                  if (m := labels.match(line))]
+    if len(boundaries) != 2 or {m.group(1) for _, m in boundaries} != {
+            "通常受講", "単発受講"}:
+        return None
+    for pos, (i, match) in enumerate(boundaries):
+        end = boundaries[pos + 1][0] if pos + 1 < len(boundaries) else len(section)
+        # One labelled tier and up to 8 continuation rows only. Stop
+        # before any unrelated section, even if it contains yen amounts.
+        continuation = section[i + 1:min(end, i + 9)]
+        merged = " ".join([match.group(2)] + continuation)
+        amount_matches = DOG_FEE_VALUE.findall(merged)
+        amounts = {name: value.replace(" ", "") for name, value in amount_matches}
+        if not {"一般料金", "JAHA会員"} <= amounts.keys():
+            return None
+        if len(amount_matches) != len(amounts):
+            return None
         rows[match.group(1)] = amounts
     if set(rows) != {"通常受講", "単発受講"}:
         return None
