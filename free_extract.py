@@ -1413,8 +1413,15 @@ def _javnu_certification(text, page, today, stats):
             ev["evidence"] = title
             ev["format"] = "オンデマンド"
             ev["audience"] = ["獣医師"]
-            ev["topics"] = ["腎・泌尿器"]
-            ev["certification_note"] = "日本獣医腎泌尿器学会 第3期認定講習会（単位・受講資格は公式案内で確認）"
+            # Only recognized topic names survive the downstream validator.
+            ev["topics"] = (["泌尿器", "画像診断"] if "画像診断" in title
+                            else ["泌尿器"])
+            ev["status"] = next((ln for ln in block[:5]
+                                  if ln in ("配信中", "配信予定")), None)
+            ev["certification_note"] = (
+                "日本獣医腎泌尿器学会 第3期認定講習会。表示日付は動画の視聴期間"
+                "（単位・受講資格は公式案内で確認）"
+            )
             ev["certification_program"] = f"第3期カリキュラム{course_no:02d}：{title}"
             # The end of a viewing period is not a registration deadline.
             ev["deadline"] = None
