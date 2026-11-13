@@ -1449,6 +1449,14 @@ def extract_free(source_name,page_url,hint,text,today,stats):
     else:raw=[]
     checked=validate(raw,text,page_url,today,stats)
     for e in checked:
+        # No.297 is a dedicated official event article, not an annual index.
+        # Accept this only after exact title/date and evidence validation.
+        if (page_url.rstrip("/") == "https://www.gakusai.co.jp/vet/vet-seminar/35591"
+                and e.get("title") == "失敗しない腸管吻合 ミニドライラボ&セミナー"
+                and e.get("start_date") == "2027-01-24"
+                and e.get("url") == page_url
+                and e.get("verified")):
+            e["url_is_page"] = False
         if not e["start_date"] or e["url_is_page"]:e["verified"]=False
     stats["free_extracted"]=stats.get("free_extracted",0)+len(checked)
     return checked
