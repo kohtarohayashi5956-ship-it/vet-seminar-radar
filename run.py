@@ -124,6 +124,7 @@ def main(argv):
     from jaha_enrich import enrich_jaha
     from society_enrich import enrich_jsvc
     from jsvas_enrich import enrich_jsvas
+    from gakusai_coverage import uncovered_gakusai_lectures
     from peppy_enrich import enrich_peppy
     from jbvp_enrich import enrich_jbvp
 
@@ -167,6 +168,14 @@ def main(argv):
                     with open(os.path.join(cache_dir, f"{src['id']}-{n}.txt"), "w", encoding="utf-8") as f:
                         f.write(text)
                 got = extract_free(src["name"], url, hint, text, today, stats)
+                if src["id"] == "gakusai":
+                    missing_numbers = uncovered_gakusai_lectures(text, got)
+                    stats["listing_lectures_uncovered"] = missing_numbers
+                    if missing_numbers:
+                        warnings.append(
+                            "学際企画: 日付付きNo.講座が抽出されていません: " +
+                            ", ".join("No." + n for n in missing_numbers)
+                        )
                 # AI is costly and strictly opt-in. It is only a fallback for
                 # pages where source-specific free parsing found no seminars.
                 if not got and client is not None:
@@ -250,6 +259,7 @@ def main(argv):
                        "handson_fees_found": stats.get("handson_fees_found", 0),
                        "handson_applications_found": stats.get("handson_applications_found", 0),
                        "handson_course_cards": stats.get("handson_course_cards", 0),
+                       "listing_lectures_uncovered": stats.get("listing_lectures_uncovered", []),
                        "handson_fetch_failed": stats.get("handson_fetch_failed", 0),
                        "fee_label_pages": stats.get("fee_label_pages", 0),
                        "fee_amount_pages": stats.get("fee_amount_pages", 0),
