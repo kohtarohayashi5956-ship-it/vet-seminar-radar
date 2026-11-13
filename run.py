@@ -221,7 +221,10 @@ def main(argv):
                 "件 / 申込締切 " + str(stats.get("deadlines_found", 0)) + "件")
         elif src["id"] == "jsvc" and not note and fresh:
             fresh = enrich_jsvc(fresh, fetcher, today, stats)
-            log("  認定医講習科目補完: " + str(stats.get("certification_programs_found", 0)) + "件")
+            log("  JSVC公式詳細: 講座 " + str(stats.get("certification_programs_found", 0)) +
+                "件 / 参加費 " + str(stats.get("registration_prices_found", 0)) +
+                "件 / 演題締切 " + str(stats.get("registration_abstract_deadlines_found", 0)) +
+                "件 / 申込案内の取得失敗 " + str(stats.get("registration_detail_failed", 0)) + "件")
         if not note and pages and fresh:
             added, updated, replaced = merge.reconcile_source(store, fresh, src, today)
         else:
@@ -239,6 +242,11 @@ def main(argv):
                        "details_accepted": stats.get("details_accepted", 0),
                        "deadlines_found": stats.get("deadlines_found", 0),
                        "prices_found": stats.get("prices_found", 0),
+                       "certification_programs_found": stats.get("certification_programs_found", 0),
+                       "registration_details_scanned": stats.get("registration_details_scanned", 0),
+                       "registration_prices_found": stats.get("registration_prices_found", 0),
+                       "registration_abstract_deadlines_found": stats.get("registration_abstract_deadlines_found", 0),
+                       "registration_detail_failed": stats.get("registration_detail_failed", 0),
                        "handson_fees_found": stats.get("handson_fees_found", 0),
                        "handson_applications_found": stats.get("handson_applications_found", 0),
                        "handson_course_cards": stats.get("handson_course_cards", 0),
