@@ -70,6 +70,13 @@ class JavnuScheduleTests(unittest.TestCase):
         self.assertTrue(all(e["start_time"] is None and
                             e["deadline"] is None for e in out))
         self.assertTrue(all("認定講習会" in e["certification_note"] for e in out))
+        self.assertTrue(all("視聴期間" in e["certification_note"] for e in out))
+        self.assertTrue(all("泌尿器" in e["topics"] for e in out))
+        self.assertEqual(out[0]["topics"], ["泌尿器", "画像診断"])
+        self.assertEqual(out[0]["status"], "配信中")
+        self.assertEqual(out[2]["status"], "配信予定")
+        # These records link to an index, not a dedicated event page.
+        self.assertTrue(all(e["url_is_page"] and not e["verified"] for e in out))
 
     def test_completed_period_removed(self):
         out, _ = parse()
