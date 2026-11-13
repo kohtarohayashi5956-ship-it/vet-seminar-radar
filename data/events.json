@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13T12:34:11+09:00",
+ "updated": "2026-11-13T12:41:20+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -1317,7 +1317,7 @@
    "end_date": null,
    "start_time": "14:00",
    "end_time": "17:00",
-   "format": null,
+   "format": "ライブ配信",
    "venue": null,
    "prefecture": "東京都",
    "audience": [
@@ -1453,7 +1453,7 @@
    "end_date": null,
    "start_time": "14:00",
    "end_time": "17:00",
-   "format": null,
+   "format": "ライブ配信",
    "venue": null,
    "prefecture": "東京都",
    "audience": [
@@ -1593,7 +1593,7 @@
    "end_date": null,
    "start_time": "14:00",
    "end_time": "17:00",
-   "format": null,
+   "format": "ライブ配信",
    "venue": null,
    "prefecture": "東京都",
    "audience": [
