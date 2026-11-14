@@ -101,13 +101,20 @@ def summarize_actionable_upcoming(events, today=None, days=14):
             continue
         source = event.get("source_id") or "unknown"
         source_counts[source] = source_counts.get(source, 0) + 1
+        # For already active recordings, the viewing end is the next
+        # meaningful date; the historical opening date is not urgent.
+        review_date = (end_date if is_on_demand and end_date is not None
+                       else date)
         rows.append({
             "id": event.get("id"),
             "source_id": source,
             "start_date": date.isoformat(),
+            "end_date": end_date.isoformat() if is_on_demand and end_date else None,
+            "review_date": review_date.isoformat(),
+            "review_date_type": "視聴期限" if is_on_demand and end_date else "開催開始",
             "missing": missing,
         })
-    rows.sort(key=lambda e: (e["start_date"], -len(e["missing"]), str(e["id"] or "")))
+    rows.sort(key=lambda e: (e["review_date"], -len(e["missing"]), str(e["id"] or "")))
     return {
         "from_date": today.isoformat(),
         "through_date": horizon.isoformat(),
