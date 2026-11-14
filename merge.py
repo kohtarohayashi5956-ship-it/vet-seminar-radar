@@ -64,10 +64,23 @@ def update_store(store, fresh, source, _unused, today):
         rec = {k: e.get(k) for k in FIELDS}
         rec.update({"id": eid, "source": source["name"], "source_id": source["id"], "last_seen": t})
         if eid in store:
-            rec["first_seen"] = store[eid].get("first_seen", t)
+            old = store[eid]
+            rec["first_seen"] = old.get("first_seen", t)
+            # An ordinary successful re-crawl is not a content update.
+            # Track only changes in published seminar fields, excluding
+            # collection timestamps, IDs and provenance.
+            changed = [key for key in FIELDS if old.get(key) != rec.get(key)]
+            if changed:
+                rec["last_changed"] = t
+                rec["changed_fields"] = changed
+            else:
+                rec["last_changed"] = old.get("last_changed")
+                rec["changed_fields"] = old.get("changed_fields") or []
             updated += 1
         else:
             rec["first_seen"] = t
+            rec["last_changed"] = None
+            rec["changed_fields"] = []
             added += 1
         store[eid] = rec
     return added, updated
