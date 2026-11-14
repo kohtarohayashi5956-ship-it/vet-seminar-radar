@@ -52,6 +52,10 @@ class CertificationFinderTests(unittest.TestCase):
         self.assertIn('$(\"certDisclosure\").open = true', PAGE)
         self.assertIn('function certCourseItems(e)', PAGE)
 
+    def test_imaging_specialty_is_available(self):
+        self.assertIn('<option value="画像診断">画像診断</option>', PAGE)
+        self.assertIn('jsvdi: "画像診断"', function_source("certArea"))
+
     def test_main_search_supports_multiple_keywords_and_speaker(self):
         body = function_source("passes")
         self.assertIn("e.speaker", body)
