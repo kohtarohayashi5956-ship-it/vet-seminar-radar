@@ -107,6 +107,15 @@ SOURCES = [
     },
 
     {
+        "id": "jsvdi",
+        "name": "日本獣医画像診断学会",
+        "kind": "html_page",
+        # Official conference article with explicit date/time and certification sessions.
+        # Only the source-specific verified 79th article is parsed.
+        "urls": ["https://jsvdi.com/conference/3332/"],
+        "enabled": True,
+    },
+    {
         "id": "jsvd",
         "name": "日本獣医皮膚科学会",
         "kind": "society_meeting",
