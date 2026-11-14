@@ -1,30 +1,30 @@
 {
-  "checked_at_jst": "2026-11-13T20:48:21+09:00",
+  "checked_at_jst": "2026-11-14T11:45:46+09:00",
   "mode": "free_rules",
   "total_events": 91,
   "data_quality": {
     "total": 91,
     "field_presence": {
       "start_date": 90,
-      "start_time": 38,
+      "start_time": 39,
       "venue": 25,
-      "price": 42,
-      "deadline": 24,
-      "topics": 72,
+      "price": 43,
+      "deadline": 25,
+      "topics": 71,
       "audience": 62,
       "url": 91,
-      "format": 75
+      "format": 76
     },
     "field_presence_pct": {
       "start_date": 98.9,
-      "start_time": 41.8,
+      "start_time": 42.9,
       "venue": 27.5,
-      "price": 46.2,
-      "deadline": 26.4,
-      "topics": 79.1,
+      "price": 47.3,
+      "deadline": 27.5,
+      "topics": 78.0,
       "audience": 68.1,
       "url": 100.0,
-      "format": 82.4
+      "format": 83.5
     },
     "note": "Field presence only; dates, prices and details are not independently verified."
   },
@@ -85,25 +85,25 @@
       "total": 20,
       "field_presence": {
         "start_date": 20,
-        "start_time": 7,
+        "start_time": 8,
         "venue": 0,
-        "price": 10,
-        "deadline": 9,
-        "topics": 13,
+        "price": 11,
+        "deadline": 10,
+        "topics": 12,
         "audience": 20,
         "url": 20,
-        "format": 11
+        "format": 12
       },
       "field_presence_pct": {
         "start_date": 100.0,
-        "start_time": 35.0,
+        "start_time": 40.0,
         "venue": 0.0,
-        "price": 50.0,
-        "deadline": 45.0,
-        "topics": 65.0,
+        "price": 55.0,
+        "deadline": 50.0,
+        "topics": 60.0,
         "audience": 100.0,
         "url": 100.0,
-        "format": 55.0
+        "format": 60.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -483,17 +483,17 @@
         },
         "missing": {
           "start_date": 0,
-          "start_time": 10,
-          "price": 10,
-          "deadline": 11,
-          "format": 9
+          "start_time": 9,
+          "price": 9,
+          "deadline": 10,
+          "format": 8
         },
         "missing_with_detail_link": {
           "start_date": 0,
-          "start_time": 1,
-          "price": 1,
-          "deadline": 2,
-          "format": 1
+          "start_time": 0,
+          "price": 0,
+          "deadline": 1,
+          "format": 0
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
@@ -840,18 +840,6 @@
         ]
       },
       {
-        "id": "886693eafdf1",
-        "source_id": "jaha",
-        "start_date": "2026-11-11",
-        "link_type": "individual_detail",
-        "missing": [
-          "start_time",
-          "price",
-          "deadline",
-          "format"
-        ]
-      },
-      {
         "id": "47c28952de1e",
         "source_id": "jaha",
         "start_date": "2026-11-14",
@@ -1054,9 +1042,21 @@
           "deadline",
           "format"
         ]
+      },
+      {
+        "id": "b229ba5201a8",
+        "source_id": "gakusai",
+        "start_date": "2027-11-21",
+        "link_type": "listing_or_other",
+        "missing": [
+          "start_time",
+          "price",
+          "deadline",
+          "format"
+        ]
       }
     ],
-    "review_candidate_total": 68,
+    "review_candidate_total": 67,
     "note": "Missing means only that the published field is blank, not that the official source lacks the information. For on-demand events a blank start_time is considered not applicable. A detail link is recognized by URL pattern, not verified page content."
   },
   "source_results": [
@@ -1065,13 +1065,13 @@
       "name": "JAHA",
       "pages": 1,
       "extracted": 20,
-      "added": 0,
-      "updated": 20,
-      "replaced_stale": 0,
+      "added": 1,
+      "updated": 19,
+      "replaced_stale": 1,
       "details_scanned": 5,
-      "details_accepted": 10,
-      "deadlines_found": 9,
-      "prices_found": 10,
+      "details_accepted": 11,
+      "deadlines_found": 10,
+      "prices_found": 11,
       "certification_programs_found": 0,
       "registration_details_scanned": 0,
       "registration_prices_found": 0,
@@ -1137,11 +1137,12 @@
           "fee_section": true,
           "dog_lecture_fee_parsed": false,
           "corroborated_dates": [
-            "2026-12-09"
+            "2026-12-09",
+            "2027-02-17"
           ]
         }
       ],
-      "times_found": 5,
+      "times_found": 6,
       "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
@@ -1152,9 +1153,9 @@
       "name": "Life&Tail",
       "pages": 1,
       "extracted": 13,
-      "added": 1,
-      "updated": 12,
-      "replaced_stale": 1,
+      "added": 0,
+      "updated": 13,
+      "replaced_stale": 0,
       "details_scanned": 9,
       "details_accepted": 9,
       "deadlines_found": 9,
