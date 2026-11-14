@@ -1437,6 +1437,15 @@ def _javnu_certification(text, page, today, stats):
                 "（単位・受講資格は公式案内で確認）"
             )
             ev["certification_program"] = f"第3期カリキュラム{course_no:02d}：{title}"
+            # The official timetable prints lecturer names immediately after
+            # each numbered title. Never borrow a speaker from another course
+            # or treat "講師調整中" as a confirmed lecturer.
+            if k + 2 < len(block):
+                lecturer = block[k + 2].strip()
+                if (len(lecturer) <= 180 and "先生" in lecturer
+                        and not re.fullmatch(r"\d{1,2}", lecturer)
+                        and not re.search(r"配信|カリキュラム|講師調整中", lecturer)):
+                    ev["speaker"] = lecturer
             # The end of a viewing period is not a registration deadline.
             ev["deadline"] = None
             ev["start_time"] = None
