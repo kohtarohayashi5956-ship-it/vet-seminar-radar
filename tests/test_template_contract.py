@@ -39,7 +39,7 @@ class TemplateContractTests(unittest.TestCase):
         required = {
             "list", "monthLabel", "prev", "next", "today",
             "fAud", "fRegion", "fOnsite", "fLive", "fOnd",
-            "fTopic", "fOrg", "fFree", "fNew", "fHidePast",
+            "fTopic", "fOrg", "fFree", "fNew", "fChanged", "fHidePast",
             "fGeneral", "fQ", "resetFilters", "resultSummary",
             "deadlineWindow", "deadlineList", "certDisclosure",
             "certShortcut", "certSearch", "certField", "certKind",
@@ -49,9 +49,10 @@ class TemplateContractTests(unittest.TestCase):
 
     def test_new_filter_and_reset_are_connected(self):
         # Handler is registered via the shared checkbox array.
-        self.assertIn('"fNew", "fHidePast"', self.html)
-        self.assertIn('if ($("fNew").checked', self.html)
+        self.assertIn('"fNew", "fChanged", "fHidePast"', self.html)
+        self.assertIn('if (($("fNew").checked || $("fChanged").checked)', self.html)
         self.assertIn('$("fNew").checked = false;', self.html)
+        self.assertIn('$("fChanged").checked = false;', self.html)
         self.assertIn('$("resetFilters").addEventListener("click"', self.html)
 
     def test_summary_and_composer_remain_connected(self):
