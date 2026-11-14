@@ -344,6 +344,7 @@
     </div>
   </div>
   <div id="certList" class="cert-list" aria-live="polite"></div>
+  <button type="button" class="cert-shortcut" id="certMore" hidden aria-controls="certList" aria-expanded="false">認定医関連をすべて表示</button>
   <p class="cert-note">ここに表示する内容は認定医取得・更新の確約ではありません。参加資格、単位・評価点の認定条件、締切時刻は必ず各学会の公式情報で確認してください。</p>
 </section>
 </details>
@@ -372,6 +373,7 @@
     head: "", intro: "気になるものがあればご覧ください。",
     note: "※日時・料金は変更されることがあります。必ずリンク先で最新情報をご確認ください。" }, load("sr.opt", {}));
   var dirty = false;
+  var certExpanded = false;
 
   var now = new Date();
   var todayStr = ymd(now);
@@ -542,11 +544,15 @@
     var list = $("certList");
     list.textContent = "";
     $("certCount").textContent = "（" + entries.length + "件）";
+    var more = $("certMore");
+    more.hidden = entries.length <= 10;
+    more.setAttribute("aria-expanded", String(certExpanded));
+    more.textContent = certExpanded ? "最初の10件だけ表示" : "残り" + Math.max(0, entries.length - 10) + "件を表示";
     if (!entries.length) {
       list.appendChild(el("p", "cert-empty", "表示条件に一致する認定医関連イベントはありません。"));
       return;
     }
-    entries.slice(0, 10).forEach(function (e) {
+    (certExpanded ? entries : entries.slice(0, 10)).forEach(function (e) {
       var item = el("article", "cert-item");
       var meta = el("div", "cert-meta");
       meta.appendChild(el("span", "cert-date", (e.format === "オンデマンド" && e.end_date ? "視聴期間：" + dateText(e) : md(e.start_date) + "（" + wd(e.start_date) + "）")));
@@ -616,9 +622,7 @@
       if (links.childNodes.length) item.appendChild(links);
       list.appendChild(item);
     });
-    if (entries.length > 10) {
-      list.appendChild(el("p", "cert-note", "ほか" + (entries.length - 10) + "件。絞り込み条件を変更してください。"));
-    }
+
   }
 
   /* ---------- 申込締切を横断検索（閲覧月とは独立） ---------- */
@@ -1070,10 +1074,12 @@
       render();
     });
     $("deadlineWindow").addEventListener("change", render);
-    $("certField").addEventListener("change", render);
-    $("certKind").addEventListener("change", render);
-    $("certSearch").addEventListener("input", render);
+    $("certField").addEventListener("change", function () { certExpanded = false; render(); });
+    $("certKind").addEventListener("change", function () { certExpanded = false; render(); });
+    $("certSearch").addEventListener("input", function () { certExpanded = false; render(); });
+    $("certMore").addEventListener("click", function () { certExpanded = !certExpanded; renderCertificationPanel(); });
     $("certReset").addEventListener("click", function () {
+      certExpanded = false;
       $("certField").value = "all";
       $("certKind").value = "all";
       $("certSearch").value = "";
