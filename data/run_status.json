@@ -1,36 +1,36 @@
 {
-  "checked_at_jst": "2026-11-14T16:19:10+09:00",
+  "checked_at_jst": "2026-11-14T17:16:42+09:00",
   "mode": "free_rules",
-  "total_events": 91,
+  "total_events": 97,
   "data_quality": {
-    "total": 91,
+    "total": 97,
     "applicable_start_time": {
-      "eligible": 79,
-      "known": 39,
-      "pct": 49.4,
+      "eligible": 85,
+      "known": 44,
+      "pct": 51.8,
       "excluded_on_demand": 12
     },
     "field_presence": {
-      "start_date": 90,
-      "start_time": 39,
-      "venue": 25,
+      "start_date": 96,
+      "start_time": 44,
+      "venue": 31,
       "price": 43,
       "deadline": 25,
-      "topics": 71,
-      "audience": 62,
-      "url": 91,
-      "format": 76
+      "topics": 77,
+      "audience": 68,
+      "url": 97,
+      "format": 82
     },
     "field_presence_pct": {
-      "start_date": 98.9,
-      "start_time": 42.9,
-      "venue": 27.5,
-      "price": 47.3,
-      "deadline": 27.5,
-      "topics": 78.0,
-      "audience": 68.1,
+      "start_date": 99.0,
+      "start_time": 45.4,
+      "venue": 32.0,
+      "price": 44.3,
+      "deadline": 25.8,
+      "topics": 79.4,
+      "audience": 70.1,
       "url": 100.0,
-      "format": 83.5
+      "format": 84.5
     },
     "note": "Field presence only; dates, prices and details are not independently verified."
   },
@@ -381,6 +381,38 @@
         "price": 100.0,
         "deadline": 0.0,
         "topics": 0.0,
+        "audience": 100.0,
+        "url": 100.0,
+        "format": 100.0
+      },
+      "note": "Field presence only; dates, prices and details are not independently verified."
+    },
+    "jsvdi": {
+      "total": 6,
+      "applicable_start_time": {
+        "eligible": 6,
+        "known": 5,
+        "pct": 83.3,
+        "excluded_on_demand": 0
+      },
+      "field_presence": {
+        "start_date": 6,
+        "start_time": 5,
+        "venue": 6,
+        "price": 0,
+        "deadline": 0,
+        "topics": 6,
+        "audience": 6,
+        "url": 6,
+        "format": 6
+      },
+      "field_presence_pct": {
+        "start_date": 100.0,
+        "start_time": 83.3,
+        "venue": 100.0,
+        "price": 0.0,
+        "deadline": 0.0,
+        "topics": 100.0,
         "audience": 100.0,
         "url": 100.0,
         "format": 100.0
@@ -815,6 +847,33 @@
           "format": 0
         }
       },
+      "jsvdi": {
+        "total": 6,
+        "not_applicable": {
+          "start_time": 0
+        },
+        "missing": {
+          "start_date": 0,
+          "start_time": 1,
+          "price": 6,
+          "deadline": 6,
+          "format": 0
+        },
+        "missing_with_detail_link": {
+          "start_date": 0,
+          "start_time": 0,
+          "price": 0,
+          "deadline": 0,
+          "format": 0
+        },
+        "missing_without_confirmed_detail_link": {
+          "start_date": 0,
+          "start_time": 1,
+          "price": 6,
+          "deadline": 6,
+          "format": 0
+        }
+      },
       "jvcs": {
         "total": 2,
         "not_applicable": {
@@ -1152,11 +1211,11 @@
         ]
       }
     ],
-    "review_candidate_total": 67,
+    "review_candidate_total": 73,
     "note": "Missing means only that the published field is blank, not that the official source lacks the information. For on-demand events a blank start_time is considered not applicable. A detail link is recognized by URL pattern, not verified page content."
   },
   "certification_quality": {
-    "total": 11,
+    "total": 16,
     "by_source": {
       "javnu": {
         "total": 1,
@@ -1237,6 +1296,22 @@
         "not_applicable": {
           "start_time": 1
         }
+      },
+      "jsvdi": {
+        "total": 5,
+        "on_demand": 0,
+        "known": {
+          "start_date": 5,
+          "end_date": 0,
+          "start_time": 5,
+          "format": 5,
+          "price": 0,
+          "deadline": 0,
+          "certification_program": 5
+        },
+        "not_applicable": {
+          "start_time": 0
+        }
       }
     },
     "note": "Presence only, not source validation. On-demand start times are not applicable; end_date is a viewing-period end, not an application deadline. Unknown fees are never assumed free."
@@ -1244,44 +1319,19 @@
   "actionable_upcoming": {
     "from_date": "2026-11-14",
     "through_date": "2026-11-28",
-    "total": 7,
+    "total": 4,
     "by_source": {
       "jaha": 3,
-      "javnu_cert": 2,
-      "jsvd": 1,
-      "jsvd_cert": 1
+      "jsvd": 1
     },
     "events": [
-      {
-        "id": "405876bdf5ab",
-        "source_id": "jsvd_cert",
-        "start_date": "2026-03-21",
-        "missing": [
-          "deadline"
-        ]
-      },
-      {
-        "id": "43efc444eac1",
-        "source_id": "javnu_cert",
-        "start_date": "2026-10-01",
-        "missing": [
-          "price",
-          "deadline"
-        ]
-      },
-      {
-        "id": "d4817fa283d1",
-        "source_id": "javnu_cert",
-        "start_date": "2026-10-01",
-        "missing": [
-          "price",
-          "deadline"
-        ]
-      },
       {
         "id": "47c28952de1e",
         "source_id": "jaha",
         "start_date": "2026-11-14",
+        "end_date": null,
+        "review_date": "2026-11-14",
+        "review_date_type": "開催開始",
         "missing": [
           "deadline"
         ]
@@ -1290,6 +1340,9 @@
         "id": "fecc161b5e56",
         "source_id": "jaha",
         "start_date": "2026-11-15",
+        "end_date": null,
+        "review_date": "2026-11-15",
+        "review_date_type": "開催開始",
         "missing": [
           "price",
           "deadline",
@@ -1301,6 +1354,9 @@
         "id": "56bc165ba66d",
         "source_id": "jsvd",
         "start_date": "2026-11-22",
+        "end_date": null,
+        "review_date": "2026-11-22",
+        "review_date_type": "開催開始",
         "missing": [
           "price",
           "start_time"
@@ -1310,6 +1366,9 @@
         "id": "6e88c4d3307b",
         "source_id": "jaha",
         "start_date": "2026-11-25",
+        "end_date": null,
+        "review_date": "2026-11-25",
+        "review_date_type": "開催開始",
         "missing": [
           "price",
           "deadline",
@@ -1329,7 +1388,7 @@
       "added": 0,
       "updated": 20,
       "replaced_stale": 0,
-      "detail_candidates": 0,
+      "detail_candidates": 5,
       "detail_deferred": 0,
       "details_scanned": 5,
       "details_accepted": 11,
@@ -1562,6 +1621,40 @@
       "deadlines_found": 0,
       "prices_found": 0,
       "certification_programs_found": 0,
+      "registration_details_scanned": 0,
+      "registration_prices_found": 0,
+      "registration_abstract_deadlines_found": 0,
+      "registration_detail_failed": 0,
+      "handson_fees_found": 0,
+      "handson_applications_found": 0,
+      "handson_course_cards": 0,
+      "listing_lectures_uncovered": [],
+      "handson_fetch_failed": 0,
+      "fee_label_pages": 0,
+      "fee_amount_pages": 0,
+      "fee_parsed_pages": 0,
+      "fee_detail_checks": [],
+      "times_found": 0,
+      "venues_found": 0,
+      "detail_fetch_failed": 0,
+      "status": "ok",
+      "note": ""
+    },
+    {
+      "id": "jsvdi",
+      "name": "日本獣医画像診断学会",
+      "pages": 1,
+      "extracted": 6,
+      "added": 6,
+      "updated": 0,
+      "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
+      "details_scanned": 0,
+      "details_accepted": 0,
+      "deadlines_found": 0,
+      "prices_found": 0,
+      "certification_programs_found": 5,
       "registration_details_scanned": 0,
       "registration_prices_found": 0,
       "registration_abstract_deadlines_found": 0,
