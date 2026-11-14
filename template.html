@@ -325,6 +325,7 @@
           <option value="all">すべて</option>
           <option value="循環器">循環器</option>
           <option value="皮膚科">皮膚科</option>
+          <option value="画像診断">画像診断</option>
           <option value="腎・泌尿器">腎・泌尿器</option>
           <option value="その他">その他</option>
         </select>
@@ -487,7 +488,7 @@
 
   /* ---------- 認定医関連：分野・種別の横断検索 ---------- */
   function certArea(e) {
-    var groups = { jsvc: "循環器", jsvd: "皮膚科", jsvd_cert: "皮膚科", javnu: "腎・泌尿器", javnu_cert: "腎・泌尿器" };
+    var groups = { jsvc: "循環器", jsvd: "皮膚科", jsvd_cert: "皮膚科", jsvdi: "画像診断", javnu: "腎・泌尿器", javnu_cert: "腎・泌尿器" };
     return groups[e.source_id] || "その他";
   }
   function certKind(e) {
