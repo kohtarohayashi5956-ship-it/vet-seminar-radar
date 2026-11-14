@@ -55,10 +55,10 @@ class FreeTests(unittest.TestCase):
 
  def test_jaha_basic_recording_window_has_no_live_start(self):
   url="https://www.jaha.or.jp/seminar-calendar/top/"
-  text=("JAHA 公開講習\\n"
-        "受付中\\n"
-        "こいぬこねこの教育アドバイザー養成講座ベーシックコース第4回 <https://www.jaha.or.jp/training/seminar/puppy/basic/>\\n"
-        "2027-01-01～2027-01-07\\n"
+  text=("JAHA 公開講習\n"
+        "受付中\n"
+        "こいぬこねこの教育アドバイザー養成講座ベーシックコース第4回 <https://www.jaha.or.jp/training/seminar/puppy/basic/>\n"
+        "2027-01-01～2027-01-07\n"
         "対象：動物病院関係者")
   results=extract_free("JAHA",url,"",text,TODAY,{})
   self.assertEqual(len(results),1)
@@ -69,9 +69,9 @@ class FreeTests(unittest.TestCase):
 
  def test_jaha_basic_ambiguous_schedule_keeps_format_unknown(self):
   url="https://www.jaha.or.jp/seminar-calendar/top/"
-  text=("JAHA 公開講習\\n"
-        "こいぬこねこの教育アドバイザー養成講座ベーシックコース第4回 <https://www.jaha.or.jp/training/seminar/puppy/basic/>\\n"
-        "2027-01-02～2027-01-07\\n"
+  text=("JAHA 公開講習\n"
+        "こいぬこねこの教育アドバイザー養成講座ベーシックコース第4回 <https://www.jaha.or.jp/training/seminar/puppy/basic/>\n"
+        "2027-01-02～2027-01-07\n"
         "対象：動物病院関係者")
   results=extract_free("JAHA",url,"",text,TODAY,{})
   self.assertEqual(len(results),1)
