@@ -2,7 +2,7 @@
 """Upcoming published seminar completeness triage."""
 import unittest
 
-from quality import summarize_actionable_upcoming
+from quality import summarize_actionable_upcoming, summarize_quality
 
 
 class UpcomingTriageTests(unittest.TestCase):
@@ -32,6 +32,25 @@ class UpcomingTriageTests(unittest.TestCase):
         ]
         result = summarize_actionable_upcoming(items, "2026-11-14")
         self.assertEqual([x["id"] for x in result["events"]], ["now", "last"])
+
+    def test_applicable_start_time_rate_ignores_recordings(self):
+        events = [
+            {"format": "オンデマンド", "start_time": None},
+            {"format": "オンデマンド", "start_time": None},
+            {"format": "ライブ配信", "start_time": "20:00"},
+            {"format": "現地", "start_time": None},
+        ]
+        quality = summarize_quality(events)
+        self.assertEqual(quality["field_presence_pct"]["start_time"], 25.0)
+        self.assertEqual(
+            quality["applicable_start_time"],
+            {"eligible": 2, "known": 1, "pct": 50.0, "excluded_on_demand": 2},
+        )
+
+    def test_all_on_demand_has_no_live_time_denominator(self):
+        result = summarize_quality([{"format": "オンデマンド"}])
+        self.assertEqual(result["applicable_start_time"]["eligible"], 0)
+        self.assertEqual(result["applicable_start_time"]["pct"], 0.0)
 
     def test_fully_documented_event_excluded(self):
         items = [{"id": "ok", "start_date": "2026-11-16",
