@@ -259,6 +259,7 @@
   <div class="group"><span class="gl">主催</span><select id="fOrg" aria-label="主催"></select></div>
   <label class="chk"><input type="checkbox" id="fFree">無料のみ</label>
   <label class="chk"><input type="checkbox" id="fNew">新着7日以内</label>
+  <label class="chk"><input type="checkbox" id="fChanged">情報更新7日以内</label>
   <label class="chk"><input type="checkbox" id="fHidePast" checked>終了を隠す</label>
   <label class="chk"><input type="checkbox" id="fGeneral">一般向けも表示</label>
   <input type="search" id="fQ" placeholder="キーワード" aria-label="キーワード検索">
@@ -462,7 +463,11 @@
     var tp = $("fTopic").value; if (tp && (e.topics || []).indexOf(tp) < 0) return false;
     var og = $("fOrg").value; if (og && e.organizer !== og && e.source !== og) return false;
     if ($("fFree").checked && !isFree(e)) return false;
-    if ($("fNew").checked && (!e.first_seen || deadlineDays(e.first_seen) > 0 || deadlineDays(e.first_seen) < -7)) return false;
+    // Both boxes selected means new OR changed, not their intersection.
+    var isNew = !!e.first_seen && deadlineDays(e.first_seen) <= 0 && deadlineDays(e.first_seen) >= -7;
+    var isChanged = !!e.last_changed && deadlineDays(e.last_changed) <= 0 && deadlineDays(e.last_changed) >= -7 && !isNew;
+    if (($("fNew").checked || $("fChanged").checked) &&
+        !(($("fNew").checked && isNew) || ($("fChanged").checked && isChanged))) return false;
     if ($("fHidePast").checked && e.start_date && endOf(e) < todayStr) return false;
     var q = norm($("fQ").value).trim();
     if (q) {
@@ -988,7 +993,7 @@
     var topics = []; EVENTS.forEach(function (e) { topics = topics.concat(e.topics || []); });
     fillSelect("fTopic", "すべて", uniq(topics));
     fillSelect("fOrg", "すべて", uniq(EVENTS.map(function (e) { return e.organizer || e.source; })));
-    ["fOnsite", "fLive", "fOnd", "fFree", "fNew", "fHidePast", "fGeneral"].forEach(function (id) { $(id).addEventListener("change", render); });
+    ["fOnsite", "fLive", "fOnd", "fFree", "fNew", "fChanged", "fHidePast", "fGeneral"].forEach(function (id) { $(id).addEventListener("change", render); });
     $("fQ").addEventListener("input", render);
     $("resetFilters").addEventListener("click", function () {
       F.aud = "all";
@@ -1003,6 +1008,7 @@
       $("fOnd").checked = false;
       $("fFree").checked = false;
       $("fNew").checked = false;
+      $("fChanged").checked = false;
       $("fHidePast").checked = true;
       $("fGeneral").checked = false;
       $("fTopic").value = "";
