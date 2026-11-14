@@ -375,7 +375,7 @@ def _gakusai(text,page,today):
             # a leading chevron, or with the URL on the same heading.
             # The exact label and first-party course path are both required.
             m = re.search(
-                r"(?:^|\\s|[»›>])\\s*詳細はこちら\\s*<(https?://[^>\\s]+)>",
+                r"(?:^|\s|[»›>])\s*詳細はこちら\s*<(https?://[^>\s]+)>",
                 candidate.strip(),
             )
             if not m:
