@@ -640,6 +640,31 @@ class TestJahaDeadlines(unittest.TestCase):
         self.assertIn("2026-11-07",
                       stats["fee_detail_checks"][0]["corroborated_dates"])
 
+    def test_detail_budget_prioritizes_missing_fields(self):
+        complete = event("2026-11-07",
+                         "https://www.jaha.or.jp/owners/dog-training/kougi3ol/")
+        complete.update({"price": "19,800円", "start_time": "14:00",
+                         "deadline": "2026-11-04"})
+        incomplete = event("2026-11-14",
+                           "https://www.jaha.or.jp/owners/dog-training/kougi2_ol/")
+        f = Fake()
+        stats = {}
+        enrich_jaha([complete, incomplete], f, DATE, stats, limit=1)
+        self.assertEqual(f.calls,
+                         ["https://www.jaha.or.jp/owners/dog-training/kougi2_ol/"])
+        self.assertEqual(stats["detail_candidates"], 2)
+        self.assertEqual(stats["detail_deferred"], 1)
+        self.assertEqual(stats["details_scanned"], 1)
+
+    def test_detail_budget_counts_shared_course_url_once(self):
+        rows = [event("2026-11-07"), event("2026-11-14")]
+        stats = {}
+        f = Fake()
+        enrich_jaha(rows, f, DATE, stats, limit=1)
+        self.assertEqual(stats["detail_candidates"], 1)
+        self.assertEqual(stats["detail_deferred"], 0)
+        self.assertEqual(len(f.calls), 1)
+
     def test_robots_failure_preserves_existing_data(self):
         class Blocked:
             def get(self,url): raise RuntimeError("robots prohibited")
