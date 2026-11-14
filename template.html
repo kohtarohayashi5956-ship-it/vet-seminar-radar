@@ -505,9 +505,14 @@
   }
   function certSearchMatch(e, q) {
     if (!q) return true;
-    var summary = norm([e.title, e.certification_note, e.source, certArea(e)].join(" "));
-    if (summary.indexOf(q) >= 0) return true;
-    return certCourseItems(e).some(function (x) { return norm(x).indexOf(q) >= 0; });
+    // Search multiple terms across the full course information. For example
+    // "循環器 講座22" should work even when the words occur in separate fields.
+    var terms = norm(q).split(/\s+/).filter(Boolean);
+    var summary = norm([
+      e.title, e.certification_note, e.certification_program,
+      e.source, e.organizer, e.speaker, certArea(e)
+    ].join(" "));
+    return terms.every(function (term) { return summary.indexOf(term) >= 0; });
   }
   function certKindLabel(kind) {
     return { course: "認定医講習科目", points: "更新評価点", activity: "学会参加・発表" }[kind] || "認定医関連";
@@ -552,9 +557,16 @@
       item.appendChild(heading);
       if (e.certification_note) item.appendChild(el("div", "cert-sub", e.certification_note));
       var courseItems = certCourseItems(e);
-      var headerMatch = !q || norm([e.title, e.certification_note, e.source, certArea(e)].join(" ")).indexOf(q) >= 0;
-      if (q && !headerMatch) {
-        courseItems = courseItems.filter(function (x) { return norm(x).indexOf(q) >= 0; });
+      // Keep all course names when a combined query spans the programme
+      // and a general field (e.g. "循環器 講座22"); don't show an empty list.
+      var terms = q.split(/\s+/).filter(Boolean);
+      var generalText = norm([e.title, e.certification_note, e.source, e.organizer, certArea(e)].join(" "));
+      var courseTerms = terms.filter(function (term) { return generalText.indexOf(term) < 0; });
+      if (courseTerms.length) {
+        courseItems = courseItems.filter(function (x) {
+          var normalized = norm(x);
+          return courseTerms.every(function (term) { return normalized.indexOf(term) >= 0; });
+        });
       }
       if (courseItems.length) {
         var courses = el("ul", "cert-courses");
