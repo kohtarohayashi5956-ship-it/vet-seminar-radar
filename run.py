@@ -24,7 +24,8 @@ import demo
 import merge
 import render
 from verified_corrections import apply_verified_corrections
-from quality import summarize_quality, summarize_quality_by_source, summarize_review_candidates
+from quality import (summarize_quality, summarize_quality_by_source,
+                     summarize_review_candidates, summarize_certification_quality)
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -105,6 +106,7 @@ def main(argv):
             status["data_quality"] = summarize_quality(events)
             status["quality_by_source"] = summarize_quality_by_source(events)
             status["review_diagnostics"] = summarize_review_candidates(events)
+            status["certification_quality"] = summarize_certification_quality(events)
             if os.path.abspath(args.out) == os.path.abspath("index.html"):
                 save_status(status)
         render.write_html(events, args.out, sources_summary=summarize(events), run_status=status)
@@ -290,6 +292,7 @@ def main(argv):
         "data_quality": summarize_quality(events),
         "quality_by_source": summarize_quality_by_source(events),
         "review_diagnostics": summarize_review_candidates(events),
+        "certification_quality": summarize_certification_quality(events),
         "source_results": health,
         "warnings": warnings,
     }
