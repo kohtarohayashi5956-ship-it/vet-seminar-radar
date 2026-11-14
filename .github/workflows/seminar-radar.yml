@@ -85,8 +85,85 @@ jobs:
           for attempt in 1 2 3; do
             git fetch origin main
             changed="$(git diff --name-only "$GITHUB_SHA" origin/main)"
-            # Both check reports are diagnostic metadata, not source changes.
-            if printf '%s\n' "$changed" | grep -Ev '^(data/(release_checks|collection_checks)\.json)?$' | grep -q .; then
+            # CI reports and documentation-only files cannot invalidate collected data.\n            # Code, tests, configuration and public data still invalidate a crawl.
+            if printf '%s\n' "$changed" | grep -Ev '^(data/(release_checks|collection_checks)\.json|README\.md|docs/[^[:space:]]+)? | grep -q .; then
+              echo "::notice::Source or public data changed during crawl; discarding stale generated files."
+              echo "publication_reason=stale_source" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            if [ "$(git rev-parse origin/main)" != "$(git rev-parse HEAD)" ]; then
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo "::error::Cannot safely publish digest after concurrent update."
+                exit 1
+              fi
+            fi
+            if git push origin HEAD:main; then
+              echo "published=true" >> "$GITHUB_OUTPUT"
+              echo "publication_reason=pushed" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep "$((attempt * 2))"
+          done
+          echo "::error::Unable to push seminar digest after retries."
+          exit 1
+
+      - name: Persist collection workflow result
+        if: always()
+        env:
+          TESTS_RESULT: ${{ steps.unit_tests.outcome }}
+          COLLECT_RESULT: ${{ steps.collect_data.outcome }}
+          VALIDATE_RESULT: ${{ steps.validate_data.outcome }}
+          PUBLISH_RESULT: ${{ steps.publish_data.outcome }}
+          WAS_PUBLISHED: ${{ steps.publish_data.outputs.published }}
+          PUBLICATION_REASON: ${{ steps.publish_data.outputs.publication_reason }}
+        run: |
+          python - <<'PY'
+          import datetime
+          import json
+          import os
+          from pathlib import Path
+          outcomes = {
+              "unit_tests": os.environ.get("TESTS_RESULT", "unknown"),
+              "collect": os.environ.get("COLLECT_RESULT", "unknown"),
+              "validate": os.environ.get("VALIDATE_RESULT", "unknown"),
+              "publish_step": os.environ.get("PUBLISH_RESULT", "unknown"),
+          }
+          # "success" means the publish step finished, not that a new
+          # digest was pushed: concurrent code edits may discard stale data.
+          result = {
+              "source_sha": os.environ["GITHUB_SHA"],
+              "checked_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+              "run_url": "/".join((os.environ["GITHUB_SERVER_URL"], os.environ["GITHUB_REPOSITORY"], "actions/runs", os.environ["GITHUB_RUN_ID"])),
+              "result": "pass" if all(v == "success" for v in outcomes.values()) and os.environ.get("WAS_PUBLISHED") == "true" else "not_published" if all(v == "success" for v in outcomes.values()) else "fail",
+              "published": os.environ.get("WAS_PUBLISHED") == "true",
+              "publication_reason": os.environ.get("PUBLICATION_REASON", ""),
+              "checks": outcomes,
+              "note": "Publication status is tracked explicitly; verify checked_at_jst separately",
+          }
+          Path("/tmp/vet-seminar-collection-report.json").write_text(
+              json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/vet-seminar-collection-report.json data/collection_checks.json
+            git add data/collection_checks.json
+            if git diff --staged --quiet; then
+              exit 0
+            fi
+            git commit -m "Record collection checks for ${GITHUB_SHA:0:12}"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep "$((attempt * 2))"
+          done
+          echo "::error::Could not persist collection report"
+          exit 1
+ | grep -q .; then
               echo "::notice::Source or public data changed during crawl; discarding stale generated files."
               echo "publication_reason=stale_source" >> "$GITHUB_OUTPUT"
               exit 0
