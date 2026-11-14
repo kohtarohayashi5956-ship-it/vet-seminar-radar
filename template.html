@@ -672,6 +672,14 @@
     if (e.first_seen) {
       var days = Math.floor((parse(todayStr).getTime() - parse(e.first_seen).getTime()) / 86400000);
       if (days >= 0 && days <= 7) r1.appendChild(el("span", "st ok", "NEW"));
+      else if (e.last_changed) {
+        var changedDays = deadlineDays(e.last_changed);
+        if (changedDays <= 0 && changedDays >= -7) {
+          var revised = el("span", "st warn", "情報更新");
+          revised.title = "前回取得時から掲載情報に差がありました。主催者による変更と断定するものではありません。";
+          r1.appendChild(revised);
+        }
+      }
     }
     if (!e.verified) {
       var u = el("span", "unv", "⚠要確認"); u.title = "掲載情報の機械的照合が不十分です。AI利用の有無にかかわらず原典をご確認ください。"; r1.appendChild(u);
