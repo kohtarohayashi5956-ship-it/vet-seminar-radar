@@ -339,6 +339,7 @@
       <label for="certSearch">講習科目
         <input type="search" id="certSearch" aria-label="認定医講習の科目名・講座番号を検索" placeholder="講座22、心臓腫瘍など">
       </label>
+      <button type="button" class="cert-shortcut" id="certReset" aria-label="認定医関連の絞り込みを解除">認定医の条件をクリア</button>
     </div>
   </div>
   <div id="certList" class="cert-list" aria-live="polite"></div>
@@ -1005,6 +1006,13 @@
     $("certField").addEventListener("change", render);
     $("certKind").addEventListener("change", render);
     $("certSearch").addEventListener("input", render);
+    $("certReset").addEventListener("click", function () {
+      $("certField").value = "all";
+      $("certKind").value = "all";
+      $("certSearch").value = "";
+      render();
+      $("certSearch").focus();
+    });
     $("certShortcut").addEventListener("click", function () {
       $("certDisclosure").open = true;
       $("certDisclosure").scrollIntoView({ behavior: "smooth", block: "start" });
