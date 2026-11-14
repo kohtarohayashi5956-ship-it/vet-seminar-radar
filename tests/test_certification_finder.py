@@ -58,6 +58,7 @@ class CertificationFinderTests(unittest.TestCase):
         js="\n".join([
             'const assert = require("node:assert/strict");',
             function_source("certCourseItems"),
+            function_source("certSearchNorm"),
             function_source("certSearchMatch"),
             function_source("certArea"),
             function_source("norm"),
@@ -67,6 +68,9 @@ class CertificationFinderTests(unittest.TestCase):
             'assert.equal(certSearchMatch(e,"講座34"),true);',
             'assert.equal(certSearchMatch(e,"臨床21"),true);',
             'assert.equal(certSearchMatch(e,"皮膚科"),false);',
+            'assert.equal(certSearchMatch(e,"循環器 講座22"),true);',
+            'const kidney={source_id:"javnu_cert",title:"JAVNU認定講習会",certification_note:"認定講習会",certification_program:"腎・泌尿器の画像診断"};',
+            'assert.equal(certSearchMatch(kidney,"腎泌尿器"),true);',
         ])
         p=subprocess.run(["node","-e",js],capture_output=True,text=True)
         self.assertEqual(p.returncode,0,p.stderr)
