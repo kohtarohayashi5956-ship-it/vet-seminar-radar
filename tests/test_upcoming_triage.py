@@ -52,6 +52,25 @@ class UpcomingTriageTests(unittest.TestCase):
         self.assertEqual(result["applicable_start_time"]["eligible"], 0)
         self.assertEqual(result["applicable_start_time"]["pct"], 0.0)
 
+    def test_active_recording_started_earlier_is_included(self):
+        items = [
+            {"id": "active", "source_id": "javnu_cert",
+             "start_date": "2026-10-01", "end_date": "2026-12-01",
+             "format": "オンデマンド", "price": None, "deadline": None},
+            {"id": "expired", "source_id": "javnu_cert",
+             "start_date": "2026-10-01", "end_date": "2026-11-13",
+             "format": "オンデマンド", "price": None, "deadline": None},
+            {"id": "unconfirmed", "source_id": "javnu_cert",
+             "start_date": "2026-10-01", "end_date": None,
+             "format": "オンデマンド", "price": None, "deadline": None},
+            {"id": "old_live", "source_id": "jaha",
+             "start_date": "2026-10-01", "end_date": "2026-12-01",
+             "format": "ライブ配信", "price": None},
+        ]
+        result = summarize_actionable_upcoming(items, "2026-11-14")
+        self.assertEqual([row["id"] for row in result["events"]], ["active"])
+        self.assertNotIn("start_time", result["events"][0]["missing"])
+
     def test_fully_documented_event_excluded(self):
         items = [{"id": "ok", "start_date": "2026-11-16",
                   "format": "ライブ配信", "price": "有料", "deadline": "2026-11-15",
