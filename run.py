@@ -249,6 +249,8 @@ def main(argv):
         health.append({"id": src["id"], "name": src["name"], "pages": pages,
                        "extracted": len(fresh), "added": added, "updated": updated,
                        "replaced_stale": replaced,
+                       "detail_candidates": stats.get("detail_candidates", 0),
+                       "detail_deferred": stats.get("detail_deferred", 0),
                        "details_scanned": stats.get("details_scanned", 0),
                        "details_accepted": stats.get("details_accepted", 0),
                        "deadlines_found": stats.get("deadlines_found", 0),
