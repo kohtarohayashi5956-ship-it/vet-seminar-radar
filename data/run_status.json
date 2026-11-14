@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-14T11:45:46+09:00",
+  "checked_at_jst": "2026-11-14T12:08:53+09:00",
   "mode": "free_rules",
   "total_events": 91,
   "data_quality": {
@@ -1065,9 +1065,9 @@
       "name": "JAHA",
       "pages": 1,
       "extracted": 20,
-      "added": 1,
-      "updated": 19,
-      "replaced_stale": 1,
+      "added": 0,
+      "updated": 20,
+      "replaced_stale": 0,
       "details_scanned": 5,
       "details_accepted": 11,
       "deadlines_found": 10,
