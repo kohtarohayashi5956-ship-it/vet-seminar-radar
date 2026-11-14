@@ -1,7 +1,7 @@
 {
-  "source_sha": "af414c1321358c23c7fee41e99d15dd20f3c915d",
-  "checked_at_utc": "2026-11-14T07:44:00+00:00",
-  "run_url": "https://github.com/kohtarohayashi5956-ship-it/vet-seminar-radar/actions/runs/43572177899",
+  "source_sha": "45338c1585cd4e7b84e1c42cfbc06371348c997a",
+  "checked_at_utc": "2026-11-14T07:47:42+00:00",
+  "run_url": "https://github.com/kohtarohayashi5956-ship-it/vet-seminar-radar/actions/runs/43572426839",
   "result": "not_published",
   "published": false,
   "publication_reason": "stale_source",
