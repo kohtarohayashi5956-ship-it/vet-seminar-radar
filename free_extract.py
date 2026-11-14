@@ -294,7 +294,7 @@ def _jaha_top(text, page, today, stats):
             course_path = urlparse(url).path
         except ValueError:
             course_path = ""
-        session = re.search(r"第\\s*([1-6])\\s*回", unicodedata.normalize("NFKC", title))
+        session = re.search(r"第\s*([1-6])\s*回", unicodedata.normalize("NFKC", title))
         basic_schedule = {
             1: ("2026-10-01", "2026-10-07"),
             2: ("2026-11-01", "2026-11-07"),
