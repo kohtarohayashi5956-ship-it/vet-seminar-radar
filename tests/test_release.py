@@ -17,6 +17,18 @@ class ReleaseSmoke(unittest.TestCase):
             self.assertIn("robots制限",s)
             self.assertIn("JST",s)
             self.assertNotIn('<script id="payload" type="application/json">null',s)
+    def test_certification_list_can_expand_beyond_ten(self):
+        with tempfile.TemporaryDirectory() as t:
+            out = os.path.join(t, "index.html")
+            render.write_html([], out)
+            with open(out, encoding="utf-8") as f:
+                html = f.read()
+            self.assertIn('id="certMore" hidden', html)
+            self.assertIn('aria-controls="certList"', html)
+            self.assertIn('certExpanded ? entries : entries.slice(0, 10)', html)
+            self.assertIn('certExpanded = !certExpanded; renderCertificationPanel()', html)
+            self.assertNotIn("絞り込み条件を変更してください。", html)
+
     def test_script_escaping(self):
         with tempfile.TemporaryDirectory() as t:
             out=os.path.join(t, "index.html")
