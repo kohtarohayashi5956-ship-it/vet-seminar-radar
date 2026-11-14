@@ -285,6 +285,29 @@ def _jaha_top(text, page, today, stats):
                        if re.match(r"^対象\s*[：:]", ln)), "")
         context = title + "\n" + line + "\n" + target
         e = _event(title, start, url, page, context, "JAHA", end=end if end != start else None)
+        # JAHA's 2026-year puppy/kitten Basic Course explicitly states that
+        # sessions 1-6 are recordings available from the 1st to the 7th.
+        # Its seventh session is live, so never generalize from the URL alone.
+        # Require both the official detail URL AND an exact session/date pair;
+        # a changed course calendar must be reviewed rather than guessed.
+        try:
+            course_path = urlparse(url).path
+        except ValueError:
+            course_path = ""
+        session = re.search(r"第\\s*([1-6])\\s*回", unicodedata.normalize("NFKC", title))
+        basic_schedule = {
+            1: ("2026-10-01", "2026-10-07"),
+            2: ("2026-11-01", "2026-11-07"),
+            3: ("2026-12-01", "2026-12-07"),
+            4: ("2027-01-01", "2027-01-07"),
+            5: ("2027-02-01", "2027-02-07"),
+            6: ("2027-03-01", "2027-03-07"),
+        }
+        if (urlparse(url).hostname in ("jaha.or.jp", "www.jaha.or.jp")
+                and course_path.rstrip("/") == "/training/seminar/puppy/basic"
+                and "こいぬこねこの教育アドバイザー養成講座" in title
+                and session and basic_schedule[int(session.group(1))] == (start, end)):
+            e["format"] = "オンデマンド"
         # Audience must come only from the explicit 対象 field, never the title.
         e["audience"] = _audience(target)
         for ln in lines[max(0,link_idx - 2):link_idx]:
