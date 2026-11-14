@@ -590,7 +590,8 @@
       // Never turn an on-demand viewing period into an application cutoff.
       reg.appendChild(el("span", null, certRegistrationStatus(e.deadline, "参加申込締切")));
       if (e.abstract_deadline) reg.appendChild(el("span", null, certRegistrationStatus(e.abstract_deadline, "演題募集締切")));
-      if (e.price || e.is_free === true) reg.appendChild(el("span", null, "受講料：" + (e.price || "無料")));
+      var feeText = e.price || (e.is_free === true ? "無料" : "未取得（公式確認）");
+      reg.appendChild(el("span", null, "受講料：" + feeText));
       item.appendChild(reg);
       var links = el("div", "cert-links");
       if (e.certification_url) {
