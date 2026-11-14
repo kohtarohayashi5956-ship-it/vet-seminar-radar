@@ -371,7 +371,13 @@ def _gakusai(text,page,today):
         # An unlinked "詳細はこちら" is not evidence of a published detail page.
         detail = None
         for candidate in seg:
-            m = re.search(r"(?:»|›|>)\s*詳細はこちら\s*<(https?://[^>\s]+)>", candidate)
+            # Official annual cards may render the detail label without
+            # a leading chevron, or with the URL on the same heading.
+            # The exact label and first-party course path are both required.
+            m = re.search(
+                r"(?:^|\\s|[»›>])\\s*詳細はこちら\\s*<(https?://[^>\\s]+)>",
+                candidate.strip(),
+            )
             if not m:
                 continue
             u = urlparse(m.group(1))
