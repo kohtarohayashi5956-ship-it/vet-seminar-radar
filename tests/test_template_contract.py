@@ -55,6 +55,13 @@ class TemplateContractTests(unittest.TestCase):
         self.assertIn('$("fChanged").checked = false;', self.html)
         self.assertIn('$("resetFilters").addEventListener("click"', self.html)
 
+    def test_on_demand_is_visible_by_default_and_after_reset(self):
+        # Certification schedules include recorded courses; hiding all of
+        # them at initial load makes correct collection look incomplete.
+        self.assertIn('id="fOnd" checked', self.html)
+        self.assertIn('$("fOnd").checked = true;', self.html)
+        self.assertIn('if (f === "オンデマンド" && !$("fOnd").checked)', self.html)
+
     def test_summary_and_composer_remain_connected(self):
         self.assertIn('$("resultSummary").textContent', self.html)
         self.assertIn('function refreshComposer(', self.html)
