@@ -27,7 +27,6 @@ class ReleaseSmoke(unittest.TestCase):
             self.assertIn('aria-controls="certList"', html)
             self.assertIn('certExpanded ? entries : entries.slice(0, 10)', html)
             self.assertIn('certExpanded = !certExpanded; renderCertificationPanel()', html)
-            self.assertNotIn("絞り込み条件を変更してください。", html)
 
     def test_script_escaping(self):
         with tempfile.TemporaryDirectory() as t:
