@@ -80,11 +80,14 @@ def parse_gakusai(text, event):
     schedule = section(lines, "開催日時・会場",
                        ["来場受講料", "ウェブ受講料", "開催にあたって"], 28)
     start = event.get("start_date")
-    idx = next((i for i, ln in enumerate(schedule)
-                if start and _dates(ln) == [start]
-                and len(re.findall(r"\d{1,2}月\d{1,2}日", ln)) == 1), None)
-    if idx is None:
+    # A detail page may list multiple sessions on the same day. A single
+    # matching date is not enough to assign a time or price to one card.
+    matches = [i for i, ln in enumerate(schedule)
+               if start and _dates(ln) == [start]
+               and len(re.findall(r"\d{1,2}月\d{1,2}日", ln)) == 1]
+    if len(matches) != 1:
         return {}
+    idx = matches[0]
     date_line = schedule[idx]
     t1, t2 = _times(date_line)
     # A single detail-card schedule sometimes wraps its clock range to
@@ -101,6 +104,8 @@ def parse_gakusai(text, event):
         if bare_range:
             t1, t2 = _times(next_line)
     if event.get("start_time") and t1 and event["start_time"] != t1:
+        return {}
+    if event.get("end_time") and t2 and event["end_time"] != t2:
         return {}
     out = {}
     if t1 and not event.get("start_time"):
