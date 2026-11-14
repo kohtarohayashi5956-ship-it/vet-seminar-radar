@@ -105,8 +105,9 @@ def parse_gakusai(text, event):
             t1, t2 = _times(next_line)
     if event.get("start_time") and t1 and event["start_time"] != t1:
         return {}
-    if event.get("end_time") and t2 and event["end_time"] != t2:
-        return {}
+    # Keep existing verified/previous end times when they disagree with
+    # the detail schedule. Other independently corroborated fields remain
+    # eligible for enrichment, while the conflicting end time is untouched.
     out = {}
     if t1 and not event.get("start_time"):
         out["start_time"] = t1
