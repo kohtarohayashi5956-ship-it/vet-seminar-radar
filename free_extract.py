@@ -1515,8 +1515,18 @@ def _jsvdi_conference(text, page, today, stats):
                  topics=["画像診断"])
     # The official article has separate student and member tiers.
     # The free *student* tier does NOT make the entire congress free.
-    if ("【会員】10,000円" in flat and "【非会員】13,000円" in flat):
-        event["price"] = "会員 10,000円／非会員 13,000円（学部学生の現地参加は条件付き無料）"
+    # The official page uses both 【...】 and 〖...〗 bracket styles,
+    # depending on rendering. Require both exact admission tiers on the
+    # same labeled price line; do not borrow amounts from the reception
+    # dinner or other unrelated sections.
+    admission_line = next((
+        line for line in lines
+        if "参加料" in line
+        and re.search(r"[【〖]会員[】〗]\\s*10,000円", line)
+        and re.search(r"[【〖]非会員[】〗]\\s*13,000円", line)
+    ), None)
+    if admission_line:
+        event["price"] = "会員 10,000円／非会員 13,000円"
         event["is_free"] = None
     records = [event]
     day = None
