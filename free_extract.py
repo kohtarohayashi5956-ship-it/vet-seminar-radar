@@ -1484,6 +1484,71 @@ def _javnu_certification(text, page, today, stats):
     return found
 
 
+def _jsvdi_conference(text, page, today, stats):
+    """Only the official 79th conference article, never an arbitrary date card.
+
+    The five separately timed certification lectures belong to the two
+    explicitly dated conference days. Later video availability has no
+    verified start date and must not produce a synthetic webinar event.
+    """
+    if page.rstrip("/") != "https://jsvdi.com/conference/3332":
+        return []
+    lines = [unicodedata.normalize("NFKC", x.strip())
+             for x in text.splitlines() if x.strip()]
+    flat = "\n".join(lines)
+    if not (re.search(r"第79回\s*日本獣医画像診断学会", flat)
+            and "日時:2026年12月5日" in flat.replace(" ", "")
+            and "6日" in flat
+            and "福岡国際会議場" in flat):
+        return []
+    first, second = "2026-12-05", "2026-12-06"
+    if second < today.isoformat():
+        return []
+    title = next((ln for ln in lines
+                  if re.fullmatch(r"第79回\s*日本獣医画像診断学会(?:【福岡開催】)?", ln)), None)
+    if not title:
+        return []
+    event = _event(title, first, page, page, title, "日本獣医画像診断学会",
+                   end=second)
+    event.update(format="ハイブリッド", venue="福岡国際会議場",
+                 prefecture="福岡県", audience=["獣医師"],
+                 topics=["画像診断"])
+    # The official article has separate student and member tiers.
+    # The free *student* tier does NOT make the entire congress free.
+    if ("【会員】10,000円" in flat and "【非会員】13,000円" in flat):
+        event["price"] = "会員 10,000円／非会員 13,000円（学部学生の現地参加は条件付き無料）"
+        event["is_free"] = None
+    records = [event]
+    day = None
+    for idx, line in enumerate(lines):
+        if re.match(r"^12月5日(?:\s|[(（]|$)", line):
+            day = first
+        elif re.match(r"^12月6日(?:\s|[(（]|$)", line):
+            day = second
+        if not day or not line.startswith("認定講習「"):
+            continue
+        if not re.fullmatch(r"認定講習「[^」]{3,90}」", line):
+            continue
+        prev = lines[idx - 1] if idx else ""
+        times = _times(prev)
+        if not all(times):
+            continue
+        item = _event(line, day, page, page, line, "日本獣医画像診断学会")
+        item.update(format="現地", venue="福岡国際会議場",
+                    prefecture="福岡県", audience=["獣医師"],
+                    topics=["画像診断"], start_time=times[0], end_time=times[1],
+                    certification_note=(
+                        "日本獣医画像診断学会 第79回大会の認定講習。"
+                        "受講資格・認定単位は公式案内を確認"),
+                    certification_program=line,
+                    certification_url=page)
+        if idx + 1 < len(lines) and lines[idx + 1].startswith("講師:"):
+            item["speaker"] = lines[idx + 1].split(":", 1)[1].split("(")[0].strip()
+        records.append(item)
+    stats["jsvdi_certification_lectures"] = len(records) - 1
+    return records
+
+
 def extract_free(source_name,page_url,hint,text,today,stats):
     source=source_name.lower().replace("&","")
     if "jaha" in source or "日本動物病院協会" in source:
@@ -1493,6 +1558,7 @@ def extract_free(source_name,page_url,hint,text,today,stats):
     elif "eduward" in source or "eduone" in source:raw=_eduone(text,page_url,today,stats)
     elif "javnu認定講習会" in source:raw=_javnu_certification(text,page_url,today,stats)
     elif source in ("javnu", "日本獣医腎泌尿器学会"):raw=_society(text,page_url,today,stats,"javnu")
+    elif source in ("jsvdi", "日本獣医画像診断学会"):raw=_jsvdi_conference(text,page_url,today,stats)
     elif "jsvd認定医講習" in source:raw=_jsvd_certification(text,page_url,today,stats)
     elif source in ("日本獣医皮膚科学会","jsvd"):raw=_society(text,page_url,today,stats,"jsvd")
     elif source in ("日本獣医がん学会","jvcs"):raw=_society(text,page_url,today,stats,"jvcs")
@@ -1515,6 +1581,13 @@ def extract_free(source_name,page_url,hint,text,today,stats):
                 and e.get("start_date") == "2027-01-24"
                 and e.get("url") == page_url
                 and e.get("verified")):
+            e["url_is_page"] = False
+        if (page_url.rstrip("/") == "https://jsvdi.com/conference/3332"
+                and e.get("url") == page_url
+                and e.get("verified")
+                and (e.get("title", "").startswith("認定講習「")
+                     or re.fullmatch(r"第79回\s*日本獣医画像診断学会(?:【福岡開催】)?",
+                                     e.get("title", "")))):
             e["url_is_page"] = False
         if not e["start_date"] or e["url_is_page"]:e["verified"]=False
     stats["free_extracted"]=stats.get("free_extracted",0)+len(checked)
