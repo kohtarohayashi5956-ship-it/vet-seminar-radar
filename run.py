@@ -25,7 +25,8 @@ import merge
 import render
 from verified_corrections import apply_verified_corrections
 from quality import (summarize_quality, summarize_quality_by_source,
-                     summarize_review_candidates, summarize_certification_quality)
+                     summarize_review_candidates, summarize_certification_quality,
+                     summarize_actionable_upcoming)
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -107,6 +108,7 @@ def main(argv):
             status["quality_by_source"] = summarize_quality_by_source(events)
             status["review_diagnostics"] = summarize_review_candidates(events)
             status["certification_quality"] = summarize_certification_quality(events)
+            status["actionable_upcoming"] = summarize_actionable_upcoming(events, today)
             if os.path.abspath(args.out) == os.path.abspath("index.html"):
                 save_status(status)
         render.write_html(events, args.out, sources_summary=summarize(events), run_status=status)
@@ -295,6 +297,7 @@ def main(argv):
         "quality_by_source": summarize_quality_by_source(events),
         "review_diagnostics": summarize_review_candidates(events),
         "certification_quality": summarize_certification_quality(events),
+        "actionable_upcoming": summarize_actionable_upcoming(events, today),
         "source_results": health,
         "warnings": warnings,
     }
