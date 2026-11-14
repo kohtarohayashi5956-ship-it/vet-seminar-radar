@@ -43,6 +43,55 @@ def summarize_quality_by_source(events):
     }
 
 
+def summarize_actionable_upcoming(events, today=None, days=14):
+    """Flag near-term sessions with actionable unknowns; no invented facts.
+
+    This is a triage diagnostic, not a claim that the source omitted a field.
+    Viewing periods and single-session start times are distinct concepts.
+    """
+    import datetime
+
+    if today is None:
+        today = datetime.datetime.now(datetime.timezone(
+            datetime.timedelta(hours=9))).date()
+    elif isinstance(today, str):
+        today = datetime.date.fromisoformat(today)
+    horizon = today + datetime.timedelta(days=days)
+    rows = []
+    source_counts = {}
+    for event in events:
+        try:
+            date = datetime.date.fromisoformat(event.get("start_date") or "")
+        except (TypeError, ValueError):
+            continue
+        if not today <= date <= horizon:
+            continue
+        missing = [field for field in ("price", "deadline", "format")
+                   if not event.get(field)]
+        if event.get("format") != "オンデマンド" and not event.get("start_time"):
+            missing.append("start_time")
+        if not missing:
+            continue
+        source = event.get("source_id") or "unknown"
+        source_counts[source] = source_counts.get(source, 0) + 1
+        rows.append({
+            "id": event.get("id"),
+            "source_id": source,
+            "start_date": date.isoformat(),
+            "missing": missing,
+        })
+    rows.sort(key=lambda e: (e["start_date"], -len(e["missing"]), str(e["id"] or "")))
+    return {
+        "from_date": today.isoformat(),
+        "through_date": horizon.isoformat(),
+        "total": len(rows),
+        "by_source": dict(sorted(source_counts.items())),
+        "events": rows[:30],
+        "note": ("Triage only. Blank fields may be unpublished or not applicable; "
+                 "viewing-period seminars do not require a start clock."),
+    }
+
+
 REVIEW_FIELDS = ("start_date", "start_time", "price", "deadline", "format")
 
 
