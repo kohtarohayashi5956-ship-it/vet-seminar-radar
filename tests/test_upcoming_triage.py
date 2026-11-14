@@ -70,6 +70,20 @@ class UpcomingTriageTests(unittest.TestCase):
         result = summarize_actionable_upcoming(items, "2026-11-14")
         self.assertEqual([row["id"] for row in result["events"]], ["active"])
         self.assertNotIn("start_time", result["events"][0]["missing"])
+        self.assertEqual(result["events"][0]["review_date"], "2026-12-01")
+        self.assertEqual(result["events"][0]["review_date_type"], "視聴期限")
+
+    def test_live_session_precedes_long_running_recording(self):
+        items = [
+            {"id": "recorded", "start_date": "2026-10-01",
+             "end_date": "2026-12-31", "format": "オンデマンド"},
+            {"id": "live", "start_date": "2026-11-15",
+             "format": "ライブ配信"},
+        ]
+        result = summarize_actionable_upcoming(items, "2026-11-14")
+        self.assertEqual([row["id"] for row in result["events"]],
+                         ["live", "recorded"])
+        self.assertEqual(result["events"][0]["review_date_type"], "開催開始")
 
     def test_fully_documented_event_excluded(self):
         items = [{"id": "ok", "start_date": "2026-11-16",
