@@ -609,10 +609,14 @@
                    days === 0 ? "締切 今日（" + fullDate(e.deadline) + "）" : "締切 " + fullDate(e.deadline) + "（あと" + days + "日）");
       row.appendChild(due);
       var link = el("a", null, displayTitle(e));
-      link.href = e.url || "#"; link.target = "_blank"; link.rel = "noopener noreferrer";
+      // Prefer the actual course detail or official signup page when provided.
+      link.href = e.detail_url || e.url || "#";
+      link.target = "_blank"; link.rel = "noopener noreferrer";
       row.appendChild(link);
+      var schedule = "開催 " + fullDate(e.start_date);
+      if (e.start_time) schedule += " " + e.start_time + (e.end_time ? "〜" + e.end_time : "");
       row.appendChild(el("span", "deadline-sub",
-        "開催 " + fullDate(e.start_date) + "｜" + (e.source || "取得元不明")));
+        schedule + "｜" + (e.format || "形式未確認") + "｜" + (e.source || "取得元不明")));
       target.appendChild(row);
     });
     if (eligible.length > 8) {
