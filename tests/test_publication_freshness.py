@@ -16,6 +16,8 @@ class PublicationFreshnessTests(unittest.TestCase):
         match = re.search(r"""grep -Ev '([^']+)'""", WORKFLOW)
         self.assertIsNotNone(match, "Missing freshness path guard")
         pattern = match.group(1)
+        self.assertIn("grep -q .; then", WORKFLOW)
+        self.assertTrue(pattern.endswith("$"), "Freshness guard must anchor path end")
 
         for path in (
             "data/release_checks.json",
