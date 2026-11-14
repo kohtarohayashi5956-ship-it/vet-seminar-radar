@@ -115,6 +115,27 @@ class TestGakusaiEnrichment(unittest.TestCase):
             item["detail_url"] = link
             self.assertIsNone(detail_url(item))
 
+    def test_annual_detail_budget_rotates_without_duplicate_fetches(self):
+        from gakusai_enrich import LIMIT
+        rows = []
+        for number in range(LIMIT + 5):
+            item = ev(url=f"https://www.gakusai.co.jp/vet/vet-seminar/{36000 + number}/")
+            rows.append(item)
+        # An additional session sharing the same page must not consume budget.
+        rows.append(dict(rows[0]))
+        dates = [datetime.date(2026, 11, 14), datetime.date(2026, 11, 15)]
+        scanned = []
+        for day in dates:
+            fetcher = FakeFetcher(PAGE)
+            stats = {}
+            enrich_gakusai([dict(x) for x in rows], fetcher, day, stats)
+            self.assertEqual(len(fetcher.calls), LIMIT)
+            self.assertEqual(len(set(fetcher.calls)), LIMIT)
+            self.assertEqual(stats["detail_candidates"], LIMIT + 5)
+            self.assertEqual(stats["detail_deferred"], 5)
+            scanned.extend(fetcher.calls)
+        self.assertEqual(len(set(scanned)), LIMIT + 5)
+
     def test_only_detail_link_and_single_fetch(self):
         e1,e2=ev(),ev()
         invalid=ev(url="https://www.gakusai.co.jp/doubutu/seminar-comingup/")
