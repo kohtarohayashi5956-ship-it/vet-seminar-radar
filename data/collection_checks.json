@@ -1,15 +1,15 @@
 {
-  "source_sha": "12cf8cf17ffb664791cf789cea6e9985bd55901f",
-  "checked_at_utc": "2026-11-14T03:01:21+00:00",
-  "run_url": "https://github.com/kohtarohayashi5956-ship-it/vet-seminar-radar/actions/runs/43549366512",
-  "result": "fail",
+  "source_sha": "79316e2d58f7424a0ec887fb1574849a4185b7bd",
+  "checked_at_utc": "2026-11-14T03:05:12+00:00",
+  "run_url": "https://github.com/kohtarohayashi5956-ship-it/vet-seminar-radar/actions/runs/43549427246",
+  "result": "not_published",
   "published": false,
-  "publication_reason": "",
+  "publication_reason": "stale_source",
   "checks": {
-    "unit_tests": "failure",
-    "collect": "skipped",
-    "validate": "skipped",
-    "publish_step": "skipped"
+    "unit_tests": "success",
+    "collect": "success",
+    "validate": "success",
+    "publish_step": "success"
   },
   "note": "Publication status is tracked explicitly; verify checked_at_jst separately"
 }
