@@ -67,20 +67,20 @@ class GakusaiBacklogTests(unittest.TestCase):
 
     def test_ambiguous_same_day_sessions_not_assigned(self):
         source = (
-            "開催日時・会場\\n"
-            "2027年1月24日 東京会場 10:00～12:00\\n"
-            "2027年1月24日 大阪会場 14:00～16:00\\n"
-            "来場受講料\\n"
-            "一般獣医師 9,000円\\n"
+            "開催日時・会場\n"
+            "2027年1月24日 東京会場 10:00～12:00\n"
+            "2027年1月24日 大阪会場 14:00～16:00\n"
+            "来場受講料\n"
+            "一般獣医師 9,000円\n"
         )
         self.assertEqual(parse_gakusai(source, event(35591)), {})
 
     def test_conflicting_end_time_not_overwritten(self):
         source = (
-            "開催日時・会場\\n"
-            "2027年1月24日 東京会場 10:00～12:00\\n"
-            "来場受講料\\n"
-            "一般獣医師 9,000円\\n"
+            "開催日時・会場\n"
+            "2027年1月24日 東京会場 10:00～12:00\n"
+            "来場受講料\n"
+            "一般獣医師 9,000円\n"
         )
         item = event(35591)
         item["end_time"] = "13:00"
@@ -90,10 +90,10 @@ class GakusaiBacklogTests(unittest.TestCase):
 
     def test_unique_same_day_session_still_fills_time(self):
         source = (
-            "開催日時・会場\\n"
-            "2027年1月24日 東京会場 10:00～12:00\\n"
-            "来場受講料\\n"
-            "一般獣医師 9,000円\\n"
+            "開催日時・会場\n"
+            "2027年1月24日 東京会場 10:00～12:00\n"
+            "来場受講料\n"
+            "一般獣医師 9,000円\n"
         )
         result = parse_gakusai(source, event(35591))
         self.assertEqual(result.get("start_time"), "10:00")
