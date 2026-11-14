@@ -565,7 +565,7 @@
       if (courseTerms.length) {
         courseItems = courseItems.filter(function (x) {
           var normalized = norm(x);
-          return courseTerms.every(function (term) { return normalized.indexOf(term) >= 0; });
+          return courseTerms.some(function (term) { return normalized.indexOf(term) >= 0; });
         });
       }
       if (courseItems.length) {
