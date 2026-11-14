@@ -473,8 +473,13 @@
     if ($("fHidePast").checked && e.start_date && endOf(e) < todayStr) return false;
     var q = norm($("fQ").value).trim();
     if (q) {
-      var hay = norm([e.title, e.venue, e.organizer, e.price, e.certification_program, e.certification_note, (e.topics || []).join(" ")].join(" "));
-      if (hay.indexOf(q) < 0) return false;
+      var hay = norm([e.title, e.venue, e.organizer, e.source, e.speaker,
+        e.price, e.certification_program, e.certification_note,
+        (e.topics || []).join(" "), (e.audience || []).join(" ")].join(" "));
+      // Separate words may occur in different fields: e.g. "心エコー 実習".
+      // Apply all terms (AND), not an exact consecutive phrase.
+      var terms = q.split(/\s+/).filter(Boolean);
+      if (!terms.every(function (term) { return hay.indexOf(term) >= 0; })) return false;
     }
     return true;
   }
