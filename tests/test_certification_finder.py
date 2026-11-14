@@ -52,6 +52,20 @@ class CertificationFinderTests(unittest.TestCase):
         self.assertIn('$(\"certDisclosure\").open = true', PAGE)
         self.assertIn('function certCourseItems(e)', PAGE)
 
+    def test_main_search_supports_multiple_keywords_and_speaker(self):
+        body = function_source("passes")
+        self.assertIn("e.speaker", body)
+        self.assertIn("e.source", body)
+        self.assertIn("terms.every", body)
+        self.assertIn("q.split(/\\s+/)", body)
+
+    def test_certification_more_button_wired(self):
+        self.assertIn('id="certMore" hidden', PAGE)
+        body = function_source("renderCertificationPanel")
+        self.assertIn("certExpanded ? entries : entries.slice(0, 10)", body)
+        self.assertIn('more.hidden = entries.length <= 10', body)
+        self.assertIn('certExpanded = !certExpanded; renderCertificationPanel()', PAGE)
+
     def test_course_search_does_not_split_titles_at_middle_dot(self):
         if shutil.which("node") is None:
             self.skipTest("Node is unavailable")
