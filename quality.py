@@ -15,8 +15,24 @@ def summarize_quality(events):
         )
         for field in FIELDS
     }
+    # A recording with a viewing period has no single live session clock.
+    # Keep the original overall percentages for backward compatibility and
+    # additionally expose the applicable denominator for start_time.
+    on_demand_count = sum(e.get("format") == "オンデマンド" for e in items)
+    applicable_start_times = total - on_demand_count
+    start_times_known = sum(
+        bool(e.get("start_time")) and e.get("format") != "オンデマンド"
+        for e in items
+    )
     return {
         "total": total,
+        "applicable_start_time": {
+            "eligible": applicable_start_times,
+            "known": start_times_known,
+            "pct": round(100 * start_times_known / applicable_start_times, 1)
+                   if applicable_start_times else 0.0,
+            "excluded_on_demand": on_demand_count,
+        },
         "field_presence": present,
         "field_presence_pct": {
             field: round(count * 100 / total, 1) if total else 0.0
