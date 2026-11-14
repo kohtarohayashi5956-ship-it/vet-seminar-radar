@@ -254,7 +254,7 @@
   <div class="group"><span class="gl">形式</span>
     <label class="chk"><input type="checkbox" id="fOnsite" checked>現地</label>
     <label class="chk"><input type="checkbox" id="fLive" checked>ライブ配信</label>
-    <label class="chk"><input type="checkbox" id="fOnd">オンデマンド</label></div>
+    <label class="chk"><input type="checkbox" id="fOnd" checked>オンデマンド</label></div>
   <div class="group"><span class="gl">分野</span><select id="fTopic" aria-label="分野"></select></div>
   <div class="group"><span class="gl">主催</span><select id="fOrg" aria-label="主催"></select></div>
   <label class="chk"><input type="checkbox" id="fFree">無料のみ</label>
@@ -1058,7 +1058,7 @@
       });
       $("fOnsite").checked = true;
       $("fLive").checked = true;
-      $("fOnd").checked = false;
+      $("fOnd").checked = true;
       $("fFree").checked = false;
       $("fNew").checked = false;
       $("fChanged").checked = false;
