@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-14T12:08:53+09:00",
+ "updated": "2026-11-14T13:37:25+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -2854,7 +2854,7 @@
    "status": "配信中",
    "deadline": null,
    "organizer": "日本獣医腎泌尿器学会",
-   "speaker": null,
+   "speaker": "華園 究 先生(ライフメイト動物医療センター)",
    "url": "https://www.javnu.jp/certification/schedule/",
    "detail_url": null,
    "abstract_deadline": null,
@@ -2868,8 +2868,10 @@
    "source_id": "javnu_cert",
    "last_seen": "2026-11-14",
    "first_seen": "2026-11-13",
-   "last_changed": null,
-   "changed_fields": []
+   "last_changed": "2026-11-14",
+   "changed_fields": [
+    "speaker"
+   ]
   },
   "d4817fa283d1": {
    "title": "JAVNU認定講習会 カリキュラム06：腎泌尿器の画像診断 2",
@@ -2892,7 +2894,7 @@
    "status": "配信中",
    "deadline": null,
    "organizer": "日本獣医腎泌尿器学会",
-   "speaker": null,
+   "speaker": "前半:華園 究 先生(ライフメイト動物医療センター)",
    "url": "https://www.javnu.jp/certification/schedule/",
    "detail_url": null,
    "abstract_deadline": null,
@@ -2906,8 +2908,10 @@
    "source_id": "javnu_cert",
    "last_seen": "2026-11-14",
    "first_seen": "2026-11-13",
-   "last_changed": null,
-   "changed_fields": []
+   "last_changed": "2026-11-14",
+   "changed_fields": [
+    "speaker"
+   ]
   },
   "54f22536d31b": {
    "title": "JAVNU認定講習会 カリキュラム07：腎泌尿器系の病理組織診断 1:細胞診、腎生検",
@@ -2929,7 +2933,7 @@
    "status": "配信予定",
    "deadline": null,
    "organizer": "日本獣医腎泌尿器学会",
-   "speaker": null,
+   "speaker": "矢吹 映 先生(鹿児島大学)",
    "url": "https://www.javnu.jp/certification/schedule/",
    "detail_url": null,
    "abstract_deadline": null,
@@ -2943,8 +2947,10 @@
    "source_id": "javnu_cert",
    "last_seen": "2026-11-14",
    "first_seen": "2026-11-13",
-   "last_changed": null,
-   "changed_fields": []
+   "last_changed": "2026-11-14",
+   "changed_fields": [
+    "speaker"
+   ]
   },
   "ffde801c042e": {
    "title": "JAVNU認定講習会 カリキュラム08：腎泌尿器系の病理組織診断 2:組織診",
@@ -2966,7 +2972,7 @@
    "status": "配信予定",
    "deadline": null,
    "organizer": "日本獣医腎泌尿器学会",
-   "speaker": null,
+   "speaker": "上家 潤一 先生(麻布大学)",
    "url": "https://www.javnu.jp/certification/schedule/",
    "detail_url": null,
    "abstract_deadline": null,
@@ -2980,8 +2986,10 @@
    "source_id": "javnu_cert",
    "last_seen": "2026-11-14",
    "first_seen": "2026-11-13",
-   "last_changed": null,
-   "changed_fields": []
+   "last_changed": "2026-11-14",
+   "changed_fields": [
+    "speaker"
+   ]
   },
   "bbc1e1db735a": {
    "title": "JAVNU認定講習会 カリキュラム12：腎臓の病気 3:尿細管間質疾患、中毒・薬剤性腎障害",
@@ -3003,7 +3011,7 @@
    "status": "配信予定",
    "deadline": null,
    "organizer": "日本獣医腎泌尿器学会",
-   "speaker": null,
+   "speaker": "小林 沙織 先生(岩手大学)",
    "url": "https://www.javnu.jp/certification/schedule/",
    "detail_url": null,
    "abstract_deadline": null,
@@ -3017,8 +3025,10 @@
    "source_id": "javnu_cert",
    "last_seen": "2026-11-14",
    "first_seen": "2026-11-13",
-   "last_changed": null,
-   "changed_fields": []
+   "last_changed": "2026-11-14",
+   "changed_fields": [
+    "speaker"
+   ]
   },
   "09566c378b5c": {
    "title": "JAVNU認定講習会 カリキュラム27：時事トピック(第1回)",

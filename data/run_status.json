@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-14T12:08:53+09:00",
+  "checked_at_jst": "2026-11-14T13:37:25+09:00",
   "mode": "free_rules",
   "total_events": 91,
   "data_quality": {
@@ -1058,6 +1058,92 @@
     ],
     "review_candidate_total": 67,
     "note": "Missing means only that the published field is blank, not that the official source lacks the information. For on-demand events a blank start_time is considered not applicable. A detail link is recognized by URL pattern, not verified page content."
+  },
+  "certification_quality": {
+    "total": 11,
+    "by_source": {
+      "javnu": {
+        "total": 1,
+        "on_demand": 0,
+        "known": {
+          "start_date": 1,
+          "end_date": 1,
+          "start_time": 0,
+          "format": 1,
+          "price": 0,
+          "deadline": 0,
+          "certification_program": 0
+        },
+        "not_applicable": {
+          "start_time": 0
+        }
+      },
+      "javnu_cert": {
+        "total": 6,
+        "on_demand": 6,
+        "known": {
+          "start_date": 6,
+          "end_date": 6,
+          "start_time": 0,
+          "format": 6,
+          "price": 0,
+          "deadline": 0,
+          "certification_program": 6
+        },
+        "not_applicable": {
+          "start_time": 6
+        }
+      },
+      "jsvc": {
+        "total": 1,
+        "on_demand": 0,
+        "known": {
+          "start_date": 1,
+          "end_date": 1,
+          "start_time": 0,
+          "format": 1,
+          "price": 1,
+          "deadline": 0,
+          "certification_program": 1
+        },
+        "not_applicable": {
+          "start_time": 0
+        }
+      },
+      "jsvd": {
+        "total": 2,
+        "on_demand": 0,
+        "known": {
+          "start_date": 2,
+          "end_date": 1,
+          "start_time": 0,
+          "format": 2,
+          "price": 0,
+          "deadline": 1,
+          "certification_program": 0
+        },
+        "not_applicable": {
+          "start_time": 0
+        }
+      },
+      "jsvd_cert": {
+        "total": 1,
+        "on_demand": 1,
+        "known": {
+          "start_date": 1,
+          "end_date": 1,
+          "start_time": 0,
+          "format": 1,
+          "price": 1,
+          "deadline": 0,
+          "certification_program": 0
+        },
+        "not_applicable": {
+          "start_time": 1
+        }
+      }
+    },
+    "note": "Presence only, not source validation. On-demand start times are not applicable; end_date is a viewing-period end, not an application deadline. Unknown fees are never assumed free."
   },
   "source_results": [
     {
