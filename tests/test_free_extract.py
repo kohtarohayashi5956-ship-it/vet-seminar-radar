@@ -77,6 +77,30 @@ class FreeTests(unittest.TestCase):
   self.assertEqual(len(results),1)
   self.assertNotEqual(results[0]["format"],"オンデマンド")
 
+ def test_gakusai_detail_label_without_chevron(self):
+  page="https://www.gakusai.co.jp/doubutu/seminar-comingup/"
+  text=("2027 セミナー 開催スケジュール\n"
+        "No.325 手術講習のタイトル\n"
+        "詳細はこちら <https://www.gakusai.co.jp/vet/vet-seminar/35580/>\n"
+        "6月20日（日）東京")
+  result=extract_free("学際企画",page,"",text,datetime.date(2026,11,14),{})
+  self.assertEqual(len(result),1)
+  self.assertEqual(result[0]["start_date"],"2027-06-20")
+  self.assertEqual(result[0]["url"],"https://www.gakusai.co.jp/vet/vet-seminar/35580/")
+
+ def test_gakusai_detail_label_rejects_cross_card_link(self):
+  page="https://www.gakusai.co.jp/doubutu/seminar-comingup/"
+  text=("2027 セミナー 開催スケジュール\n"
+        "No.325 前半講習のタイトル\n"
+        "6月20日（日）東京\n"
+        "No.326 後半講習のタイトル\n"
+        "詳細はこちら <https://www.gakusai.co.jp/vet/vet-seminar/35580/>\n"
+        "7月18日（日）大阪")
+  result=extract_free("学際企画",page,"",text,datetime.date(2026,11,14),{})
+  self.assertEqual(len(result),2)
+  self.assertEqual(result[0]["url"],page)
+  self.assertEqual(result[1]["url"],"https://www.gakusai.co.jp/vet/vet-seminar/35580/")
+
  def test_peppy_linked_card_dates_and_source_isolation(self):
   page="https://www.peppy.jp/seminar"
   text=(
