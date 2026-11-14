@@ -681,7 +681,24 @@
         var changedDays = deadlineDays(e.last_changed);
         if (changedDays <= 0 && changedDays >= -7) {
           var revised = el("span", "st warn", "情報更新");
-          revised.title = "前回取得時から掲載情報に差がありました。主催者による変更と断定するものではありません。";
+          var fieldNames = {
+            start_date: "開催日", end_date: "終了日", start_time: "開始時刻",
+            end_time: "終了時刻", format: "開催形式", venue: "会場",
+            prefecture: "開催地", price: "受講料", is_free: "無料区分",
+            status: "受付状況", deadline: "参加申込締切",
+            abstract_deadline: "演題募集締切", audience: "対象者",
+            topics: "分野", organizer: "主催", speaker: "講師",
+            title: "講座名", url: "掲載URL", detail_url: "個別案内URL",
+            certification_note: "認定関連情報",
+            certification_url: "認定制度URL", certification_program: "認定講習科目"
+          };
+          var changed = (e.changed_fields || []).map(function (name) {
+            return fieldNames[name] || null;
+          }).filter(Boolean);
+          revised.title = (changed.length ? "差分検出：" + changed.join("・") + "。 " : "") +
+            "機械的な取得情報の差分であり、主催者による変更とは断定できません。";
+          revised.setAttribute("aria-label", changed.length ?
+            "情報更新：" + changed.join("、") : "情報更新");
           r1.appendChild(revised);
         }
       }
