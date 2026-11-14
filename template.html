@@ -600,6 +600,14 @@
         rules.href = e.certification_url; rules.target = "_blank"; rules.rel = "noopener noreferrer";
         links.appendChild(rules);
       }
+      if (e.source_id === "javnu_cert") {
+        // The official programme fee page lists programme and credential
+        // charges, not a confirmed individual course registration price.
+        var fees = el("a", null, "認定制度の費用を確認（講座受講料とは別）");
+        fees.href = "https://www.javnu.jp/certification/fee/";
+        fees.target = "_blank"; fees.rel = "noopener noreferrer";
+        links.appendChild(fees);
+      }
       if (e.detail_url && e.detail_url !== e.url) {
         var official = el("a", null, "イベント個別案内");
         official.href = e.detail_url; official.target = "_blank"; official.rel = "noopener noreferrer";
