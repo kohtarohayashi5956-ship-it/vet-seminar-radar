@@ -60,6 +60,7 @@ class JsvdiOfficialTests(unittest.TestCase):
         self.assertEqual(lectures[0]["end_time"], "11:30")
         self.assertEqual(lectures[-1]["start_time"], "12:40")
         self.assertTrue(all(x["deadline"] is None for x in lectures))
+        self.assertTrue(all(x["price"] is None for x in lectures))
         self.assertTrue(all(x["verified"] for x in lectures))
         self.assertTrue(all(x["certification_note"] for x in lectures))
 
