@@ -13,6 +13,8 @@ class CertificationViewingPeriodTests(unittest.TestCase):
         self.assertIn('remaining > 0 && remaining <= 14', template)
         self.assertIn('certRegistrationStatus(e.deadline, "参加申込締切")', template)
         self.assertNotIn('certRegistrationStatus(e.end_date, "参加申込締切")', template)
+        self.assertIn('e.is_free === true ? "無料" : "未取得（公式確認）"', template)
+        self.assertIn('"受講料：" + feeText', template)
 
 
 if __name__ == "__main__":
