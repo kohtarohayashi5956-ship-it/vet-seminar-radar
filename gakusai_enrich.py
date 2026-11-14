@@ -158,11 +158,18 @@ def enrich_gakusai(events, fetcher, today, stats):
     candidates = [(e["start_date"], detail_url(e), e) for e in events
                   if e.get("start_date") and e["start_date"] >= today.isoformat()
                   and detail_url(e)]
-    candidates.sort(key=lambda x: x[0])
+    candidates.sort(key=lambda x: (x[0], x[1]))
+    # Rotate a bounded crawl across unique official detail URLs. Otherwise
+    # an annual programme with >LIMIT pages repeatedly checks its earliest
+    # events and may never visit later ones.
+    unique_urls = list(dict.fromkeys(url for _, url, _ in candidates))
+    if len(unique_urls) > LIMIT:
+        start_at = (today.toordinal() * LIMIT) % len(unique_urls)
+        selected = (unique_urls[start_at:] + unique_urls[:start_at])[:LIMIT]
+    else:
+        selected = unique_urls
     fetched = {}
-    for _, url, _ in candidates:
-        if url in fetched or len(fetched) >= LIMIT:
-            continue
+    for url in selected:
         try:
             fetched[url] = html_to_text(fetcher.get(url), url)
         except Exception:
@@ -184,6 +191,8 @@ def enrich_gakusai(events, fetcher, today, stats):
         accepted += previous != current
         prices += bool(details.get("price"))
         times += bool(details.get("start_time"))
+    stats["detail_candidates"] = len(unique_urls)
+    stats["detail_deferred"] = len(unique_urls) - len(fetched)
     stats["details_scanned"] = len(fetched)
     stats["details_accepted"] = accepted
     stats["prices_found"] = prices
