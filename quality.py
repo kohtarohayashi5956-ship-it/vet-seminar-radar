@@ -132,3 +132,44 @@ def summarize_review_candidates(events, limit=20):
             "is recognized by URL pattern, not verified page content."
         ),
     }
+
+
+CERTIFICATION_FIELDS = ("start_date", "end_date", "start_time", "format",
+                        "price", "deadline", "certification_program")
+
+
+def summarize_certification_quality(events):
+    """Separate confirmed fields and applicability for certification listings.
+
+    Only events explicitly tagged with certification_note/program are included.
+    These are *presence* counters; missing prices/deadlines are not invented.
+    On-demand sessions have a viewing end date rather than a single start time.
+    """
+    items = [e for e in events if e.get("certification_note") or
+             e.get("certification_program")]
+    sources = {}
+    for e in items:
+        source = e.get("source_id") or "unknown"
+        row = sources.setdefault(source, {
+            "total": 0,
+            "on_demand": 0,
+            "known": {field: 0 for field in CERTIFICATION_FIELDS},
+            "not_applicable": {"start_time": 0},
+        })
+        row["total"] += 1
+        on_demand = e.get("format") == "オンデマンド"
+        if on_demand:
+            row["on_demand"] += 1
+            row["not_applicable"]["start_time"] += 1
+        for field in CERTIFICATION_FIELDS:
+            if field == "start_time" and on_demand:
+                continue
+            if e.get(field):
+                row["known"][field] += 1
+    return {
+        "total": len(items),
+        "by_source": dict(sorted(sources.items())),
+        "note": ("Presence only, not source validation. On-demand start times "
+                 "are not applicable; end_date is a viewing-period end, not "
+                 "an application deadline. Unknown fees are never assumed free."),
+    }
