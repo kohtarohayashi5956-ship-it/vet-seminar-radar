@@ -579,6 +579,15 @@
         item.appendChild(courses);
       }
       var reg = el("div", "cert-registration");
+      if (e.format === "オンデマンド" && e.end_date) {
+        var remaining = deadlineDays(e.end_date);
+        var viewing = "視聴期限：" + fullDate(e.end_date) +
+          (remaining === 0 ? "（本日まで）" :
+            remaining > 0 && remaining <= 14 ? "（あと" + remaining + "日）" : "");
+        reg.appendChild(el("span", null, viewing));
+      }
+      // Viewing end and registration deadline are distinct.
+      // Never turn an on-demand viewing period into an application cutoff.
       reg.appendChild(el("span", null, certRegistrationStatus(e.deadline, "参加申込締切")));
       if (e.abstract_deadline) reg.appendChild(el("span", null, certRegistrationStatus(e.abstract_deadline, "演題募集締切")));
       if (e.price || e.is_free === true) reg.appendChild(el("span", null, "受講料：" + (e.price || "無料")));
