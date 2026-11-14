@@ -76,11 +76,22 @@ def summarize_actionable_upcoming(events, today=None, days=14):
     rows = []
     source_counts = {}
     for event in events:
+        is_on_demand = event.get("format") == "オンデマンド"
         try:
             date = datetime.date.fromisoformat(event.get("start_date") or "")
         except (TypeError, ValueError):
             continue
-        if not today <= date <= horizon:
+        if is_on_demand:
+            # Include already-started recordings ONLY if their explicit
+            # viewing end date proves they remain accessible in this window.
+            try:
+                end_date = datetime.date.fromisoformat(event.get("end_date") or "")
+            except (TypeError, ValueError):
+                end_date = None
+            if not (today <= date <= horizon or
+                    (date < today and end_date is not None and end_date >= today)):
+                continue
+        elif not today <= date <= horizon:
             continue
         missing = [field for field in ("price", "deadline", "format")
                    if not event.get(field)]
