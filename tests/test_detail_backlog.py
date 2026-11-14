@@ -84,7 +84,9 @@ class GakusaiBacklogTests(unittest.TestCase):
         )
         item = event(35591)
         item["end_time"] = "13:00"
-        self.assertEqual(parse_gakusai(source, item), {})
+        parsed = parse_gakusai(source, item)
+        self.assertNotIn("end_time", parsed)
+        self.assertEqual(parsed.get("start_time"), "10:00")
 
     def test_unique_same_day_session_still_fills_time(self):
         source = (
