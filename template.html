@@ -503,12 +503,17 @@
     return text.split(/・(?=(?:講座\d+|基礎\d+|臨床\d+)\s)/)
       .map(function (x) { return x.trim(); }).filter(Boolean);
   }
+  function certSearchNorm(value) {
+    // Normalize only search matching, not official course names.
+    // Common user queries omit the separator in 腎・泌尿器.
+    return norm(value).replace(/[・･·]/g, "");
+  }
   function certSearchMatch(e, q) {
     if (!q) return true;
     // Search multiple terms across the full course information. For example
     // "循環器 講座22" should work even when the words occur in separate fields.
-    var terms = norm(q).split(/\s+/).filter(Boolean);
-    var summary = norm([
+    var terms = certSearchNorm(q).split(/\s+/).filter(Boolean);
+    var summary = certSearchNorm([
       e.title, e.certification_note, e.certification_program,
       e.source, e.organizer, e.speaker, certArea(e)
     ].join(" "));
@@ -526,7 +531,7 @@
   }
   function renderCertificationPanel() {
     var area = $("certField").value, kind = $("certKind").value;
-    var q = norm($("certSearch").value).trim();
+    var q = certSearchNorm($("certSearch").value).trim();
     var entries = EVENTS.filter(function (e) {
       return e.start_date && endOf(e) >= todayStr &&
              certMatches(e, area, kind) && certSearchMatch(e, q) && passes(e);
@@ -560,11 +565,11 @@
       // Keep all course names when a combined query spans the programme
       // and a general field (e.g. "循環器 講座22"); don't show an empty list.
       var terms = q.split(/\s+/).filter(Boolean);
-      var generalText = norm([e.title, e.certification_note, e.source, e.organizer, certArea(e)].join(" "));
+      var generalText = certSearchNorm([e.title, e.certification_note, e.source, e.organizer, certArea(e)].join(" "));
       var courseTerms = terms.filter(function (term) { return generalText.indexOf(term) < 0; });
       if (courseTerms.length) {
         courseItems = courseItems.filter(function (x) {
-          var normalized = norm(x);
+          var normalized = certSearchNorm(x);
           return courseTerms.some(function (term) { return normalized.indexOf(term) >= 0; });
         });
       }
