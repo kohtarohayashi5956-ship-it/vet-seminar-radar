@@ -1,9 +1,15 @@
 {
-  "checked_at_jst": "2026-11-14T13:37:25+09:00",
+  "checked_at_jst": "2026-11-14T16:19:10+09:00",
   "mode": "free_rules",
   "total_events": 91,
   "data_quality": {
     "total": 91,
+    "applicable_start_time": {
+      "eligible": 79,
+      "known": 39,
+      "pct": 49.4,
+      "excluded_on_demand": 12
+    },
     "field_presence": {
       "start_date": 90,
       "start_time": 39,
@@ -31,6 +37,12 @@
   "quality_by_source": {
     "dourinken": {
       "total": 1,
+      "applicable_start_time": {
+        "eligible": 1,
+        "known": 0,
+        "pct": 0.0,
+        "excluded_on_demand": 0
+      },
       "field_presence": {
         "start_date": 1,
         "start_time": 0,
@@ -57,6 +69,12 @@
     },
     "gakusai": {
       "total": 27,
+      "applicable_start_time": {
+        "eligible": 27,
+        "known": 12,
+        "pct": 44.4,
+        "excluded_on_demand": 0
+      },
       "field_presence": {
         "start_date": 27,
         "start_time": 12,
@@ -83,6 +101,12 @@
     },
     "jaha": {
       "total": 20,
+      "applicable_start_time": {
+        "eligible": 17,
+        "known": 8,
+        "pct": 47.1,
+        "excluded_on_demand": 3
+      },
       "field_presence": {
         "start_date": 20,
         "start_time": 8,
@@ -109,6 +133,12 @@
     },
     "javnu": {
       "total": 1,
+      "applicable_start_time": {
+        "eligible": 1,
+        "known": 0,
+        "pct": 0.0,
+        "excluded_on_demand": 0
+      },
       "field_presence": {
         "start_date": 1,
         "start_time": 0,
@@ -135,6 +165,12 @@
     },
     "javnu_cert": {
       "total": 6,
+      "applicable_start_time": {
+        "eligible": 0,
+        "known": 0,
+        "pct": 0.0,
+        "excluded_on_demand": 6
+      },
       "field_presence": {
         "start_date": 6,
         "start_time": 0,
@@ -161,6 +197,12 @@
     },
     "jbvp": {
       "total": 8,
+      "applicable_start_time": {
+        "eligible": 7,
+        "known": 1,
+        "pct": 14.3,
+        "excluded_on_demand": 1
+      },
       "field_presence": {
         "start_date": 8,
         "start_time": 1,
@@ -187,6 +229,12 @@
     },
     "jcvim": {
       "total": 1,
+      "applicable_start_time": {
+        "eligible": 1,
+        "known": 0,
+        "pct": 0.0,
+        "excluded_on_demand": 0
+      },
       "field_presence": {
         "start_date": 1,
         "start_time": 0,
@@ -213,6 +261,12 @@
     },
     "jsvas": {
       "total": 4,
+      "applicable_start_time": {
+        "eligible": 4,
+        "known": 2,
+        "pct": 50.0,
+        "excluded_on_demand": 0
+      },
       "field_presence": {
         "start_date": 4,
         "start_time": 2,
@@ -239,6 +293,12 @@
     },
     "jsvc": {
       "total": 1,
+      "applicable_start_time": {
+        "eligible": 1,
+        "known": 0,
+        "pct": 0.0,
+        "excluded_on_demand": 0
+      },
       "field_presence": {
         "start_date": 1,
         "start_time": 0,
@@ -265,6 +325,12 @@
     },
     "jsvd": {
       "total": 2,
+      "applicable_start_time": {
+        "eligible": 2,
+        "known": 0,
+        "pct": 0.0,
+        "excluded_on_demand": 0
+      },
       "field_presence": {
         "start_date": 2,
         "start_time": 0,
@@ -291,6 +357,12 @@
     },
     "jsvd_cert": {
       "total": 1,
+      "applicable_start_time": {
+        "eligible": 0,
+        "known": 0,
+        "pct": 0.0,
+        "excluded_on_demand": 1
+      },
       "field_presence": {
         "start_date": 1,
         "start_time": 0,
@@ -317,6 +389,12 @@
     },
     "jvcs": {
       "total": 2,
+      "applicable_start_time": {
+        "eligible": 2,
+        "known": 0,
+        "pct": 0.0,
+        "excluded_on_demand": 0
+      },
       "field_presence": {
         "start_date": 2,
         "start_time": 0,
@@ -343,6 +421,12 @@
     },
     "jvna": {
       "total": 1,
+      "applicable_start_time": {
+        "eligible": 1,
+        "known": 1,
+        "pct": 100.0,
+        "excluded_on_demand": 0
+      },
       "field_presence": {
         "start_date": 1,
         "start_time": 1,
@@ -369,6 +453,12 @@
     },
     "lifetail": {
       "total": 12,
+      "applicable_start_time": {
+        "eligible": 12,
+        "known": 12,
+        "pct": 100.0,
+        "excluded_on_demand": 0
+      },
       "field_presence": {
         "start_date": 12,
         "start_time": 12,
@@ -395,6 +485,12 @@
     },
     "vetstech": {
       "total": 4,
+      "applicable_start_time": {
+        "eligible": 3,
+        "known": 3,
+        "pct": 100.0,
+        "excluded_on_demand": 1
+      },
       "field_presence": {
         "start_date": 3,
         "start_time": 3,
@@ -1145,6 +1241,85 @@
     },
     "note": "Presence only, not source validation. On-demand start times are not applicable; end_date is a viewing-period end, not an application deadline. Unknown fees are never assumed free."
   },
+  "actionable_upcoming": {
+    "from_date": "2026-11-14",
+    "through_date": "2026-11-28",
+    "total": 7,
+    "by_source": {
+      "jaha": 3,
+      "javnu_cert": 2,
+      "jsvd": 1,
+      "jsvd_cert": 1
+    },
+    "events": [
+      {
+        "id": "405876bdf5ab",
+        "source_id": "jsvd_cert",
+        "start_date": "2026-03-21",
+        "missing": [
+          "deadline"
+        ]
+      },
+      {
+        "id": "43efc444eac1",
+        "source_id": "javnu_cert",
+        "start_date": "2026-10-01",
+        "missing": [
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "d4817fa283d1",
+        "source_id": "javnu_cert",
+        "start_date": "2026-10-01",
+        "missing": [
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "47c28952de1e",
+        "source_id": "jaha",
+        "start_date": "2026-11-14",
+        "missing": [
+          "deadline"
+        ]
+      },
+      {
+        "id": "fecc161b5e56",
+        "source_id": "jaha",
+        "start_date": "2026-11-15",
+        "missing": [
+          "price",
+          "deadline",
+          "format",
+          "start_time"
+        ]
+      },
+      {
+        "id": "56bc165ba66d",
+        "source_id": "jsvd",
+        "start_date": "2026-11-22",
+        "missing": [
+          "price",
+          "start_time"
+        ]
+      },
+      {
+        "id": "6e88c4d3307b",
+        "source_id": "jaha",
+        "start_date": "2026-11-25",
+        "missing": [
+          "price",
+          "deadline",
+          "format",
+          "start_time"
+        ]
+      }
+    ],
+    "note": "Triage only. Blank fields may be unpublished or not applicable; viewing-period seminars do not require a start clock."
+  },
   "source_results": [
     {
       "id": "jaha",
@@ -1154,6 +1329,8 @@
       "added": 0,
       "updated": 20,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 5,
       "details_accepted": 11,
       "deadlines_found": 10,
@@ -1242,6 +1419,8 @@
       "added": 0,
       "updated": 13,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 9,
       "details_accepted": 9,
       "deadlines_found": 9,
@@ -1274,6 +1453,8 @@
       "added": 0,
       "updated": 27,
       "replaced_stale": 0,
+      "detail_candidates": 3,
+      "detail_deferred": 0,
       "details_scanned": 3,
       "details_accepted": 3,
       "deadlines_found": 0,
@@ -1306,6 +1487,8 @@
       "added": 0,
       "updated": 8,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 5,
       "details_accepted": 0,
       "deadlines_found": 0,
@@ -1338,6 +1521,8 @@
       "added": 0,
       "updated": 1,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 0,
       "details_accepted": 0,
       "deadlines_found": 0,
@@ -1370,6 +1555,8 @@
       "added": 0,
       "updated": 6,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 0,
       "details_accepted": 0,
       "deadlines_found": 0,
@@ -1402,6 +1589,8 @@
       "added": 0,
       "updated": 2,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 0,
       "details_accepted": 0,
       "deadlines_found": 0,
@@ -1434,6 +1623,8 @@
       "added": 0,
       "updated": 1,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 0,
       "details_accepted": 0,
       "deadlines_found": 0,
@@ -1466,6 +1657,8 @@
       "added": 0,
       "updated": 2,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 0,
       "details_accepted": 0,
       "deadlines_found": 0,
@@ -1498,6 +1691,8 @@
       "added": 0,
       "updated": 1,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 0,
       "details_accepted": 0,
       "deadlines_found": 0,
@@ -1530,6 +1725,8 @@
       "added": 0,
       "updated": 4,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 4,
       "details_accepted": 3,
       "deadlines_found": 2,
@@ -1562,6 +1759,8 @@
       "added": 0,
       "updated": 1,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 0,
       "details_accepted": 0,
       "deadlines_found": 0,
@@ -1594,6 +1793,8 @@
       "added": 0,
       "updated": 1,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 0,
       "details_accepted": 0,
       "deadlines_found": 0,
@@ -1626,6 +1827,8 @@
       "added": 0,
       "updated": 1,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 0,
       "details_accepted": 0,
       "deadlines_found": 0,
@@ -1658,6 +1861,8 @@
       "added": 1,
       "updated": 4,
       "replaced_stale": 0,
+      "detail_candidates": 0,
+      "detail_deferred": 0,
       "details_scanned": 0,
       "details_accepted": 0,
       "deadlines_found": 0,
