@@ -65,6 +65,22 @@ class JsvdiOfficialTests(unittest.TestCase):
         self.assertTrue(all(x["verified"] for x in lectures))
         self.assertTrue(all(x["certification_note"] for x in lectures))
 
+    def test_bracket_variants_and_unrelated_fees(self):
+        for left, right in (("【", "】"), ("〖", "〗")):
+            page = PAGE.replace("【会員】", left + "会員" + right).replace(
+                "【非会員】", left + "非会員" + right)
+            events, _ = self.extract(page)
+            congress = next(x for x in events if x["title"].startswith("第79回"))
+            self.assertEqual(congress["price"], "会員 10,000円／非会員 13,000円")
+            self.assertIsNone(congress["is_free"])
+            lectures = [x for x in events if x["certification_program"]]
+            self.assertTrue(all(x["price"] is None for x in lectures))
+        page = PAGE.replace("参加料：【会員】10,000円　【非会員】13,000円",
+                            "懇親会費：10,000円 13,000円")
+        events, _ = self.extract(page)
+        congress = next(x for x in events if x["title"].startswith("第79回"))
+        self.assertIsNone(congress["price"])
+
     def test_missing_congress_schedule_fails_closed(self):
         bad = PAGE.replace("日時：2026年12月5日（土）・6日（日）",
                            "日時は調整中")
