@@ -1546,6 +1546,7 @@ def _jsvdi_conference(text, page, today, stats):
             item["speaker"] = lines[idx + 1].split(":", 1)[1].split("(")[0].strip()
         records.append(item)
     stats["jsvdi_certification_lectures"] = len(records) - 1
+    stats["certification_programs_found"] = len(records) - 1
     return records
 
 
