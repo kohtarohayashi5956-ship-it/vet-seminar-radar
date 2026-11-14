@@ -88,8 +88,12 @@ def summarize_actionable_upcoming(events, today=None, days=14):
                 end_date = datetime.date.fromisoformat(event.get("end_date") or "")
             except (TypeError, ValueError):
                 end_date = None
+            # A previously started recording with a distant viewing
+            # deadline is not an imminent action; prioritize only an
+            # opening within the window or expiry within the window.
             if not (today <= date <= horizon or
-                    (date < today and end_date is not None and end_date >= today)):
+                    (date < today and end_date is not None
+                     and today <= end_date <= horizon)):
                 continue
         elif not today <= date <= horizon:
             continue
