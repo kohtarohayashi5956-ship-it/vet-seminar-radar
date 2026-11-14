@@ -86,7 +86,7 @@ jobs:
             git fetch origin main
             changed="$(git diff --name-only "$GITHUB_SHA" origin/main)"
             # CI reports and documentation-only files cannot invalidate collected data.\n            # Code, tests, configuration and public data still invalidate a crawl.
-            if printf '%s\n' "$changed" | grep -Ev '^(data/(release_checks|collection_checks)\.json|README\.md|docs/[^[:space:]]+)? | grep -q .; then
+            if printf '%s\n' "$changed" | grep -Ev '^(data/(release_checks|collection_checks)\.json|README\.md|docs/[^[:space:]]+)?$' | grep -q .; then
               echo "::notice::Source or public data changed during crawl; discarding stale generated files."
               echo "publication_reason=stale_source" >> "$GITHUB_OUTPUT"
               exit 0
