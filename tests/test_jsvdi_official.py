@@ -46,6 +46,7 @@ class JsvdiOfficialTests(unittest.TestCase):
         events, stats = self.extract()
         self.assertEqual(len(events), 6)
         self.assertEqual(stats["jsvdi_certification_lectures"], 5)
+        self.assertEqual(stats["certification_programs_found"], 5)
         congress = next(x for x in events if x["title"].startswith("第79回"))
         self.assertEqual(congress["start_date"], "2026-12-05")
         self.assertEqual(congress["end_date"], "2026-12-06")
