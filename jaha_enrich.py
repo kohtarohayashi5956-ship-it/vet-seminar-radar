@@ -806,11 +806,26 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
         if u and start and start >= today.isoformat():
             candidates.append((start, u, e))
     candidates.sort(key=lambda x: x[0])
+    # Consider each official detail page only once. When the per-run
+    # budget is limited, prioritize a course with unknown price/time over
+    # one already complete, then use earliest session date. A shared URL
+    # may represent several numbered sessions; count each page only once.
+    grouped = {}
+    for start, url, event in candidates:
+        grouped.setdefault(url, []).append((start, event))
+    def priority(item):
+        url, sessions = item
+        missing = any(
+            not e.get("price") or
+            (e.get("format") != "オンデマンド" and not e.get("start_time")) or
+            not e.get("deadline")
+            for _, e in sessions
+        )
+        return (not missing, min(day for day, _ in sessions), url)
+    selected = [url for url, _ in sorted(grouped.items(), key=priority)[:max(0, limit)]]
     fetched = {}
     raw_html = {}
-    for _, url, _ in candidates:
-        if url in fetched or len(fetched) >= limit:
-            continue
+    for url in selected:
         try:
             raw_html[url] = fetcher.get(url)
             fetched[url] = html_to_text(raw_html[url], url)
@@ -896,6 +911,8 @@ def enrich_jaha(events, fetcher, today, stats, limit=MAX_DETAILS):
             accepted += before != updated
             times_found += bool(missing_start and e.get("start_time"))
             prices_found += bool(missing_price and e.get("price"))
+    stats["detail_candidates"] = len(grouped)
+    stats["detail_deferred"] = len(grouped) - len(selected)
     stats["details_scanned"] = len(fetched)
     stats["details_accepted"] = accepted
     stats["deadlines_found"] = sum(bool(e.get("deadline")) for _, _, e in candidates)
