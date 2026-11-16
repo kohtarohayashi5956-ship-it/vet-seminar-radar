@@ -1,36 +1,36 @@
 {
-  "checked_at_jst": "2026-11-14T17:16:42+09:00",
+  "checked_at_jst": "2026-11-16T17:29:27+09:00",
   "mode": "free_rules",
-  "total_events": 97,
+  "total_events": 96,
   "data_quality": {
-    "total": 97,
+    "total": 96,
     "applicable_start_time": {
-      "eligible": 85,
+      "eligible": 84,
       "known": 44,
-      "pct": 51.8,
+      "pct": 52.4,
       "excluded_on_demand": 12
     },
     "field_presence": {
-      "start_date": 96,
+      "start_date": 95,
       "start_time": 44,
-      "venue": 31,
+      "venue": 30,
       "price": 43,
-      "deadline": 25,
-      "topics": 77,
-      "audience": 68,
-      "url": 97,
-      "format": 82
+      "deadline": 24,
+      "topics": 74,
+      "audience": 67,
+      "url": 96,
+      "format": 80
     },
     "field_presence_pct": {
       "start_date": 99.0,
-      "start_time": 45.4,
-      "venue": 32.0,
-      "price": 44.3,
-      "deadline": 25.8,
-      "topics": 79.4,
-      "audience": 70.1,
+      "start_time": 45.8,
+      "venue": 31.2,
+      "price": 44.8,
+      "deadline": 25.0,
+      "topics": 77.1,
+      "audience": 69.8,
       "url": 100.0,
-      "format": 84.5
+      "format": 83.3
     },
     "note": "Field presence only; dates, prices and details are not independently verified."
   },
@@ -103,31 +103,31 @@
       "total": 20,
       "applicable_start_time": {
         "eligible": 17,
-        "known": 8,
-        "pct": 47.1,
+        "known": 9,
+        "pct": 52.9,
         "excluded_on_demand": 3
       },
       "field_presence": {
         "start_date": 20,
-        "start_time": 8,
+        "start_time": 9,
         "venue": 0,
-        "price": 11,
+        "price": 12,
         "deadline": 10,
-        "topics": 12,
+        "topics": 10,
         "audience": 20,
         "url": 20,
-        "format": 12
+        "format": 11
       },
       "field_presence_pct": {
         "start_date": 100.0,
-        "start_time": 40.0,
+        "start_time": 45.0,
         "venue": 0.0,
-        "price": 55.0,
+        "price": 60.0,
         "deadline": 50.0,
-        "topics": 60.0,
+        "topics": 50.0,
         "audience": 100.0,
         "url": 100.0,
-        "format": 60.0
+        "format": 55.0
       },
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
@@ -260,31 +260,31 @@
       "note": "Field presence only; dates, prices and details are not independently verified."
     },
     "jsvas": {
-      "total": 4,
+      "total": 3,
       "applicable_start_time": {
-        "eligible": 4,
-        "known": 2,
-        "pct": 50.0,
+        "eligible": 3,
+        "known": 1,
+        "pct": 33.3,
         "excluded_on_demand": 0
       },
       "field_presence": {
-        "start_date": 4,
-        "start_time": 2,
-        "venue": 4,
-        "price": 2,
-        "deadline": 2,
-        "topics": 2,
-        "audience": 4,
-        "url": 4,
-        "format": 4
+        "start_date": 3,
+        "start_time": 1,
+        "venue": 3,
+        "price": 1,
+        "deadline": 1,
+        "topics": 1,
+        "audience": 3,
+        "url": 3,
+        "format": 3
       },
       "field_presence_pct": {
         "start_date": 100.0,
-        "start_time": 50.0,
+        "start_time": 33.3,
         "venue": 100.0,
-        "price": 50.0,
-        "deadline": 50.0,
-        "topics": 50.0,
+        "price": 33.3,
+        "deadline": 33.3,
+        "topics": 33.3,
         "audience": 100.0,
         "url": 100.0,
         "format": 100.0
@@ -611,24 +611,24 @@
         },
         "missing": {
           "start_date": 0,
-          "start_time": 9,
-          "price": 9,
+          "start_time": 8,
+          "price": 8,
           "deadline": 10,
-          "format": 8
+          "format": 9
         },
         "missing_with_detail_link": {
           "start_date": 0,
           "start_time": 0,
           "price": 0,
-          "deadline": 1,
-          "format": 0
+          "deadline": 2,
+          "format": 2
         },
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
-          "start_time": 9,
-          "price": 9,
-          "deadline": 9,
-          "format": 8
+          "start_time": 8,
+          "price": 8,
+          "deadline": 8,
+          "format": 7
         }
       },
       "javnu": {
@@ -740,7 +740,7 @@
         }
       },
       "jsvas": {
-        "total": 4,
+        "total": 3,
         "not_applicable": {
           "start_time": 0
         },
@@ -995,12 +995,23 @@
         ]
       },
       {
-        "id": "47c28952de1e",
+        "id": "c7f4974d3edc",
         "source_id": "jaha",
-        "start_date": "2026-11-14",
+        "start_date": "2027-01-17",
         "link_type": "individual_detail",
         "missing": [
-          "deadline"
+          "deadline",
+          "format"
+        ]
+      },
+      {
+        "id": "28d9b221385d",
+        "source_id": "jaha",
+        "start_date": "2027-01-24",
+        "link_type": "individual_detail",
+        "missing": [
+          "deadline",
+          "format"
         ]
       },
       {
@@ -1028,18 +1039,6 @@
         "link_type": "individual_detail",
         "missing": [
           "deadline"
-        ]
-      },
-      {
-        "id": "fecc161b5e56",
-        "source_id": "jaha",
-        "start_date": "2026-11-15",
-        "link_type": "listing_or_other",
-        "missing": [
-          "start_time",
-          "price",
-          "deadline",
-          "format"
         ]
       },
       {
@@ -1317,39 +1316,14 @@
     "note": "Presence only, not source validation. On-demand start times are not applicable; end_date is a viewing-period end, not an application deadline. Unknown fees are never assumed free."
   },
   "actionable_upcoming": {
-    "from_date": "2026-11-14",
-    "through_date": "2026-11-28",
-    "total": 4,
+    "from_date": "2026-11-16",
+    "through_date": "2026-11-30",
+    "total": 2,
     "by_source": {
-      "jaha": 3,
+      "jaha": 1,
       "jsvd": 1
     },
     "events": [
-      {
-        "id": "47c28952de1e",
-        "source_id": "jaha",
-        "start_date": "2026-11-14",
-        "end_date": null,
-        "review_date": "2026-11-14",
-        "review_date_type": "開催開始",
-        "missing": [
-          "deadline"
-        ]
-      },
-      {
-        "id": "fecc161b5e56",
-        "source_id": "jaha",
-        "start_date": "2026-11-15",
-        "end_date": null,
-        "review_date": "2026-11-15",
-        "review_date_type": "開催開始",
-        "missing": [
-          "price",
-          "deadline",
-          "format",
-          "start_time"
-        ]
-      },
       {
         "id": "56bc165ba66d",
         "source_id": "jsvd",
@@ -1385,15 +1359,15 @@
       "name": "JAHA",
       "pages": 1,
       "extracted": 20,
-      "added": 0,
-      "updated": 20,
-      "replaced_stale": 0,
+      "added": 2,
+      "updated": 18,
+      "replaced_stale": 2,
       "detail_candidates": 5,
       "detail_deferred": 0,
       "details_scanned": 5,
-      "details_accepted": 11,
+      "details_accepted": 12,
       "deadlines_found": 10,
-      "prices_found": 11,
+      "prices_found": 12,
       "certification_programs_found": 0,
       "registration_details_scanned": 0,
       "registration_prices_found": 0,
@@ -1406,18 +1380,8 @@
       "handson_fetch_failed": 0,
       "fee_label_pages": 4,
       "fee_amount_pages": 5,
-      "fee_parsed_pages": 2,
+      "fee_parsed_pages": 3,
       "fee_detail_checks": [
-        {
-          "path": "/owners/dog-training/kougi3ol/",
-          "fee_label": true,
-          "yen_amount": true,
-          "fee_section": false,
-          "dog_lecture_fee_parsed": true,
-          "corroborated_dates": [
-            "2026-11-14"
-          ]
-        },
         {
           "path": "/training/seminar/puppy/basic/",
           "fee_label": true,
@@ -1462,9 +1426,20 @@
             "2026-12-09",
             "2027-02-17"
           ]
+        },
+        {
+          "path": "/owners/dog-training/kougi4ol/",
+          "fee_label": true,
+          "yen_amount": true,
+          "fee_section": true,
+          "dog_lecture_fee_parsed": false,
+          "corroborated_dates": [
+            "2027-01-17",
+            "2027-01-24"
+          ]
         }
       ],
-      "times_found": 6,
+      "times_found": 7,
       "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
@@ -1475,9 +1450,9 @@
       "name": "Life&Tail",
       "pages": 1,
       "extracted": 13,
-      "added": 0,
-      "updated": 13,
-      "replaced_stale": 0,
+      "added": 1,
+      "updated": 12,
+      "replaced_stale": 1,
       "detail_candidates": 0,
       "detail_deferred": 0,
       "details_scanned": 9,
@@ -1645,8 +1620,8 @@
       "name": "日本獣医画像診断学会",
       "pages": 1,
       "extracted": 6,
-      "added": 6,
-      "updated": 0,
+      "added": 0,
+      "updated": 6,
       "replaced_stale": 0,
       "detail_candidates": 0,
       "detail_deferred": 0,
@@ -1814,16 +1789,16 @@
       "id": "jsvas",
       "name": "日本獣医麻酔外科学会",
       "pages": 2,
-      "extracted": 4,
+      "extracted": 3,
       "added": 0,
-      "updated": 4,
-      "replaced_stale": 0,
+      "updated": 3,
+      "replaced_stale": 1,
       "detail_candidates": 0,
       "detail_deferred": 0,
-      "details_scanned": 4,
-      "details_accepted": 3,
-      "deadlines_found": 2,
-      "prices_found": 2,
+      "details_scanned": 3,
+      "details_accepted": 2,
+      "deadlines_found": 1,
+      "prices_found": 1,
       "certification_programs_found": 0,
       "registration_details_scanned": 0,
       "registration_prices_found": 0,
@@ -1838,7 +1813,7 @@
       "fee_amount_pages": 0,
       "fee_parsed_pages": 0,
       "fee_detail_checks": [],
-      "times_found": 2,
+      "times_found": 1,
       "venues_found": 0,
       "detail_fetch_failed": 0,
       "status": "ok",
@@ -1951,9 +1926,9 @@
       "name": "VETS TECH",
       "pages": 3,
       "extracted": 5,
-      "added": 1,
-      "updated": 4,
-      "replaced_stale": 0,
+      "added": 2,
+      "updated": 3,
+      "replaced_stale": 1,
       "detail_candidates": 0,
       "detail_deferred": 0,
       "details_scanned": 0,
