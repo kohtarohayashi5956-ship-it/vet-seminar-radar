@@ -1525,9 +1525,9 @@ def _jsvdi_conference(text, page, today, stats):
     admission_window = next((
         " ".join(lines[i:i + 5])
         for i, line in enumerate(lines)
-        if re.match(r"^参加料\\s*[:：]", line)
-        and re.search(r"[【〖]会員[】〗]\\s*10,000\\s*円", " ".join(lines[i:i + 5]))
-        and re.search(r"[【〖]非会員[】〗]\\s*13,000\\s*円", " ".join(lines[i:i + 5]))
+        if re.match(r"^参加料\s*[:：]", line)
+        and re.search(r"[【〖]会員[】〗]\s*10,000\s*円", " ".join(lines[i:i + 5]))
+        and re.search(r"[【〖]非会員[】〗]\s*13,000\s*円", " ".join(lines[i:i + 5]))
     ), None)
     if admission_window:
         event["price"] = "会員 10,000円／非会員 13,000円"
