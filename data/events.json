@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-16T17:29:27+09:00",
+ "updated": "2026-11-16T17:43:45+09:00",
  "events": {
   "dc4573f8a1dd": {
    "title": "手島健次先生「明日から使える！ 犬と猫の局所麻酔セミナー」",
@@ -3193,7 +3193,7 @@
    "topics": [
     "画像診断"
    ],
-   "price": null,
+   "price": "会員 10,000円／非会員 13,000円",
    "is_free": null,
    "status": null,
    "deadline": null,
@@ -3212,8 +3212,10 @@
    "source_id": "jsvdi",
    "last_seen": "2026-11-16",
    "first_seen": "2026-11-14",
-   "last_changed": null,
-   "changed_fields": []
+   "last_changed": "2026-11-16",
+   "changed_fields": [
+    "price"
+   ]
   },
   "ab62defbb00c": {
    "title": "認定講習「各種画像検査法の物理学とアーティファクト」",

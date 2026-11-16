@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-16T17:29:27+09:00",
+  "checked_at_jst": "2026-11-16T17:43:45+09:00",
   "mode": "free_rules",
   "total_events": 96,
   "data_quality": {
@@ -14,7 +14,7 @@
       "start_date": 95,
       "start_time": 44,
       "venue": 30,
-      "price": 43,
+      "price": 44,
       "deadline": 24,
       "topics": 74,
       "audience": 67,
@@ -25,7 +25,7 @@
       "start_date": 99.0,
       "start_time": 45.8,
       "venue": 31.2,
-      "price": 44.8,
+      "price": 45.8,
       "deadline": 25.0,
       "topics": 77.1,
       "audience": 69.8,
@@ -399,7 +399,7 @@
         "start_date": 6,
         "start_time": 5,
         "venue": 6,
-        "price": 0,
+        "price": 1,
         "deadline": 0,
         "topics": 6,
         "audience": 6,
@@ -410,7 +410,7 @@
         "start_date": 100.0,
         "start_time": 83.3,
         "venue": 100.0,
-        "price": 0.0,
+        "price": 16.7,
         "deadline": 0.0,
         "topics": 100.0,
         "audience": 100.0,
@@ -855,7 +855,7 @@
         "missing": {
           "start_date": 0,
           "start_time": 1,
-          "price": 6,
+          "price": 5,
           "deadline": 6,
           "format": 0
         },
@@ -869,7 +869,7 @@
         "missing_without_confirmed_detail_link": {
           "start_date": 0,
           "start_time": 1,
-          "price": 6,
+          "price": 5,
           "deadline": 6,
           "format": 0
         }
@@ -1359,9 +1359,9 @@
       "name": "JAHA",
       "pages": 1,
       "extracted": 20,
-      "added": 2,
-      "updated": 18,
-      "replaced_stale": 2,
+      "added": 0,
+      "updated": 20,
+      "replaced_stale": 0,
       "detail_candidates": 5,
       "detail_deferred": 0,
       "details_scanned": 5,
@@ -1450,9 +1450,9 @@
       "name": "Life&Tail",
       "pages": 1,
       "extracted": 13,
-      "added": 1,
-      "updated": 12,
-      "replaced_stale": 1,
+      "added": 0,
+      "updated": 13,
+      "replaced_stale": 0,
       "detail_candidates": 0,
       "detail_deferred": 0,
       "details_scanned": 9,
@@ -1792,7 +1792,7 @@
       "extracted": 3,
       "added": 0,
       "updated": 3,
-      "replaced_stale": 1,
+      "replaced_stale": 0,
       "detail_candidates": 0,
       "detail_deferred": 0,
       "details_scanned": 3,
@@ -1924,11 +1924,11 @@
     {
       "id": "vetstech",
       "name": "VETS TECH",
-      "pages": 3,
-      "extracted": 5,
-      "added": 2,
-      "updated": 3,
-      "replaced_stale": 1,
+      "pages": 0,
+      "extracted": 0,
+      "added": 0,
+      "updated": 0,
+      "replaced_stale": 0,
       "detail_candidates": 0,
       "detail_deferred": 0,
       "details_scanned": 0,
@@ -1952,9 +1952,11 @@
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
-      "status": "ok",
-      "note": ""
+      "status": "error",
+      "note": "エラー: RSSの構造が不正で、解析可能なitemがありません"
     }
   ],
-  "warnings": []
+  "warnings": [
+    "VETS TECH: エラー: RSSの構造が不正で、解析可能なitemがありません"
+  ]
 }
