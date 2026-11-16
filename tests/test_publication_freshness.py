@@ -18,6 +18,10 @@ class PublicationFreshnessTests(unittest.TestCase):
         pattern = match.group(1)
         self.assertIn("grep -q .; then", WORKFLOW)
         self.assertTrue(pattern.endswith("$"), "Freshness guard must anchor path end")
+        self.assertEqual(WORKFLOW.count("- name: Persist collection workflow result"), 1)
+        self.assertEqual(WORKFLOW.count("- name: Commit public digest and run status"), 1)
+        self.assertNotIn(r"\\n            #", WORKFLOW)
+        self.assertTrue(WORKFLOW.rstrip().endswith("exit 1"))
 
         for path in (
             "data/release_checks.json",
