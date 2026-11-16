@@ -1519,13 +1519,17 @@ def _jsvdi_conference(text, page, today, stats):
     # depending on rendering. Require both exact admission tiers on the
     # same labeled price line; do not borrow amounts from the reception
     # dinner or other unrelated sections.
-    admission_line = next((
-        line for line in lines
-        if "参加料" in line
-        and re.search(r"[【〖]会員[】〗]\s*10,000円", line)
-        and re.search(r"[【〖]非会員[】〗]\s*13,000円", line)
+    # html_to_text inserts line breaks at inline HTML boundaries; the
+    # price label and the two tiers may therefore occupy separate lines.
+    # Accept only a narrow window immediately after an explicit price label.
+    admission_window = next((
+        " ".join(lines[i:i + 5])
+        for i, line in enumerate(lines)
+        if re.match(r"^参加料\\s*[:：]", line)
+        and re.search(r"[【〖]会員[】〗]\\s*10,000\\s*円", " ".join(lines[i:i + 5]))
+        and re.search(r"[【〖]非会員[】〗]\\s*13,000\\s*円", " ".join(lines[i:i + 5]))
     ), None)
-    if admission_line:
+    if admission_window:
         event["price"] = "会員 10,000円／非会員 13,000円"
         event["is_free"] = None
     records = [event]
