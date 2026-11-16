@@ -81,6 +81,16 @@ class JsvdiOfficialTests(unittest.TestCase):
         congress = next(x for x in events if x["title"].startswith("第79回"))
         self.assertIsNone(congress["price"])
 
+    def test_official_fee_split_across_html_text_lines(self):
+        split = PAGE.replace(
+            "参加料：【会員】10,000円　【非会員】13,000円",
+            "参加料：\n〖会員〗\n10,000円\n〖非会員〗\n13,000円",
+        )
+        events, _ = self.extract(split)
+        congress = next(x for x in events if x["title"].startswith("第79回"))
+        self.assertEqual(congress["price"], "会員 10,000円／非会員 13,000円")
+        self.assertTrue(all(x["price"] is None for x in events if x["certification_program"]))
+
     def test_missing_congress_schedule_fails_closed(self):
         bad = PAGE.replace("日時：2026年12月5日（土）・6日（日）",
                            "日時は調整中")
