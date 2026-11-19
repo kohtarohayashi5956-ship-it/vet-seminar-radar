@@ -1,5 +1,5 @@
 {
-  "checked_at_jst": "2026-11-16T17:43:45+09:00",
+  "checked_at_jst": "2026-11-19T11:27:59+09:00",
   "mode": "free_rules",
   "total_events": 96,
   "data_quality": {
@@ -13,10 +13,10 @@
     "field_presence": {
       "start_date": 95,
       "start_time": 44,
-      "venue": 30,
+      "venue": 26,
       "price": 44,
       "deadline": 24,
-      "topics": 74,
+      "topics": 78,
       "audience": 67,
       "url": 96,
       "format": 80
@@ -24,10 +24,10 @@
     "field_presence_pct": {
       "start_date": 99.0,
       "start_time": 45.8,
-      "venue": 31.2,
+      "venue": 27.1,
       "price": 45.8,
       "deadline": 25.0,
-      "topics": 77.1,
+      "topics": 81.2,
       "audience": 69.8,
       "url": 100.0,
       "format": 83.3
@@ -494,10 +494,10 @@
       "field_presence": {
         "start_date": 12,
         "start_time": 12,
-        "venue": 5,
+        "venue": 1,
         "price": 12,
         "deadline": 9,
-        "topics": 7,
+        "topics": 11,
         "audience": 12,
         "url": 12,
         "format": 12
@@ -505,10 +505,10 @@
       "field_presence_pct": {
         "start_date": 100.0,
         "start_time": 100.0,
-        "venue": 41.7,
+        "venue": 8.3,
         "price": 100.0,
         "deadline": 75.0,
-        "topics": 58.3,
+        "topics": 91.7,
         "audience": 100.0,
         "url": 100.0,
         "format": 100.0
@@ -1316,12 +1316,14 @@
     "note": "Presence only, not source validation. On-demand start times are not applicable; end_date is a viewing-period end, not an application deadline. Unknown fees are never assumed free."
   },
   "actionable_upcoming": {
-    "from_date": "2026-11-16",
-    "through_date": "2026-11-30",
-    "total": 2,
+    "from_date": "2026-11-19",
+    "through_date": "2026-12-03",
+    "total": 5,
     "by_source": {
       "jaha": 1,
-      "jsvd": 1
+      "javnu_cert": 2,
+      "jsvd": 1,
+      "lifetail": 1
     },
     "events": [
       {
@@ -1348,6 +1350,41 @@
           "deadline",
           "format",
           "start_time"
+        ]
+      },
+      {
+        "id": "940d1575107c",
+        "source_id": "lifetail",
+        "start_date": "2026-12-01",
+        "end_date": null,
+        "review_date": "2026-12-01",
+        "review_date_type": "開催開始",
+        "missing": [
+          "deadline"
+        ]
+      },
+      {
+        "id": "54f22536d31b",
+        "source_id": "javnu_cert",
+        "start_date": "2026-12-01",
+        "end_date": "2027-02-15",
+        "review_date": "2027-02-15",
+        "review_date_type": "視聴期限",
+        "missing": [
+          "price",
+          "deadline"
+        ]
+      },
+      {
+        "id": "ffde801c042e",
+        "source_id": "javnu_cert",
+        "start_date": "2026-12-01",
+        "end_date": "2027-02-15",
+        "review_date": "2027-02-15",
+        "review_date_type": "視聴期限",
+        "missing": [
+          "price",
+          "deadline"
         ]
       }
     ],
@@ -1450,9 +1487,9 @@
       "name": "Life&Tail",
       "pages": 1,
       "extracted": 13,
-      "added": 0,
-      "updated": 13,
-      "replaced_stale": 0,
+      "added": 5,
+      "updated": 8,
+      "replaced_stale": 5,
       "detail_candidates": 0,
       "detail_deferred": 0,
       "details_scanned": 9,
@@ -1924,10 +1961,10 @@
     {
       "id": "vetstech",
       "name": "VETS TECH",
-      "pages": 0,
-      "extracted": 0,
-      "added": 0,
-      "updated": 0,
+      "pages": 3,
+      "extracted": 5,
+      "added": 1,
+      "updated": 4,
       "replaced_stale": 0,
       "detail_candidates": 0,
       "detail_deferred": 0,
@@ -1952,11 +1989,9 @@
       "times_found": 0,
       "venues_found": 0,
       "detail_fetch_failed": 0,
-      "status": "error",
-      "note": "エラー: RSSの構造が不正で、解析可能なitemがありません"
+      "status": "ok",
+      "note": ""
     }
   ],
-  "warnings": [
-    "VETS TECH: エラー: RSSの構造が不正で、解析可能なitemがありません"
-  ]
+  "warnings": []
 }
